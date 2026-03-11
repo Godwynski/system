@@ -47,16 +47,46 @@ export async function updateSession(request: NextRequest) {
   const { data } = await supabase.auth.getClaims();
   const user = data?.claims;
 
-  if (
-    request.nextUrl.pathname !== "/" &&
-    !user &&
-    !request.nextUrl.pathname.startsWith("/login") &&
-    !request.nextUrl.pathname.startsWith("/auth")
-  ) {
-    // no user, potentially respond by redirecting the user to the login page
+  const isAuthRoute = request.nextUrl.pathname.startsWith("/login") || request.nextUrl.pathname.startsWith("/auth") || request.nextUrl.pathname.startsWith("/sign-up");
+  const isPublicRoute = request.nextUrl.pathname === "/" || isAuthRoute || request.nextUrl.pathname.startsWith("/api");
+
+  // 1. Unauthenticated users trying to access protected routes -> login
+  if (!user && !isPublicRoute) {
     const url = request.nextUrl.clone();
-    url.pathname = "/auth/login";
+    url.pathname = "/auth/login"; // Adjust based on your actual login path if difference
     return NextResponse.redirect(url);
+  }
+
+  // 2. Fetch user role if authenticated
+  let userRole = 'student'; // default
+  if (user) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', user.sub)
+      .single();
+    
+    if (profile) {
+      userRole = profile.role;
+    }
+  }
+
+  // 3. RBAC Route Guards
+  const path = request.nextUrl.pathname;
+  
+  // Admin only routes
+  if (path.startsWith('/admin') && userRole !== 'admin') {
+    return NextResponse.redirect(new URL('/unauthorized', request.url));
+  }
+  
+  // Librarian only routes (accessible by admin too)
+  if (path.startsWith('/librarian') && !['admin', 'librarian'].includes(userRole)) {
+    return NextResponse.redirect(new URL('/unauthorized', request.url));
+  }
+
+  // Staff only routes (accessible by admin, librarian, too)
+  if (path.startsWith('/staff') && !['admin', 'librarian', 'staff'].includes(userRole)) {
+    return NextResponse.redirect(new URL('/unauthorized', request.url));
   }
 
   // IMPORTANT: You *must* return the supabaseResponse object as it is.
