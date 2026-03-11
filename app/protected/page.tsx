@@ -102,22 +102,22 @@ const QUICK_CARDS: QuickCard[] = [
 ];
 
 const ROLE_LABELS: Record<string, { label: string; color: string }> = {
-  admin:     { label: "Admin",     color: "text-amber-400 bg-amber-400/10 border-amber-400/20" },
-  librarian: { label: "Librarian", color: "text-indigo-400 bg-indigo-400/10 border-indigo-400/20" },
-  staff:     { label: "Staff",     color: "text-sky-400 bg-sky-400/10 border-sky-400/20" },
-  student:   { label: "Student",   color: "text-emerald-400 bg-emerald-400/10 border-emerald-400/20" },
+  admin:     { label: "Admin",     color: "text-amber-700 bg-amber-100 border-amber-200" },
+  librarian: { label: "Librarian", color: "text-indigo-700 bg-indigo-100 border-indigo-200" },
+  staff:     { label: "Staff",     color: "text-sky-700 bg-sky-100 border-sky-200" },
+  student:   { label: "Student",   color: "text-emerald-700 bg-emerald-100 border-emerald-200" },
 };
 
 const COLOR_MAP: Record<string, string> = {
-  indigo: "bg-indigo-500/10 text-indigo-400 border-indigo-500/20 hover:bg-indigo-500/20",
-  violet: "bg-violet-500/10 text-violet-400 border-violet-500/20 hover:bg-violet-500/20",
-  rose:   "bg-rose-500/10 text-rose-400 border-rose-500/20 hover:bg-rose-500/20",
-  emerald:"bg-emerald-500/10 text-emerald-400 border-emerald-500/20 hover:bg-emerald-500/20",
-  sky:    "bg-sky-500/10 text-sky-400 border-sky-500/20 hover:bg-sky-500/20",
-  amber:  "bg-amber-500/10 text-amber-400 border-amber-500/20 hover:bg-amber-500/20",
-  teal:   "bg-teal-500/10 text-teal-400 border-teal-500/20 hover:bg-teal-500/20",
-  zinc:   "bg-zinc-500/10 text-zinc-400 border-zinc-500/20 hover:bg-zinc-500/20",
-  orange: "bg-orange-500/10 text-orange-400 border-orange-500/20 hover:bg-orange-500/20",
+  indigo: "bg-indigo-50 text-indigo-600 border-indigo-100 group-hover:bg-indigo-100",
+  violet: "bg-violet-50 text-violet-600 border-violet-100 group-hover:bg-violet-100",
+  rose:   "bg-rose-50 text-rose-600 border-rose-100 group-hover:bg-rose-100",
+  emerald:"bg-emerald-50 text-emerald-600 border-emerald-100 group-hover:bg-emerald-100",
+  sky:    "bg-sky-50 text-sky-600 border-sky-100 group-hover:bg-sky-100",
+  amber:  "bg-amber-50 text-amber-600 border-amber-100 group-hover:bg-amber-100",
+  teal:   "bg-teal-50 text-teal-600 border-teal-100 group-hover:bg-teal-100",
+  zinc:   "bg-zinc-100 text-zinc-600 border-zinc-200 group-hover:bg-zinc-200",
+  orange: "bg-orange-50 text-orange-600 border-orange-100 group-hover:bg-orange-100",
 };
 
 async function DashboardContent() {
@@ -136,15 +136,15 @@ async function DashboardContent() {
       <div className="flex flex-col gap-2">
         <div className="flex items-center gap-3 flex-wrap">
           <LayoutDashboard size={22} className="text-zinc-400" />
-          <h1 className="text-2xl font-bold text-zinc-100">Dashboard</h1>
+          <h1 className="text-2xl font-bold text-zinc-900">Dashboard</h1>
           {roleInfo && (
             <span className={`text-xs font-semibold px-2.5 py-1 rounded-full border ${roleInfo.color}`}>
               {roleInfo.label}
             </span>
           )}
         </div>
-        <p className="text-zinc-400 text-sm">
-          Welcome back{user?.email ? `, ${user.email}` : ""}. Here&apos;s what you have access to.
+        <p className="text-zinc-600 text-sm">
+          Welcome back{user?.email ? <span className="font-medium text-zinc-900">, {user.email}</span> : ""}! Here&apos;s what you have access to.
         </p>
       </div>
 
@@ -157,13 +157,13 @@ async function DashboardContent() {
             <Link
               key={card.href}
               href={card.href}
-              className="group flex flex-col gap-3 p-5 rounded-2xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.04] transition-all duration-200"
+              className="group flex flex-col gap-3 p-5 rounded-2xl border border-zinc-200 bg-white hover:border-zinc-300 hover:shadow-md hover:shadow-zinc-200/50 transition-all duration-300"
             >
               <div className={`h-10 w-10 rounded-xl border flex items-center justify-center transition-colors ${colorClass}`}>
                 <Icon size={20} />
               </div>
               <div className="flex flex-col gap-1">
-                <span className="font-semibold text-zinc-100 group-hover:text-white transition-colors">
+                <span className="font-semibold text-zinc-900 transition-colors">
                   {card.label}
                 </span>
                 <p className="text-zinc-500 text-sm leading-relaxed">{card.description}</p>
@@ -181,12 +181,12 @@ function DashboardSkeleton() {
   return (
     <div className="flex flex-col gap-8 animate-pulse">
       <div className="flex flex-col gap-2">
-        <div className="h-8 w-48 bg-zinc-800 rounded-lg" />
-        <div className="h-4 w-72 bg-zinc-800/60 rounded" />
+        <div className="h-8 w-48 bg-zinc-200 rounded-lg" />
+        <div className="h-4 w-72 bg-zinc-100 rounded" />
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {Array.from({ length: 6 }).map((_, i) => (
-          <div key={i} className="flex flex-col gap-3 p-5 rounded-2xl border border-white/5 bg-white/[0.02] h-32" />
+          <div key={i} className="flex flex-col gap-3 p-5 rounded-2xl border border-zinc-100 bg-zinc-50 h-32" />
         ))}
       </div>
     </div>
