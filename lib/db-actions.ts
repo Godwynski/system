@@ -1,21 +1,7 @@
-import { createClient } from '@supabase/supabase-js';
-import * as dotenv from 'dotenv';
-import { resolve } from 'path';
+import { SupabaseClient } from '@supabase/supabase-js';
 
-dotenv.config({ path: resolve(process.cwd(), '.env') });
-
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-if (!supabaseUrl || !supabaseServiceRoleKey) {
-  console.error('Missing Supabase environment variables');
-  process.exit(1);
-}
-
-const supabase = createClient(supabaseUrl, supabaseServiceRoleKey);
-
-// Define profiles/users we expect in the DB
-const profileIds = {
+// Profile IDs matching the demo accounts in auth.users
+export const profileIds = {
   godwynStudent: 'f1d742df-ca66-4ac8-a4e2-7369c1dc4460',
   kayleStudent: '00000000-0000-0000-0000-000000000006',
   jericoSA: '5e674c6d-cf73-4b78-a2e9-9f32f9553511',
@@ -27,10 +13,232 @@ const profileIds = {
   luminaAdmin: '00000000-0000-0000-0000-000000000001',
 };
 
-async function seed() {
-  console.info('🌱 Starting database seed...');
+// 1. COMPLETE DATABASE CLEAR
+export async function clearDatabase(supabase: SupabaseClient) {
+  const log: string[] = [];
+  const logInfo = (msg: string) => {
+    console.info(msg);
+    log.push(msg);
+  };
 
-  // 1. Seed Categories
+  logInfo('🧹 Starting full database purge...');
+
+  // Deletion in order to respect foreign key constraints
+  const tablesToDelete = [
+    'renewals',
+    'fines',
+    'violations',
+    'borrowing_records',
+    'reservations',
+    'book_copies',
+    'books',
+    'categories',
+    'audit_logs',
+    'checkout_idempotency',
+    'return_idempotency',
+    'rate_limit_log',
+    'attendance',
+    'notifications',
+    'announcements',
+    'reports',
+    'deleted_profile_info',
+    'library_cards',
+    'ui_preferences'
+  ];
+
+  for (const table of tablesToDelete) {
+    logInfo(`Deleting records from ${table}...`);
+    const { error } = await supabase
+      .from(table)
+      .delete()
+      .neq('id', '00000000-0000-0000-0000-000000000000');
+    
+    if (error) {
+      logInfo(`⚠️ Error deleting from ${table}: ${error.message}`);
+    } else {
+      logInfo(`✅ Deleted records from ${table}`);
+    }
+  }
+
+  // Reset profiles (avatars only, keeping the demo accounts intact)
+  logInfo('Resetting profile avatar_urls to NULL...');
+  const { error: profileError } = await supabase
+    .from('profiles')
+    .update({ avatar_url: null })
+    .neq('id', '00000000-0000-0000-0000-000000000000');
+    
+  if (profileError) {
+    logInfo(`⚠️ Error resetting profiles: ${profileError.message}`);
+  } else {
+    logInfo('✅ Reset all profile avatar_urls to NULL');
+  }
+
+  // Clear storage buckets
+  const buckets = ['avatars', 'book-covers', 'library-cards'];
+  for (const bucket of buckets) {
+    logInfo(`Clearing bucket ${bucket}...`);
+    const { data: files, error: listError } = await supabase.storage.from(bucket).list();
+    
+    if (listError) {
+      logInfo(`⚠️ Error listing files in bucket ${bucket}: ${listError.message}`);
+      continue;
+    }
+    
+    if (files && files.length > 0) {
+      const fileNames = files
+        .map((f) => f.name)
+        .filter((name) => name !== '.emptyFolderPlaceholder');
+        
+      if (fileNames.length > 0) {
+        const { error: deleteError } = await supabase.storage.from(bucket).remove(fileNames);
+        if (deleteError) {
+          logInfo(`⚠️ Error deleting files from bucket ${bucket}: ${deleteError.message}`);
+        } else {
+          logInfo(`✅ Deleted ${fileNames.length} files from bucket ${bucket}`);
+        }
+      } else {
+        logInfo(`✅ Bucket ${bucket} is already empty`);
+      }
+    } else {
+      logInfo(`✅ Bucket ${bucket} is already empty`);
+    }
+  }
+
+  logInfo('✨ Database purge completed successfully!');
+  return log;
+}
+
+// 2. CLEAR ONLY LOGS AND BORROWING HISTORY
+export async function clearLogsAndBorrows(supabase: SupabaseClient) {
+  const log: string[] = [];
+  const logInfo = (msg: string) => {
+    console.info(msg);
+    log.push(msg);
+  };
+
+  logInfo('🧹 Clearing only logs, borrowing history, violations, and attendance...');
+
+  const tablesToDelete = [
+    'renewals',
+    'fines',
+    'violations',
+    'borrowing_records',
+    'reservations',
+    'audit_logs',
+    'checkout_idempotency',
+    'return_idempotency',
+    'rate_limit_log',
+    'attendance',
+    'notifications',
+    'reports'
+  ];
+
+  for (const table of tablesToDelete) {
+    logInfo(`Deleting records from ${table}...`);
+    const { error } = await supabase
+      .from(table)
+      .delete()
+      .neq('id', '00000000-0000-0000-0000-000000000000');
+    
+    if (error) {
+      logInfo(`⚠️ Error deleting from ${table}: ${error.message}`);
+    } else {
+      logInfo(`✅ Deleted records from ${table}`);
+    }
+  }
+
+  // Reset book copies status to AVAILABLE since logs are gone
+  logInfo('Resetting all book copies status to AVAILABLE...');
+  const { error: copyError } = await supabase
+    .from('book_copies')
+    .update({ status: 'AVAILABLE' })
+    .neq('id', '00000000-0000-0000-0000-000000000000');
+
+  if (copyError) {
+    logInfo(`⚠️ Error resetting book copies: ${copyError.message}`);
+  } else {
+    logInfo('✅ All book copies set to AVAILABLE');
+  }
+
+  logInfo('✨ Logs and borrowing records cleared successfully!');
+  return log;
+}
+
+// 3. CLEAR ONLY CATALOG
+export async function clearCatalog(supabase: SupabaseClient) {
+  const log: string[] = [];
+  const logInfo = (msg: string) => {
+    console.info(msg);
+    log.push(msg);
+  };
+
+  logInfo('🧹 Clearing Catalog data (Books, Copies, Categories)...');
+
+  // Deleting catalog-dependent records first to satisfy FKs
+  const tablesToDelete = [
+    'renewals',
+    'fines',
+    'violations',
+    'borrowing_records',
+    'reservations',
+    'reports',
+    'book_copies',
+    'books',
+    'categories',
+    'audit_logs',
+    'attendance'
+  ];
+
+  for (const table of tablesToDelete) {
+    logInfo(`Deleting records from ${table}...`);
+    const { error } = await supabase
+      .from(table)
+      .delete()
+      .neq('id', '00000000-0000-0000-0000-000000000000');
+    
+    if (error) {
+      logInfo(`⚠️ Error deleting from ${table}: ${error.message}`);
+    } else {
+      logInfo(`✅ Deleted records from ${table}`);
+    }
+  }
+
+  // Clear book covers bucket
+  logInfo('Clearing book-covers storage bucket...');
+  const { data: files, error: listError } = await supabase.storage.from('book-covers').list();
+  if (!listError && files && files.length > 0) {
+    const fileNames = files
+      .map((f) => f.name)
+      .filter((name) => name !== '.emptyFolderPlaceholder');
+    if (fileNames.length > 0) {
+      const { error: deleteError } = await supabase.storage.from('book-covers').remove(fileNames);
+      if (deleteError) {
+        logInfo(`⚠️ Error clearing book-covers bucket: ${deleteError.message}`);
+      } else {
+        logInfo(`✅ Deleted ${fileNames.length} cover files`);
+      }
+    }
+  }
+
+  logInfo('✨ Catalog cleared successfully!');
+  return log;
+}
+
+// 4. SEED ONLY CATALOG (Categories, Books, Book Copies mark AVAILABLE)
+export async function seedCatalog(supabase: SupabaseClient) {
+  const log: string[] = [];
+  const logInfo = (msg: string) => {
+    console.info(msg);
+    log.push(msg);
+  };
+
+  logInfo('🌱 Starting Catalog Seeding...');
+
+  // 1. Clear catalog first
+  const clearLogs = await clearCatalog(supabase);
+  log.push(...clearLogs);
+
+  logInfo('🌱 Inserting categories...');
   const categories = [
     { name: 'Computer Science', slug: 'computer-science', description: 'Programming, software design, algorithms, databases, AI, and systems engineering.' },
     { name: 'Mathematics', slug: 'mathematics', description: 'Calculus, algebra, discrete structures, probability, and numerical methods.' },
@@ -47,16 +255,15 @@ async function seed() {
     .select();
 
   if (catError) {
-    console.error('Error seeding categories:', catError);
-    return;
+    logInfo(`❌ Error seeding categories: ${catError.message}`);
+    return log;
   }
-  console.info(`✅ Seeded ${catData.length} categories`);
+  logInfo(`✅ Seeded ${catData.length} categories`);
 
   const catMap = new Map(catData.map(c => [c.slug, c.id]));
 
-  // 2. Seed Books
+  logInfo('🌱 Inserting books...');
   const booksToSeed = [
-    // Computer Science
     {
       title: 'Clean Code',
       author: 'Robert C. Martin',
@@ -109,7 +316,6 @@ async function seed() {
       description: 'Key principles, tradeoffs, and architectures for designing data systems.',
       published_year: 2017
     },
-    // Mathematics
     {
       title: 'Calculus Vol 1',
       author: 'Tom M. Apostol',
@@ -136,7 +342,6 @@ async function seed() {
       description: 'Renowned professor Gilbert Strang introduces linear algebra with clear explanations and real-world examples.',
       published_year: 2005
     },
-    // Science & Tech
     {
       title: 'A Brief History of Time',
       author: 'Stephen Hawking',
@@ -163,7 +368,6 @@ async function seed() {
       description: 'Dawkins explains how natural selection operates at the level of genes, transforming our understanding of biology.',
       published_year: 1976
     },
-    // Literature & Fiction
     {
       title: 'To Kill a Mockingbird',
       author: 'Harper Lee',
@@ -190,7 +394,6 @@ async function seed() {
       description: 'Winston Smith toes the Party line, rewriting history to satisfy the Ministry of Truth. But deep inside, he harbors a rebellion.',
       published_year: 1949
     },
-    // History & Biography
     {
       title: 'Sapiens: A Brief History of Humankind',
       author: 'Yuval Noah Harari',
@@ -217,7 +420,6 @@ async function seed() {
       description: 'The classic diary of a young Jewish girl during the Nazi occupation of the Netherlands.',
       published_year: 1947
     },
-    // Business & Economics
     {
       title: 'Thinking, Fast and Slow',
       author: 'Daniel Kahneman',
@@ -244,7 +446,6 @@ async function seed() {
       description: 'The classic text on value investing, providing time-tested strategies for financial success.',
       published_year: 1949
     },
-    // Philosophy & Ethics
     {
       title: 'The Republic',
       author: 'Plato',
@@ -279,25 +480,17 @@ async function seed() {
     .select();
 
   if (bookError) {
-    console.error('Error seeding books:', bookError);
-    return;
+    logInfo(`❌ Error seeding books: ${bookError.message}`);
+    return log;
   }
-  console.info(`✅ Seeded ${bookData.length} books`);
+  logInfo(`✅ Seeded ${bookData.length} books`);
 
-  // 3. Seed Book Copies
-  const copies: any[] = [];
-  const bookCopiesMap: { [bookTitle: string]: any[] } = {};
-
+  logInfo('🌱 Inserting book copies (all marked as AVAILABLE)...');
+  const copies: { book_id: string; condition: string; status: string }[] = [];
   for (const book of bookData) {
-    bookCopiesMap[book.title] = [];
-    
-    // Copy 1 (will be BORROWED / AVAILABLE)
     copies.push({ book_id: book.id, condition: 'New', status: 'AVAILABLE' });
-    // Copy 2 (will be AVAILABLE)
     copies.push({ book_id: book.id, condition: 'Good', status: 'AVAILABLE' });
-    // Copy 3 (will be AVAILABLE)
     copies.push({ book_id: book.id, condition: 'Good', status: 'AVAILABLE' });
-    // Copy 4 (will be MAINTENANCE)
     copies.push({ book_id: book.id, condition: 'Fair', status: 'MAINTENANCE' });
   }
 
@@ -307,20 +500,39 @@ async function seed() {
     .select();
 
   if (copyError) {
-    console.error('Error seeding book copies:', copyError);
-    return;
+    logInfo(`❌ Error seeding book copies: ${copyError.message}`);
+    return log;
   }
-  console.info(`✅ Seeded ${insertedCopies.length} book copies`);
+  logInfo(`✅ Seeded ${insertedCopies.length} book copies in AVAILABLE status`);
+  logInfo('✨ Catalog seeding completed successfully!');
+  return log;
+}
 
-  // Populate bookCopiesMap with database ids and details
-  for (const copy of insertedCopies) {
-    const bookObj = bookData.find(b => b.id === copy.book_id);
-    if (bookObj) {
-      bookCopiesMap[bookObj.title].push(copy);
-    }
+// 5. SEED LOGS AND BORROWING HISTORY ONLY
+export async function seedLogsAndBorrows(supabase: SupabaseClient) {
+  const log: string[] = [];
+  const logInfo = (msg: string) => {
+    console.info(msg);
+    log.push(msg);
+  };
+
+  logInfo('🌱 Seeding operational history, borrows, and logs...');
+
+  // Clear existing history first
+  const clearLogs = await clearLogsAndBorrows(supabase);
+  log.push(...clearLogs);
+
+  // Fetch existing books and copies from DB
+  const { data: books, error: fetchBooksErr } = await supabase.from('books').select('id, title');
+  const { data: copies, error: fetchCopiesErr } = await supabase.from('book_copies').select('id, book_id, status');
+
+  if (fetchBooksErr || fetchCopiesErr || !books || !copies || books.length === 0 || copies.length === 0) {
+    logInfo('⚠️ Could not find catalog books or copies in database. Please seed the Catalog first!');
+    return log;
   }
 
-  // 4. Seed Library Cards for Profiles
+  // Ensure library cards exist
+  logInfo('Ensuring library cards exist...');
   const libraryCards = [
     { user_id: profileIds.godwynStudent, card_number: 'LIB-2026-N1122334', status: 'ACTIVE', expires_at: new Date(Date.now() + 100 * 365 * 24 * 60 * 60 * 1000).toISOString() },
     { user_id: profileIds.kayleStudent, card_number: 'LIB-2026-F5566778', status: 'ACTIVE', expires_at: new Date(Date.now() + 100 * 365 * 24 * 60 * 60 * 1000).toISOString() },
@@ -333,96 +545,126 @@ async function seed() {
     { user_id: profileIds.luminaAdmin, card_number: 'LIB-2026-A1111222', status: 'ACTIVE', expires_at: new Date(Date.now() + 100 * 365 * 24 * 60 * 60 * 1000).toISOString() },
   ];
 
-  const { error: cardError } = await supabase
-    .from('library_cards')
-    .insert(libraryCards);
-
-  if (cardError) {
-    console.error('Error seeding library cards:', cardError);
-    return;
+  for (const card of libraryCards) {
+    const { error: cardErr } = await supabase
+      .from('library_cards')
+      .upsert(card, { onConflict: 'user_id' });
+    if (cardErr) {
+      logInfo(`⚠️ Error upserting library card for ${card.user_id}: ${cardErr.message}`);
+    }
   }
-  console.info('✅ Seeded library cards');
+  logInfo('✅ library_cards table verified');
 
-  // 5. Seed Borrowing Records
+  const bookCopiesMap: { [bookTitle: string]: { id: string; book_id: string; status: string }[] } = {};
+  for (const b of books) {
+    bookCopiesMap[b.title] = copies.filter(c => c.book_id === b.id);
+  }
+
+  const getCopyId = (title: string, index: number): string | null => {
+    const list = bookCopiesMap[title];
+    return list && list[index] ? list[index].id : null;
+  };
+
+  const copyCleanCodeId = getCopyId('Clean Code', 0);
+  const copyPragmaticId = getCopyId('The Pragmatic Programmer', 0);
+  const copyAlgorithmsId = getCopyId('Introduction to Algorithms', 0);
+  const copyDataIntensiveId = getCopyId('Designing Data-Intensive Applications', 0);
+  const copyCalculusId = getCopyId('Calculus Vol 1', 0);
+  const copyLinearAlgebraId = getCopyId('Linear Algebra and Its Applications', 0);
+  const copyBriefHistoryId = getCopyId('A Brief History of Time', 0);
+  const copySelfishGeneId = getCopyId('The Selfish Gene', 0);
+
   const now = new Date();
-  
-  // Future dates (ACTIVE)
-  const dueFuture1 = new Date(now.getTime() + 12 * 24 * 60 * 60 * 1000).toISOString(); // 12 days from now
-  const dueFuture2 = new Date(now.getTime() + 10 * 24 * 60 * 60 * 1000).toISOString(); // 10 days from now
-  const dueFuture3 = new Date(now.getTime() + 8 * 24 * 60 * 60 * 1000).toISOString(); // 8 days from now
-  const dueFuture4 = new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000).toISOString(); // 14 days from now
+  const dueFuture1 = new Date(now.getTime() + 12 * 24 * 60 * 60 * 1000).toISOString();
+  const dueFuture2 = new Date(now.getTime() + 10 * 24 * 60 * 60 * 1000).toISOString();
+  const dueFuture3 = new Date(now.getTime() + 8 * 24 * 60 * 60 * 1000).toISOString();
+  const dueFuture4 = new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000).toISOString();
 
-  // Past dates for completed/returned borrows
   const borrowPast1 = new Date(now.getTime() - 15 * 24 * 60 * 60 * 1000).toISOString();
   const duePast1 = new Date(now.getTime() - 1 * 24 * 60 * 60 * 1000).toISOString();
-  const returnPast1 = new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000).toISOString(); // Returned early
+  const returnPast1 = new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000).toISOString();
 
   const borrowPast2 = new Date(now.getTime() - 10 * 24 * 60 * 60 * 1000).toISOString();
   const duePast2 = new Date(now.getTime() - 4 * 24 * 60 * 60 * 1000).toISOString();
-  const returnPast2 = new Date(now.getTime() - 4 * 24 * 60 * 60 * 1000).toISOString(); // Returned on due date
+  const returnPast2 = new Date(now.getTime() - 4 * 24 * 60 * 60 * 1000).toISOString();
 
   const borrowPast3 = new Date(now.getTime() - 20 * 24 * 60 * 60 * 1000).toISOString();
   const duePast3 = new Date(now.getTime() - 6 * 24 * 60 * 60 * 1000).toISOString();
-  const returnPast3 = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString(); // Returned early
+  const returnPast3 = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
 
   const borrowPast4 = new Date(now.getTime() - 5 * 24 * 60 * 60 * 1000).toISOString();
   const duePast4 = new Date(now.getTime() + 9 * 24 * 60 * 60 * 1000).toISOString();
-  const returnPast4 = new Date(now.getTime()).toISOString(); // Returned today
+  const returnPast4 = new Date(now.getTime()).toISOString();
 
-  // Select copies to borrow
-  const copyCleanCode = bookCopiesMap['Clean Code'][0];
-  const copyPragmatic = bookCopiesMap['The Pragmatic Programmer'][0];
-  const copyAlgorithms = bookCopiesMap['Introduction to Algorithms'][0];
-  const copyDataIntensive = bookCopiesMap['Designing Data-Intensive Applications'][0];
-  
-  const copyCalculus = bookCopiesMap['Calculus Vol 1'][0];
-  const copyLinearAlgebra = bookCopiesMap['Linear Algebra and Its Applications'][0];
-  const copyBriefHistory = bookCopiesMap['A Brief History of Time'][0];
-  const copySelfishGene = bookCopiesMap['The Selfish Gene'][0];
+  const borrowsToSeed: {
+    user_id: string;
+    book_copy_id: string;
+    processed_by: string;
+    borrowed_at: string;
+    due_date: string;
+    status: string;
+    renewal_count: number;
+    returned_at?: string | null;
+  }[] = [];
+  const activeCopiesToUpdate: string[] = [];
 
-  const borrowsToSeed = [
-    // 4 ACTIVE Borrows (due in the future)
-    {
+  if (copyCleanCodeId) {
+    borrowsToSeed.push({
       user_id: profileIds.godwynStudent,
-      book_copy_id: copyCleanCode.id,
+      book_copy_id: copyCleanCodeId,
       processed_by: profileIds.rhedLibrarian,
       borrowed_at: new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000).toISOString(),
       due_date: dueFuture1,
       status: 'ACTIVE',
       renewal_count: 0
-    },
-    {
+    });
+    activeCopiesToUpdate.push(copyCleanCodeId);
+  }
+
+  if (copyCalculusId) {
+    borrowsToSeed.push({
       user_id: profileIds.kayleStudent,
-      book_copy_id: copyCalculus.id,
+      book_copy_id: copyCalculusId,
       processed_by: profileIds.luminaLibrarian,
       borrowed_at: new Date(now.getTime() - 1 * 24 * 60 * 60 * 1000).toISOString(),
       due_date: dueFuture2,
       status: 'ACTIVE',
       renewal_count: 0
-    },
-    {
+    });
+    activeCopiesToUpdate.push(copyCalculusId);
+  }
+
+  if (copyBriefHistoryId) {
+    borrowsToSeed.push({
       user_id: profileIds.jericoSA,
-      book_copy_id: copyBriefHistory.id,
+      book_copy_id: copyBriefHistoryId,
       processed_by: profileIds.rhedLibrarian,
       borrowed_at: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000).toISOString(),
       due_date: dueFuture3,
       status: 'ACTIVE',
       renewal_count: 0
-    },
-    {
+    });
+    activeCopiesToUpdate.push(copyBriefHistoryId);
+  }
+
+  if (copyAlgorithmsId) {
+    borrowsToSeed.push({
       user_id: profileIds.luminaSA,
-      book_copy_id: copyAlgorithms.id,
+      book_copy_id: copyAlgorithmsId,
       processed_by: profileIds.luminaLibrarian,
       borrowed_at: new Date(now.getTime() - 4 * 24 * 60 * 60 * 1000).toISOString(),
       due_date: dueFuture4,
       status: 'ACTIVE',
       renewal_count: 0
-    },
+    });
+    activeCopiesToUpdate.push(copyAlgorithmsId);
+  }
 
-    // 4 RETURNED Borrows
-    {
+  // Returned records
+  if (copyPragmaticId) {
+    borrowsToSeed.push({
       user_id: profileIds.godwynStudent,
-      book_copy_id: copyPragmatic.id,
+      book_copy_id: copyPragmaticId,
       processed_by: profileIds.rhedLibrarian,
       borrowed_at: borrowPast1,
       due_date: duePast1,
@@ -430,10 +672,12 @@ async function seed() {
       returned_by: profileIds.rhedLibrarian,
       status: 'RETURNED',
       renewal_count: 0
-    },
-    {
+    });
+  }
+  if (copySelfishGeneId) {
+    borrowsToSeed.push({
       user_id: profileIds.kayleStudent,
-      book_copy_id: copySelfishGene.id,
+      book_copy_id: copySelfishGeneId,
       processed_by: profileIds.luminaLibrarian,
       borrowed_at: borrowPast2,
       due_date: duePast2,
@@ -441,10 +685,12 @@ async function seed() {
       returned_by: profileIds.luminaLibrarian,
       status: 'RETURNED',
       renewal_count: 0
-    },
-    {
+    });
+  }
+  if (copyDataIntensiveId) {
+    borrowsToSeed.push({
       user_id: profileIds.luminaSA,
-      book_copy_id: copyDataIntensive.id,
+      book_copy_id: copyDataIntensiveId,
       processed_by: profileIds.rhedLibrarian,
       borrowed_at: borrowPast3,
       due_date: duePast3,
@@ -452,10 +698,12 @@ async function seed() {
       returned_by: profileIds.rhedLibrarian,
       status: 'RETURNED',
       renewal_count: 0
-    },
-    {
+    });
+  }
+  if (copyLinearAlgebraId) {
+    borrowsToSeed.push({
       user_id: profileIds.rhedLibrarian,
-      book_copy_id: copyLinearAlgebra.id,
+      book_copy_id: copyLinearAlgebraId,
       processed_by: profileIds.luminaLibrarian,
       borrowed_at: borrowPast4,
       due_date: duePast4,
@@ -463,113 +711,116 @@ async function seed() {
       returned_by: profileIds.luminaLibrarian,
       status: 'RETURNED',
       renewal_count: 0
+    });
+  }
+
+  if (borrowsToSeed.length > 0) {
+    const { data: insertedBorrows, error: borrowError } = await supabase
+      .from('borrowing_records')
+      .insert(borrowsToSeed)
+      .select();
+
+    if (borrowError) {
+      logInfo(`❌ Error seeding borrowing records: ${borrowError.message}`);
+      return log;
     }
-  ];
+    logInfo(`✅ Seeded ${insertedBorrows.length} borrowing records`);
 
-  const { data: borrowData, error: borrowError } = await supabase
-    .from('borrowing_records')
-    .insert(borrowsToSeed)
-    .select();
+    if (activeCopiesToUpdate.length > 0) {
+      const { error: updateCopiesError } = await supabase
+        .from('book_copies')
+        .update({ status: 'BORROWED' })
+        .in('id', activeCopiesToUpdate);
 
-  if (borrowError) {
-    console.error('Error seeding borrowing records:', borrowError);
-    return;
-  }
-  console.info(`✅ Seeded ${borrowData.length} borrowing records`);
-
-  // Update book_copies statuses that are currently borrowed to 'BORROWED'
-  const activeCopiesToUpdate = [copyCleanCode.id, copyCalculus.id, copyBriefHistory.id, copyAlgorithms.id];
-  const { error: updateCopiesError } = await supabase
-    .from('book_copies')
-    .update({ status: 'BORROWED' })
-    .in('id', activeCopiesToUpdate);
-
-  if (updateCopiesError) {
-    console.error('Error updating borrowed copies status:', updateCopiesError);
-    return;
-  }
-  console.info('✅ Updated borrowed book copies status to BORROWED');
-
-  // 6. Seed Renewals
-  const returnedBorrowRecord = borrowData.find(b => b.status === 'RETURNED' && b.user_id === profileIds.godwynStudent);
-  if (returnedBorrowRecord) {
-    const renewalsToSeed = [
-      {
-        borrowing_record_id: returnedBorrowRecord.id,
-        renewed_by: profileIds.rhedLibrarian,
-        renewed_at: new Date(now.getTime() - 8 * 24 * 60 * 60 * 1000).toISOString(),
-        new_due_date: new Date(now.getTime() + 6 * 24 * 60 * 60 * 1000).toISOString()
+      if (updateCopiesError) {
+        logInfo(`❌ Error updating copy statuses to BORROWED: ${updateCopiesError.message}`);
+      } else {
+        logInfo('✅ Updated borrowed copies status to BORROWED');
       }
-    ];
+    }
 
-    const { error: renewalError } = await supabase
-      .from('renewals')
-      .insert(renewalsToSeed);
+    // Seed Renewals
+    const returnedBorrowRecord = insertedBorrows.find(b => b.status === 'RETURNED' && b.user_id === profileIds.godwynStudent);
+    if (returnedBorrowRecord) {
+      const renewalsToSeed = [
+        {
+          borrowing_record_id: returnedBorrowRecord.id,
+          renewed_by: profileIds.rhedLibrarian,
+          renewed_at: new Date(now.getTime() - 8 * 24 * 60 * 60 * 1000).toISOString(),
+          new_due_date: new Date(now.getTime() + 6 * 24 * 60 * 60 * 1000).toISOString()
+        }
+      ];
 
-    if (renewalError) {
-      console.error('Error seeding renewals:', renewalError);
-    } else {
-      console.info('✅ Seeded renewals');
+      const { error: renewalError } = await supabase.from('renewals').insert(renewalsToSeed);
+      if (renewalError) logInfo(`❌ Error seeding renewals: ${renewalError.message}`);
+      else logInfo('✅ Seeded renewals');
     }
   }
 
-  // 7. Seed Reservations
-  const bookCleanCodeObj = bookData.find(b => b.title === 'Clean Code');
-  const bookCalculusObj = bookData.find(b => b.title === 'Calculus Vol 1');
-  const bookSapiensObj = bookData.find(b => b.title === 'Sapiens: A Brief History of Humankind');
+  // Reservations
+  const bookCleanCode = books.find(b => b.title === 'Clean Code');
+  const bookCalculus = books.find(b => b.title === 'Calculus Vol 1');
+  const bookSapiens = books.find(b => b.title === 'Sapiens: A Brief History of Humankind');
 
-  const reservationsToSeed = [
-    {
+  const reservationsToSeed: {
+    user_id: string;
+    book_id: string;
+    status: string;
+    queue_position: number;
+    reserved_at: string;
+    fulfilled_at?: string | null;
+  }[] = [];
+  if (bookCalculus) {
+    reservationsToSeed.push({
       user_id: profileIds.godwynStudent,
-      book_id: bookCalculusObj.id,
+      book_id: bookCalculus.id,
       status: 'ACTIVE',
       queue_position: 1,
       reserved_at: new Date(now.getTime() - 1 * 24 * 60 * 60 * 1000).toISOString()
-    },
-    {
+    });
+  }
+  if (bookCleanCode) {
+    const cleanCodeCopy2 = getCopyId('Clean Code', 1);
+    reservationsToSeed.push({
       user_id: profileIds.kayleStudent,
-      book_id: bookCleanCodeObj.id,
+      book_id: bookCleanCode.id,
       status: 'FULFILLED',
-      copy_id: bookCopiesMap['Clean Code'][1].id,
+      copy_id: cleanCodeCopy2,
       queue_position: 1,
       reserved_at: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000).toISOString(),
       fulfilled_at: new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000).toISOString()
-    },
-    {
+    });
+  }
+  if (bookSapiens) {
+    reservationsToSeed.push({
       user_id: profileIds.jericoSA,
-      book_id: bookSapiensObj.id,
+      book_id: bookSapiens.id,
       status: 'ACTIVE',
       queue_position: 1,
       reserved_at: new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000).toISOString()
-    }
-  ];
-
-  const { error: reservationError } = await supabase
-    .from('reservations')
-    .insert(reservationsToSeed);
-
-  if (reservationError) {
-    console.error('Error seeding reservations:', reservationError);
-  } else {
-    console.info('✅ Seeded reservations');
+    });
   }
 
-  // 8. Seed Attendance (Condition: "dont make currently active attendance, maybe attendance completed")
+  if (reservationsToSeed.length > 0) {
+    const { error: reservationError } = await supabase.from('reservations').insert(reservationsToSeed);
+    if (reservationError) logInfo(`❌ Error seeding reservations: ${reservationError.message}`);
+    else logInfo('✅ Seeded reservations');
+  }
+
+  // Attendance
   const attendanceToSeed = [
-    // Godwyn Neri completed attendances
     {
       user_id: profileIds.godwynStudent,
-      check_in_at: new Date(now.getTime() - 5 * 24 * 60 * 60 * 1000 - 8 * 60 * 60 * 1000).toISOString(), // 5 days ago, 8:00 AM
-      check_out_at: new Date(now.getTime() - 5 * 24 * 60 * 60 * 1000 - 4 * 60 * 60 * 1000).toISOString(), // 5 days ago, 12:00 PM
+      check_in_at: new Date(now.getTime() - 5 * 24 * 60 * 60 * 1000 - 8 * 60 * 60 * 1000).toISOString(),
+      check_out_at: new Date(now.getTime() - 5 * 24 * 60 * 60 * 1000 - 4 * 60 * 60 * 1000).toISOString(),
       notes: 'Study session'
     },
     {
       user_id: profileIds.godwynStudent,
-      check_in_at: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000 - 7 * 60 * 60 * 1000).toISOString(), // 3 days ago, 9:00 AM
-      check_out_at: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000 - 2 * 60 * 60 * 1000).toISOString(), // 3 days ago, 2:00 PM
+      check_in_at: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000 - 7 * 60 * 60 * 1000).toISOString(),
+      check_out_at: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000 - 2 * 60 * 60 * 1000).toISOString(),
       notes: 'Group project research'
     },
-    // Kayle Floriano completed attendances
     {
       user_id: profileIds.kayleStudent,
       check_in_at: new Date(now.getTime() - 4 * 24 * 60 * 60 * 1000 - 6 * 60 * 60 * 1000).toISOString(),
@@ -582,7 +833,6 @@ async function seed() {
       check_out_at: new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000 - 1 * 60 * 60 * 1000).toISOString(),
       notes: 'Reading'
     },
-    // Jerico SA completed attendances
     {
       user_id: profileIds.jericoSA,
       check_in_at: new Date(now.getTime() - 6 * 24 * 60 * 60 * 1000 - 9 * 60 * 60 * 1000).toISOString(),
@@ -595,7 +845,6 @@ async function seed() {
       check_out_at: new Date(now.getTime() - 1 * 24 * 60 * 60 * 1000 - 4 * 60 * 60 * 1000).toISOString(),
       notes: 'Shelf organizing shift'
     },
-    // Lumina SA completed attendances
     {
       user_id: profileIds.luminaSA,
       check_in_at: new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000 - 9 * 60 * 60 * 1000).toISOString(),
@@ -604,17 +853,11 @@ async function seed() {
     }
   ];
 
-  const { error: attendanceError } = await supabase
-    .from('attendance')
-    .insert(attendanceToSeed);
+  const { error: attendanceError } = await supabase.from('attendance').insert(attendanceToSeed);
+  if (attendanceError) logInfo(`❌ Error seeding attendance: ${attendanceError.message}`);
+  else logInfo('✅ Seeded completed attendance records');
 
-  if (attendanceError) {
-    console.error('Error seeding attendance:', attendanceError);
-  } else {
-    console.info('✅ Seeded completed attendance records');
-  }
-
-  // 9. Seed Fines
+  // Fines & Violations
   const finesToSeed = [
     {
       user_id: profileIds.godwynStudent,
@@ -632,17 +875,10 @@ async function seed() {
     }
   ];
 
-  const { error: fineError } = await supabase
-    .from('fines')
-    .insert(finesToSeed);
+  const { error: fineError } = await supabase.from('fines').insert(finesToSeed);
+  if (fineError) logInfo(`❌ Error seeding fines: ${fineError.message}`);
+  else logInfo('✅ Seeded fines');
 
-  if (fineError) {
-    console.error('Error seeding fines:', fineError);
-  } else {
-    console.info('✅ Seeded fines');
-  }
-
-  // 10. Seed Violations
   const violationsToSeed = [
     {
       user_id: profileIds.godwynStudent,
@@ -668,135 +904,36 @@ async function seed() {
     }
   ];
 
-  const { error: violationError } = await supabase
-    .from('violations')
-    .insert(violationsToSeed);
+  const { error: violationError } = await supabase.from('violations').insert(violationsToSeed);
+  if (violationError) logInfo(`❌ Error seeding violations: ${violationError.message}`);
+  else logInfo('✅ Seeded violations');
 
-  if (violationError) {
-    console.error('Error seeding violations:', violationError);
-  } else {
-    console.info('✅ Seeded violations');
+  // Reports
+  if (bookCleanCode && bookCalculus) {
+    const reportsToSeed = [
+      {
+        book_id: bookCleanCode.id,
+        user_id: profileIds.godwynStudent,
+        notes: 'Pages 102 to 110 are heavily smeared with ink and illegible. Reporting for review.',
+        status: 'resolved',
+        created_at: new Date(now.getTime() - 6 * 24 * 60 * 60 * 1000).toISOString()
+      },
+      {
+        book_id: bookCalculus.id,
+        user_id: profileIds.kayleStudent,
+        notes: 'The front cover page is partially torn off.',
+        status: 'pending',
+        created_at: new Date(now.getTime() - 1 * 24 * 60 * 60 * 1000).toISOString()
+      }
+    ];
+
+    const { error: reportError } = await supabase.from('reports').insert(reportsToSeed);
+    if (reportError) logInfo(`❌ Error seeding reports: ${reportError.message}`);
+    else logInfo('✅ Seeded reports');
   }
 
-  // 11. Seed Notifications
-  const notificationsToSeed = [
-    {
-      user_id: profileIds.godwynStudent,
-      title: 'Welcome to Lumina Library!',
-      content: 'Your digital library card is now active. Explore the catalog and enjoy borrowing resources.',
-      type: 'SYSTEM',
-      priority: 'medium',
-      is_read: true,
-      metadata: {}
-    },
-    {
-      user_id: profileIds.godwynStudent,
-      title: 'Book Borrow Confirmed',
-      content: 'You have borrowed "Clean Code". It is due on ' + new Date(dueFuture1).toLocaleDateString() + '.',
-      type: 'CIRCULATION',
-      priority: 'medium',
-      is_read: false,
-      metadata: {}
-    },
-    {
-      user_id: profileIds.kayleStudent,
-      title: 'Outstanding Fine Notice',
-      content: 'You have a pending fine of Php 20.00 for: Lost accompanying media CD for Linear Algebra. Please settle at the circulation desk.',
-      type: 'FINE',
-      priority: 'high',
-      is_read: false,
-      metadata: {}
-    }
-  ];
-
-  const { error: notificationError } = await supabase
-    .from('notifications')
-    .insert(notificationsToSeed);
-
-  if (notificationError) {
-    console.error('Error seeding notifications:', notificationError);
-  } else {
-    console.info('✅ Seeded notifications');
-  }
-
-  // 12. Seed Announcements
-  const announcementsToSeed = [
-    {
-      title: 'Lumina Library System Upgrade',
-      content: 'We have successfully upgraded our library catalog system to support automated QR checkouts and a brand new modern dashboard.',
-      priority: 'medium',
-      is_active: true,
-      target_role: null,
-      starts_at: new Date(now.getTime() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-      created_by: profileIds.luminaAdmin
-    },
-    {
-      title: 'Library Hours Extended for Exams',
-      content: 'To support your exam preparation, library study hours are extended to 9:00 PM starting this Friday.',
-      priority: 'high',
-      is_active: true,
-      target_role: 'student',
-      starts_at: new Date(now.getTime()).toISOString(),
-      created_by: profileIds.rhedLibrarian
-    },
-    {
-      title: 'Annual Shelf Inventory Audit',
-      content: 'Librarians and Staff: Please prepare files and reports for the annual shelf inventory audit on Friday.',
-      priority: 'medium',
-      is_active: true,
-      target_role: 'librarian',
-      starts_at: new Date(now.getTime()).toISOString(),
-      created_by: profileIds.luminaAdmin
-    }
-  ];
-
-  const { error: announcementError } = await supabase
-    .from('announcements')
-    .insert(announcementsToSeed);
-
-  if (announcementError) {
-    console.error('Error seeding announcements:', announcementError);
-  } else {
-    console.info('✅ Seeded announcements');
-  }
-
-  // 13. Seed Reports
-  const reportsToSeed = [
-    {
-      book_id: bookCleanCodeObj.id,
-      user_id: profileIds.godwynStudent,
-      notes: 'Pages 102 to 110 are heavily smeared with ink and illegible. Reporting for review.',
-      status: 'resolved',
-      created_at: new Date(now.getTime() - 6 * 24 * 60 * 60 * 1000).toISOString()
-    },
-    {
-      book_id: bookCalculusObj.id,
-      user_id: profileIds.kayleStudent,
-      notes: 'The front cover page is partially torn off.',
-      status: 'pending',
-      created_at: new Date(now.getTime() - 1 * 24 * 60 * 60 * 1000).toISOString()
-    }
-  ];
-
-  const { error: reportError } = await supabase
-    .from('reports')
-    .insert(reportsToSeed);
-
-  if (reportError) {
-    console.error('Error seeding reports:', reportError);
-  } else {
-    console.info('✅ Seeded reports');
-  }
-
-  // 14. Seed Audit Logs
+  // Audit Logs
   const auditLogsToSeed = [
-    {
-      admin_id: profileIds.luminaAdmin,
-      entity_type: 'books',
-      action: 'CREATE_BOOK',
-      reason: 'Standard catalog initialization',
-      details: { count: bookData.length }
-    },
     {
       admin_id: profileIds.luminaAdmin,
       entity_type: 'system_settings',
@@ -813,20 +950,74 @@ async function seed() {
     }
   ];
 
-  const { error: auditError } = await supabase
-    .from('audit_logs')
-    .insert(auditLogsToSeed);
+  const { error: auditError } = await supabase.from('audit_logs').insert(auditLogsToSeed);
+  if (auditError) logInfo(`❌ Error seeding audit logs: ${auditError.message}`);
+  else logInfo('✅ Seeded audit logs');
 
-  if (auditError) {
-    console.error('Error seeding audit logs:', auditError);
-  } else {
-    console.info('✅ Seeded audit logs');
-  }
-
-  console.info('✨ Seeding completed successfully!');
+  logInfo('✨ Operational history and logs seeding completed successfully!');
+  return log;
 }
 
-seed().catch(err => {
-  console.error('Unexpected error during seeding:', err);
-  process.exit(1);
-});
+// 6. FULL SYSTEM SEED
+export async function seedDatabase(supabase: SupabaseClient) {
+  const log: string[] = [];
+  const logInfo = (msg: string) => {
+    console.info(msg);
+    log.push(msg);
+  };
+
+  logInfo('🌱 Starting complete database seeding (Full Seed)...');
+
+  // Seed Catalog First
+  const catalogLogs = await seedCatalog(supabase);
+  log.push(...catalogLogs);
+
+  // Seed Logs and History Next
+  const logsAndBorrows = await seedLogsAndBorrows(supabase);
+  log.push(...logsAndBorrows);
+
+  // Add Announcements
+  logInfo('🌱 Adding announcements...');
+  const announcementsToSeed = [
+    {
+      title: 'Lumina Library System Upgrade',
+      content: 'We have successfully upgraded our library catalog system to support automated QR checkouts and a brand new modern dashboard.',
+      priority: 'medium',
+      is_active: true,
+      target_role: null,
+      starts_at: new Date().toISOString(),
+      created_by: profileIds.luminaAdmin
+    },
+    {
+      title: 'Library Hours Extended for Exams',
+      content: 'To support your exam preparation, library study hours are extended to 9:00 PM starting this Friday.',
+      priority: 'high',
+      is_active: true,
+      target_role: 'student',
+      starts_at: new Date().toISOString(),
+      created_by: profileIds.rhedLibrarian
+    },
+    {
+      title: 'Annual Shelf Inventory Audit',
+      content: 'Librarians and Staff: Please prepare files and reports for the annual shelf inventory audit on Friday.',
+      priority: 'medium',
+      is_active: true,
+      target_role: 'librarian',
+      starts_at: new Date().toISOString(),
+      created_by: profileIds.luminaAdmin
+    }
+  ];
+
+  const { error: announcementError } = await supabase
+    .from('announcements')
+    .insert(announcementsToSeed);
+
+  if (announcementError) {
+    logInfo(`❌ Error seeding announcements: ${announcementError.message}`);
+  } else {
+    logInfo('✅ Seeded announcements');
+  }
+
+  logInfo('✨ Full database seeding completed successfully!');
+  return log;
+}
