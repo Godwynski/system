@@ -105,7 +105,7 @@ export function AddBookClient() {
     async function loadCategories() {
       try {
         const data = await getCategories();
-        setCategories((data ?? []).map((c) => ({ id: c.id as string, name: c.name as string })));
+        setCategories((data ?? []).map((c: any) => ({ id: c.id as string, name: c.name as string })));
       } catch (err) {
         console.error('Failed to load categories', err);
       }

@@ -208,7 +208,15 @@ export function PreferencesProvider({
 export function usePreferences() {
   const context = useContext(PreferencesContext);
   if (context === undefined) {
-    throw new Error("usePreferences must be used within a PreferencesProvider");
+    return {
+      preferences: {},
+      loading: false,
+      updatePreferences: async () => {},
+      refreshPreferences: async () => {},
+      role: null,
+      profile: null,
+      currentMode: "student" as const,
+    };
   }
   return context;
 }

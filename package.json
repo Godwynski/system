@@ -1,5 +1,10 @@
 {
+  "name": "lumina-lms",
+  "version": "1.0.0",
+  "description": "Lumina Library Management System",
+  "author": "Godwynski",
   "private": true,
+  "main": "electron.js",
   "engines": {
     "node": ">=24 <25",
     "npm": ">=11 <12"
@@ -11,7 +16,10 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "analyze": "cross-env ANALYZE=true next build",
-    "seed": "ts-node -T scripts/seed.ts"
+    "seed": "ts-node -T scripts/seed.ts",
+    "electron:dev": "cross-env NODE_ENV=development NEXT_PUBLIC_ELECTRON_MODE=true npx electron .",
+    "electron:start": "npm run build && cross-env NODE_ENV=production ELECTRON_MODE=true NEXT_PUBLIC_ELECTRON_MODE=true npx electron .",
+    "electron:pack": "npm run build && electron-builder"
   },
   "dependencies": {
     "@radix-ui/react-avatar": "^1.1.11",
@@ -63,6 +71,8 @@
     "autoprefixer": "^10.4.20",
     "cross-env": "^10.1.0",
     "dotenv": "^17.4.0",
+    "electron": "^42.2.0",
+    "electron-builder": "^26.8.1",
     "eslint": "^9.39.4",
     "eslint-config-next": "^16.2.2",
     "knip": "^6.7.0",
@@ -72,5 +82,23 @@
     "tailwindcss-animate": "^1.0.7",
     "ts-node": "^10.9.2",
     "typescript": "^5"
+  },
+  "build": {
+    "appId": "com.lumina.lms",
+    "productName": "Lumina LMS",
+    "files": [
+      "**/*",
+      "!node_modules/electron/**/*",
+      "!node_modules/electron-builder/**/*"
+    ],
+    "win": {
+      "target": "nsis"
+    },
+    "mac": {
+      "target": "dmg"
+    },
+    "linux": {
+      "target": "AppImage"
+    }
   }
 }

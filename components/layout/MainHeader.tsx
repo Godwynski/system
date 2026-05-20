@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils"
 
 
 import { NotificationBell } from "@/components/notifications/NotificationBell"
+import { SyncStatusIndicator } from "@/components/layout/SyncStatusIndicator"
 
 interface MainHeaderProps {
   userNav?: React.ReactNode;
@@ -52,6 +53,8 @@ export function MainHeader({ userNav }: MainHeaderProps) {
         </div>
 
         <div className="flex items-center gap-3">
+          <SyncStatusIndicator />
+          <div className="h-6 w-[1px] bg-border/20 mx-1 hidden md:block" />
           <NotificationBell />
           {userNav && (
             <>

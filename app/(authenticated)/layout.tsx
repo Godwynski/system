@@ -10,6 +10,7 @@ import { getMe, getPreferences } from "@/lib/auth-helpers";
 import { redirect } from "next/navigation";
 import { AccountPendingScreen } from "@/components/auth/AccountPendingScreen";
 import { NotificationBell } from "@/components/notifications/NotificationBell";
+import { SyncStatusIndicator } from "@/components/layout/SyncStatusIndicator";
 import NavAnimatePresence from "./NavAnimatePresence";
 import { SWRProvider } from "./_components/SWRProvider";
 import { cookies } from "next/headers";
@@ -77,6 +78,7 @@ export default async function ProtectedLayout({
                 </div>
               </div>
               <div className="ml-2 shrink-0 flex items-center gap-2">
+                <SyncStatusIndicator />
                 <NotificationBell />
                 <StreamedUserNav />
               </div>

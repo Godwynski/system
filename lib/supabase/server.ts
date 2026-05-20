@@ -1,12 +1,13 @@
 import { createServerClient } from "@supabase/ssr";
 import { cache } from "react";
-
+import { wrapWithOfflineProxy } from "@/lib/database/supabase-proxy";
+import { offlineFriendlyFetch } from "@/lib/database/offline-fetch";
 
 export const createClient = cache(async () => {
   const { cookies } = await import("next/headers");
   const cookieStore = await cookies();
 
-  return createServerClient(
+  const client = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
     {
@@ -23,12 +24,17 @@ export const createClient = cache(async () => {
           }
         },
       },
+      global: {
+        fetch: offlineFriendlyFetch,
+      },
     },
   );
+
+  return wrapWithOfflineProxy(client);
 });
 
 export const createSafeClient = () => {
-  return createServerClient(
+  const client = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
     {
@@ -39,6 +45,11 @@ export const createSafeClient = () => {
         setAll() {
         },
       },
+      global: {
+        fetch: offlineFriendlyFetch,
+      },
     }
   );
+
+  return wrapWithOfflineProxy(client);
 };

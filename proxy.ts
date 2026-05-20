@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { offlineFriendlyFetch } from "@/lib/database/offline-fetch";
 
 export default async function middleware(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
@@ -26,6 +27,9 @@ export default async function middleware(request: NextRequest) {
           );
         },
       },
+      global: {
+        fetch: offlineFriendlyFetch,
+      },
     },
   );
 
@@ -37,7 +41,6 @@ export default async function middleware(request: NextRequest) {
 
   if (error && error.code === 'refresh_token_not_found') {
     // This is expected if the browser has stale session cookies.
-    // The @supabase/ssr client will handle cookie cleaning via setAll if configured.
   }
 
   return supabaseResponse;
@@ -50,7 +53,6 @@ export const config = {
      * - _next/static (static files)
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
-     * Feel free to modify this pattern to include more paths.
      */
     "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
