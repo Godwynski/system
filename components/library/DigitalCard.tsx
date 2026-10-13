@@ -108,15 +108,15 @@ function CardFront({
           <div className="flex items-center justify-center border-r border-foreground bg-[#ffdb00] p-1 sm:p-2">
             <div className="text-center leading-none text-[#005aa9]">
               <p className="text-lg font-black sm:text-3xl">STI</p>
-              <p className="mt-0.5 text-[7px] font-bold tracking-[0.12em] sm:text-[10px]">ALABANG</p>
+              <p className="mt-0.5 text-xs font-bold tracking-wider">ALABANG</p>
             </div>
           </div>
           <div className="flex items-center justify-center px-2 py-2 sm:py-3">
-            <h2 className="text-center font-sans font-bold text-[clamp(20px,5vw,40px)] tracking-tight text-white">LIBRARY CARD</h2>
+            <h2 className="text-center font-sans font-bold text-xl sm:text-2xl tracking-tight text-white">LIBRARY CARD</h2>
           </div>
           <div className="flex items-start justify-end p-1.5 sm:p-2">
             {status !== "active" && (
-              <span className={cn("inline-flex rounded border px-1.5 py-0.5 text-[9px] font-semibold uppercase sm:text-[10px]", statusConfig[status])}>
+              <span className={cn("inline-flex rounded border px-1.5 py-0.5 text-xs font-semibold uppercase tracking-wider", statusConfig[status])}>
                 {status}
               </span>
             )}
@@ -165,7 +165,7 @@ function CardFront({
               aria-label="Expand QR code"
               className={cn(
                 "w-full border border-foreground bg-card p-1 shadow-[inset_0_1px_3px_rgba(0,0,0,0.1)] text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#0068b3] rounded-none",
-                onQrClick ? "cursor-pointer transition-all hover:scale-105 active:scale-95 hover:border-[#0068b3]" : "cursor-default"
+                onQrClick ? "cursor-pointer transition-colors hover:border-[#0068b3]" : "cursor-default"
               )}
             >
               {qrUrl ? (
@@ -184,8 +184,8 @@ function CardFront({
               )}
             </button>
             <div className="flex flex-col items-center leading-none">
-              <p className="font-mono text-[11px] font-black tracking-tighter text-foreground sm:text-[14px] break-all text-center">{cardNumber}</p>
-              <p className="mt-0.5 text-center text-[6px] font-bold uppercase tracking-tight text-muted-foreground/80 sm:text-[8px]">Scan</p>
+              <p className="font-mono text-xs sm:text-sm font-black tracking-tighter text-foreground break-all text-center">{cardNumber}</p>
+              <p className="mt-0.5 text-center text-xs font-bold uppercase tracking-wider text-muted-foreground/80">Scan</p>
             </div>
           </div>
         </div>
@@ -198,9 +198,9 @@ function FieldLine({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex flex-col items-center">
       <div className="w-full border-b border-foreground/40 pb-0.5 text-center">
-        <p className="font-sans text-[12px] font-bold leading-tight text-foreground sm:text-[20px] whitespace-normal break-words line-clamp-2">{value}</p>
+        <p className="font-sans text-xs sm:text-xl font-bold leading-tight text-foreground whitespace-normal break-words line-clamp-2">{value}</p>
       </div>
-      <p className="pt-0.5 text-center font-sans text-[9px] font-bold uppercase tracking-widest text-muted-foreground/80 sm:text-[11px]">{label}</p>
+      <p className="pt-0.5 text-center font-sans text-xs font-bold uppercase tracking-wider text-muted-foreground/80">{label}</p>
     </div>
   );
 }
@@ -229,33 +229,33 @@ function CardBack({
           <div className="flex items-center justify-center border-r border-foreground bg-[#ffdb00] p-1 sm:p-2">
             <div className="text-center leading-none text-[#005aa9]">
               <p className="text-lg font-black sm:text-3xl">STI</p>
-              <p className="mt-0.5 text-[7px] font-bold tracking-[0.12em] sm:text-[10px]">ALABANG</p>
+              <p className="mt-0.5 text-xs font-bold tracking-wider">ALABANG</p>
             </div>
           </div>
           <div className="flex items-center justify-center px-2 py-2 sm:py-3">
-            <h3 className="text-center font-sans font-bold text-[clamp(16px,4vw,32px)] tracking-tight text-white">LIBRARY CARD</h3>
+            <h3 className="text-center font-sans font-bold text-xl sm:text-2xl tracking-tight text-white">LIBRARY CARD</h3>
           </div>
         </div>
 
         <div className="grid h-[calc(100%-52px)] grid-rows-[auto_1fr_auto] gap-2 p-2 sm:h-[calc(100%-72px)] sm:gap-3 sm:p-4">
           <div className="grid gap-1.5">
             <div>
-              <p className="text-[11px] font-medium text-foreground sm:text-xs">Address:</p>
-              <div className="mt-1 flex min-h-[1.5rem] items-center border border-foreground bg-card px-2 py-0.5 text-[10px] sm:min-h-[1.75rem] sm:text-xs">
+              <p className="text-xs font-medium text-foreground">Address:</p>
+              <div className="mt-1 flex min-h-[1.5rem] items-center border border-foreground bg-card px-2 py-0.5 text-xs sm:min-h-[1.75rem]">
                 {address || "N/A"}
               </div>
             </div>
             <div>
-              <p className="text-[11px] font-medium text-foreground sm:text-xs">Contact No:</p>
-              <div className="mt-1 flex min-h-[1.5rem] items-center border border-foreground bg-card px-2 py-0.5 text-[10px] sm:min-h-[1.75rem] sm:text-xs">
+              <p className="text-xs font-medium text-foreground">Contact No:</p>
+              <div className="mt-1 flex min-h-[1.5rem] items-center border border-foreground bg-card px-2 py-0.5 text-xs sm:min-h-[1.75rem]">
                 {phone || "N/A"}
               </div>
             </div>
           </div>
 
           <div className="flex flex-col gap-1">
-            <h4 className="text-center font-sans text-[clamp(14px,3vw,20px)] font-bold text-foreground">Important Reminders</h4>
-            <ol className="list-decimal space-y-0.5 pl-5 font-sans text-[9px] leading-tight text-foreground sm:pl-6 sm:text-[11px]">
+            <h4 className="text-center font-sans text-sm sm:text-base font-bold text-foreground">Important Reminders</h4>
+            <ol className="list-decimal space-y-0.5 pl-5 font-sans text-xs leading-tight text-foreground sm:pl-6">
               <li>This card is non-transferable.</li>
               <li>Present this card every time you borrow books and other library materials.</li>
               <li>Surrender this card at the end of the semester for clearance.</li>
@@ -265,9 +265,9 @@ function CardBack({
           <div className="flex items-end justify-end">
             <div className="flex flex-col items-end pb-1">
               <div className="min-w-[100px] border-b border-foreground text-center sm:min-w-[140px]">
-                <p className="font-sans text-[11px] font-bold text-foreground sm:text-sm">{roleLabel || "Librarian"}</p>
+                <p className="font-sans text-xs font-bold text-foreground sm:text-sm">{roleLabel || "Librarian"}</p>
               </div>
-              <p className="mt-0.5 text-[8px] uppercase tracking-widest text-muted-foreground/60">Signature</p>
+              <p className="mt-0.5 text-xs uppercase tracking-wider text-muted-foreground/60">Signature</p>
             </div>
           </div>
         </div>

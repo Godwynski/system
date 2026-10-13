@@ -1,7 +1,6 @@
 "use client";
 
 import { m } from "framer-motion";
-import Image from "next/image";
 import { useState } from "react";
 import { 
   Sparkles, 
@@ -12,6 +11,8 @@ import { Book } from "@/lib/types";
 import { ReserveTitleButton } from "@/components/common/ReserveTitleButton";
 import { cn } from "@/lib/utils";
 import { BookDetailModal } from "@/components/catalog/BookDetailModal";
+
+import { BookCover } from "@/components/ui/book-cover";
 
 interface StudentBookCardProps {
   book: Book;
@@ -51,50 +52,46 @@ export function StudentBookCard({ book, priority, reservedInfo, onReserveSuccess
         }}
         className="block h-full w-full text-left cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-xl"
       >
-        <div className="relative flex h-full flex-col overflow-hidden rounded-xl border border-border/40 bg-card p-3 shadow-sm transition-all hover:bg-accent/50 hover:border-primary/20 hover:shadow-lg">
-          <div className="mb-3 flex items-start gap-3">
+        <div className="relative flex h-full flex-col overflow-hidden rounded-xl border border-border/60 bg-card p-3.5 shadow-xs transition-all hover:bg-accent/40 hover:border-border/80">
+          <div className="mb-3 flex items-start gap-3.5">
             <div className="min-w-0 flex-1">
               <div className="mb-2">
                 <h3 className="line-clamp-2 text-sm font-bold leading-tight text-foreground transition-colors group-hover:text-primary">
                   {book.title}
                 </h3>
-                <p className="mt-1 truncate text-xs font-semibold text-muted-foreground/80">by {book.author}</p>
+                <p className="mt-1 truncate text-xs font-medium text-muted-foreground">by {book.author}</p>
               </div>
 
               <div className="flex flex-wrap gap-1.5">
-                 <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50">{book.section || "General"}</span>
+                 <span className="text-2xs font-semibold uppercase tracking-wider text-muted-foreground/60">{book.section || "General"}</span>
                  {reservedInfo && (
                     <Badge
                       variant={isReady ? "default" : "outline"}
                       className={cn(
-                        "shrink-0 text-[9px] px-1.5 py-0 h-[18px] gap-1 font-black",
+                        "shrink-0 text-2xs px-2 py-0.5 gap-1 font-semibold",
                         isReady
                           ? "bg-emerald-500 hover:bg-emerald-500 text-white border-transparent"
-                          : "border-primary/30 text-primary bg-primary/5"
+                          : "border-primary/40 text-primary bg-primary/5"
                       )}
                     >
-                      {isReady ? <Sparkles className="h-2.5 w-2.5" /> : <Ticket className="h-2.5 w-2.5" />}
+                      {isReady ? <Sparkles className="h-3 w-3" /> : <Ticket className="h-3 w-3" />}
                       {isReady ? "Ready" : `#${reservedInfo.queuePosition}`}
                     </Badge>
                  )}
               </div>
             </div>
 
-            <div className="relative h-24 w-16 shrink-0 overflow-hidden rounded-lg border border-border/40 bg-muted/20 shadow-sm transition-transform duration-500 group-hover:scale-105 group-hover:rotate-2">
-              <Image 
-                src={book.cover_url || "/images/default-book-cover.png"} 
-                alt={book.title} 
-                fill 
-                className="object-cover" 
-                sizes="80px"
+            <div className="relative h-28 w-20 shrink-0 overflow-hidden rounded-lg border border-border/60 bg-muted/30 shadow-xs transition-transform duration-300 group-hover:scale-105">
+              <BookCover
+                src={book.cover_url}
+                alt={book.title}
                 priority={priority}
-                unoptimized
               />
             </div>
           </div>
 
           <div className="mt-auto flex items-center justify-between pt-3 border-t border-border/30">
-            <Badge variant={isOutOfStock ? "destructive" : "secondary"} className="rounded-full px-2.5 py-0 h-5 text-[10px] font-black tracking-tight">
+            <Badge variant={isOutOfStock ? "destructive" : "secondary"} className="rounded-md px-2 py-0.5 text-2xs font-mono font-medium">
               {book.available_copies} / {book.total_copies}
             </Badge>
             
@@ -108,7 +105,7 @@ export function StudentBookCard({ book, priority, reservedInfo, onReserveSuccess
                 holdExpiresAt={reservedInfo?.holdExpiresAt}
                 variant="outline"
                 size="sm"
-                className="h-7 text-[10px] px-2 rounded-lg"
+                className="h-8 text-xs px-3 rounded-lg"
                 onReserveSuccess={onReserveSuccess}
               />
             </div>

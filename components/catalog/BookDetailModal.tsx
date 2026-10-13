@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useTransition, useCallback, useMemo } from 'react';
-import Image from 'next/image';
+import { BookCover } from '@/components/ui/book-cover';
 import {
   MapPin,
   CheckCircle2,
@@ -82,23 +82,23 @@ function CopyMeter({ available, total }: { available: number; total: number }) {
 
   return (
     <div className="space-y-2">
-      <div className="flex items-center justify-between text-[11px] font-bold text-muted-foreground">
-        <span className="uppercase tracking-widest">Copy Availability</span>
-        <span>{available}/{total} free</span>
+      <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+        <span>Copy Availability</span>
+        <span className="tabular-nums">{available}/{total} free</span>
       </div>
       <div className="h-2 w-full overflow-hidden rounded-full bg-muted/60">
         <div
-          className="h-full rounded-full bg-emerald-500 transition-all duration-700"
+          className="h-full rounded-full bg-primary transition-all duration-700"
           style={{ width: `${pct}%` }}
         />
       </div>
-      <div className="flex gap-3 text-[10px] font-bold">
-        <span className="flex items-center gap-1 text-emerald-600">
-          <span className="h-2 w-2 rounded-full bg-emerald-500 inline-block" />
+      <div className="flex gap-3 text-xs font-semibold tabular-nums">
+        <span className="flex items-center gap-1 status-success !bg-transparent !border-0">
+          <span className="h-2 w-2 rounded-full bg-current inline-block" />
           {available} on shelf
         </span>
-        <span className="flex items-center gap-1 text-amber-600">
-          <span className="h-2 w-2 rounded-full bg-amber-400 inline-block" />
+        <span className="flex items-center gap-1 status-warning !bg-transparent !border-0">
+          <span className="h-2 w-2 rounded-full bg-current inline-block" />
           {borrowed} borrowed
         </span>
       </div>
@@ -118,13 +118,13 @@ function MetaRow({
   value: React.ReactNode;
 }) {
   return (
-    <div className="flex items-center gap-3 rounded-xl border border-border/30 bg-card/20 p-2.5 backdrop-blur-sm">
-      <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-muted/30 text-muted-foreground/60">
+    <div className="flex items-center gap-3 rounded-lg border border-border/60 bg-card/40 p-2.5">
+      <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-muted border border-border/60 text-muted-foreground">
         <Icon className="h-3.5 w-3.5" />
       </div>
       <div className="min-w-0 flex-1">
-        <p className="text-[9px] font-black uppercase tracking-[0.15em] text-muted-foreground/40">{label}</p>
-        <p className="truncate text-xs font-bold text-foreground/90">{value || '—'}</p>
+        <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{label}</p>
+        <p className="truncate text-xs font-semibold text-foreground">{value || '—'}</p>
       </div>
     </div>
   );
@@ -142,24 +142,24 @@ function StatusMini({ book, availability }: { book: BookDetail; availability: Av
         })
       : null;
     return (
-      <div className="flex items-center gap-3 rounded-xl border border-emerald-500/20 bg-emerald-500/5 px-3 py-2.5">
-        <Sparkles className="h-4 w-4 text-emerald-600 shrink-0" />
+      <div className="flex items-center gap-3 rounded-lg border status-success px-3 py-2.5">
+        <Sparkles className="h-4 w-4 shrink-0" />
         <div className="min-w-0">
-          <p className="text-xs font-black text-emerald-700 uppercase tracking-tight">Ready for Pickup</p>
-          {deadline && <p className="text-[10px] font-bold text-emerald-600/70 mt-0.5">Claim by {deadline}</p>}
+          <p className="text-xs font-semibold uppercase tracking-wider">Ready for Pickup</p>
+          {deadline && <p className="text-xs mt-0.5">Claim by {deadline}</p>}
         </div>
-        <span className="ml-auto animate-pulse inline-flex h-2 w-2 rounded-full bg-emerald-500 shadow-[0_0_6px_2px_rgba(16,185,129,0.4)]" />
+        <span className="ml-auto inline-flex h-2 w-2 rounded-full bg-current" />
       </div>
     );
   }
 
   if (availability.hasReservation && availability.queuePosition) {
     return (
-      <div className="flex items-center gap-3 rounded-xl border border-primary/20 bg-primary/5 px-3 py-2.5">
+      <div className="flex items-center gap-3 rounded-lg border border-border/60 bg-card/40 px-3 py-2.5">
         <Ticket className="h-4 w-4 text-primary shrink-0" />
         <div className="min-w-0">
-          <p className="text-xs font-black text-primary uppercase tracking-tight">Queue Position #{availability.queuePosition}</p>
-          <p className="text-[10px] font-bold text-muted-foreground/70 mt-0.5">We&apos;ll notify you when assigned.</p>
+          <p className="text-xs font-semibold text-foreground uppercase tracking-wider">Queue Position #{availability.queuePosition}</p>
+          <p className="text-xs text-muted-foreground mt-0.5">We&apos;ll notify you when assigned.</p>
         </div>
       </div>
     );
@@ -167,10 +167,10 @@ function StatusMini({ book, availability }: { book: BookDetail; availability: Av
 
   if (isAvailable) {
     return (
-      <div className="flex items-center gap-3 rounded-xl border border-emerald-500/10 bg-emerald-500/5 px-3 py-2.5">
-        <CheckCircle2 className="h-4 w-4 text-emerald-600 shrink-0" />
+      <div className="flex items-center gap-3 rounded-lg border status-success px-3 py-2.5">
+        <CheckCircle2 className="h-4 w-4 shrink-0" />
         <div className="min-w-0">
-          <p className="text-xs font-black text-emerald-700 uppercase tracking-tight">
+          <p className="text-xs font-semibold uppercase tracking-wider">
             {book.available_copies} {book.available_copies === 1 ? 'copy' : 'copies'} on shelf
           </p>
         </div>
@@ -179,10 +179,10 @@ function StatusMini({ book, availability }: { book: BookDetail; availability: Av
   }
 
   return (
-    <div className="flex items-center gap-3 rounded-xl border border-amber-500/10 bg-amber-500/5 px-3 py-2.5">
-      <Clock className="h-4 w-4 text-amber-600 shrink-0" />
+    <div className="flex items-center gap-3 rounded-lg border status-warning px-3 py-2.5">
+      <Clock className="h-4 w-4 shrink-0" />
       <div className="min-w-0">
-        <p className="text-xs font-black text-amber-700 uppercase tracking-tight">Currently Unavailable</p>
+        <p className="text-xs font-semibold uppercase tracking-wider">Currently Unavailable</p>
       </div>
     </div>
   );
@@ -258,22 +258,19 @@ function StudentModalContent({
 
       {/* Cover + Title row */}
       <div className="flex gap-4 pr-6">
-        <div className="relative h-36 w-24 shrink-0 overflow-hidden rounded-xl border border-border/40 bg-muted/20 shadow-sm">
-          <Image 
-            src={book.cover_url || "/images/default-book-cover.png"} 
+        <div className="relative h-36 w-24 shrink-0 overflow-hidden rounded-xl border border-border/60 bg-muted/30 shadow-xs">
+          <BookCover 
+            src={book.cover_url} 
             alt={book.title} 
-            fill 
-            className="object-cover" 
             sizes="96px" 
-            unoptimized 
           />
           {/* Availability ribbon */}
           <div className={cn(
-            "absolute bottom-0 left-0 right-0 px-2 py-1 text-[8px] font-extrabold uppercase tracking-wider text-center backdrop-blur-sm",
-            availability.isReady ? 'bg-emerald-500/90 text-white'
+            "absolute bottom-0 left-0 right-0 px-2 py-1 text-xs font-semibold uppercase tracking-wider text-center backdrop-blur-sm z-10",
+            availability.isReady ? 'status-success'
               : availability.hasReservation ? 'bg-primary/90 text-primary-foreground'
-              : isAvailable ? 'bg-emerald-500/85 text-white'
-              : 'bg-amber-500/90 text-white'
+              : isAvailable ? 'status-success'
+              : 'status-warning'
           )}>
             {availability.isReady ? '✦ Ready'
               : availability.hasReservation ? `Queue #${availability.queuePosition ?? 1}`
@@ -292,13 +289,13 @@ function StudentModalContent({
           {book.tags && book.tags.length > 0 && (
             <div className="flex flex-wrap gap-1">
               {book.tags.slice(0, 3).map((tag, i) => (
-                <Badge key={i} variant="secondary" className="text-[8px] px-1.5 py-0 font-bold">
-                  <Tag className="mr-0.5 h-2 w-2" />
+                <Badge key={i} variant="secondary" className="text-xs font-semibold uppercase tracking-wider px-2 py-0.5 rounded-lg border border-border/60">
+                  <Tag className="mr-1 h-3 w-3" />
                   {tag}
                 </Badge>
               ))}
               {book.tags.length > 3 && (
-                <Badge variant="outline" className="text-[8px] px-1.5 py-0 font-bold text-muted-foreground">
+                <Badge variant="outline" className="text-xs font-semibold uppercase tracking-wider px-2 py-0.5 rounded-lg border border-border/60 text-muted-foreground">
                   +{book.tags.length - 3}
                 </Badge>
               )}
@@ -308,14 +305,14 @@ function StudentModalContent({
       </div>
 
       {/* Copy Meter */}
-      <div className="rounded-xl border border-border/30 bg-card/20 p-3 backdrop-blur-sm">
+      <div className="rounded-xl border border-border/60 bg-card/40 p-3 backdrop-blur-sm">
         <CopyMeter available={book.available_copies} total={book.total_copies} />
       </div>
 
       {/* Metadata Grid */}
       <div className="grid grid-cols-2 gap-2">
-        <MetaRow icon={Hash} label="ISBN" value={<span className="font-mono text-[11px]">{book.isbn || 'N/A'}</span>} />
-        <MetaRow icon={Tag} label="DDC" value={<span className="font-mono text-[11px]">{book.dewey_decimal || 'N/A'}</span>} />
+        <MetaRow icon={Hash} label="ISBN" value={<span className="font-mono text-xs tabular-nums">{book.isbn || 'N/A'}</span>} />
+        <MetaRow icon={Tag} label="DDC" value={<span className="font-mono text-xs tabular-nums">{book.dewey_decimal || 'N/A'}</span>} />
         <MetaRow icon={Layers} label="Category" value={categoryName || 'Uncategorized'} />
         <MetaRow icon={MapPin} label="Location" value={book.section || 'General'} />
         <MetaRow icon={Library} label="Section" value={book.location || book.section || 'Main Floor'} />
@@ -332,7 +329,7 @@ function StudentModalContent({
           holdExpiresAt={availability.holdExpiresAt}
           nextAvailableDate={availability.nextAvailableDate}
           onReserveSuccess={handleReserveSuccess}
-          className="h-9 px-4 text-xs shadow-sm flex-1"
+          className="h-9 px-4 text-xs font-semibold rounded-lg shadow-sm flex-1"
         />
         {availability.hasReservation && (
           <Button
@@ -340,7 +337,7 @@ function StudentModalContent({
             size="sm"
             disabled={isPending}
             onClick={() => setCancelDialogOpen(true)}
-            className="h-9 px-3 text-xs text-destructive border-destructive/30 hover:bg-destructive/5"
+            className="h-9 px-3 text-xs font-semibold rounded-lg text-destructive border-destructive/30 hover:bg-destructive/5"
           >
             {isPending ? 'Cancelling…' : 'Cancel'}
           </Button>
@@ -486,7 +483,7 @@ export function BookDetailModal({ bookId, open, onOpenChange, variant, initialDa
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className={cn(
-        "max-h-[90vh] overflow-y-auto custom-scrollbar pt-12",
+        "max-h-[90vh] overflow-y-auto custom-scrollbar pt-12 rounded-xl border border-border/60 bg-background shadow-xl",
         variant === 'super_admin' ? "sm:max-w-3xl" : "sm:max-w-lg"
       )}>
         <DialogHeader className="sr-only">

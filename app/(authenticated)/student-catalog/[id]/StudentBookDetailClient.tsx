@@ -4,7 +4,7 @@ import { use, useState, useTransition, useEffect, useCallback, useRef } from 're
 import Image from 'next/image';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
-import { getCategoryName } from '@/lib/utils';
+import { cn, getCategoryName } from '@/lib/utils';
 import {
   MapPin,
   BookOpen,
@@ -87,20 +87,20 @@ function StatusBanner({
       : null;
 
     return (
-      <div className="flex items-center gap-4 rounded-2xl border border-emerald-500/20 bg-emerald-500/5 px-4 py-4 backdrop-blur-sm">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/20 text-emerald-600 shadow-inner">
+      <div className="status-success rounded-xl border p-4 flex items-center gap-4">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-border/60 bg-background/50 shadow-inner">
           <Sparkles className="h-5 w-5" />
         </div>
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-black text-emerald-700 uppercase tracking-tight leading-tight">Copy Ready for Pickup</p>
+          <p className="text-sm font-bold uppercase tracking-wider leading-tight">Copy Ready for Pickup</p>
           {deadline && (
-            <p className="mt-0.5 text-[11px] font-bold text-emerald-600/70">
-              Claim at the desk by <span className="text-emerald-700 font-black underline decoration-emerald-500/30 underline-offset-2">{deadline}</span>
+            <p className="mt-0.5 text-xs font-semibold opacity-90">
+              Claim at the desk by <span className="font-bold underline underline-offset-2">{deadline}</span>
             </p>
           )}
         </div>
         <div className="shrink-0 animate-pulse">
-          <span className="inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500 shadow-[0_0_6px_2px_rgba(16,185,129,0.4)]" />
+          <span className="inline-flex h-2.5 w-2.5 rounded-full bg-current" />
         </div>
       </div>
     );
@@ -108,15 +108,15 @@ function StatusBanner({
 
   if (availability.hasReservation && availability.queuePosition) {
     return (
-      <div className="flex items-center gap-4 rounded-2xl border border-primary/20 bg-primary/5 px-4 py-4 backdrop-blur-sm">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary shadow-inner">
+      <div className="rounded-xl border border-border/60 bg-card/40 p-4 flex items-center gap-4">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-border/60 bg-background/50 text-foreground shadow-inner">
           <Ticket className="h-5 w-5" />
         </div>
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-black text-primary uppercase tracking-tight leading-tight">
+          <p className="text-sm font-bold uppercase tracking-wider leading-tight text-foreground">
             Queue Position #{availability.queuePosition}
           </p>
-          <p className="mt-0.5 text-[11px] font-bold text-muted-foreground/70">
+          <p className="mt-0.5 text-xs text-muted-foreground">
             We&apos;ll notify you when a copy is assigned to you.
           </p>
         </div>
@@ -126,15 +126,15 @@ function StatusBanner({
 
   if (isAvailable) {
     return (
-      <div className="flex items-center gap-4 rounded-2xl border border-emerald-500/10 bg-emerald-500/5 px-4 py-4 backdrop-blur-sm">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 shadow-inner">
+      <div className="status-success rounded-xl border p-4 flex items-center gap-4">
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-border/60 bg-background/50 shadow-inner">
           <CheckCircle2 className="h-5 w-5" />
         </div>
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-black text-emerald-700 uppercase tracking-tight leading-tight">
+          <p className="text-sm font-bold uppercase tracking-wider leading-tight">
             {book.available_copies} {book.available_copies === 1 ? 'copy' : 'copies'} on shelf
           </p>
-          <p className="mt-0.5 text-[11px] font-bold text-muted-foreground/70">
+          <p className="mt-0.5 text-xs opacity-90">
             Reserve to secure this title for your next visit.
           </p>
         </div>
@@ -151,15 +151,15 @@ function StatusBanner({
     : null;
 
   return (
-    <div className="flex items-center gap-4 rounded-2xl border border-amber-500/10 bg-amber-500/5 px-4 py-4 backdrop-blur-sm">
-      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-500/10 text-amber-600 shadow-inner">
+    <div className="status-warning rounded-xl border p-4 flex items-center gap-4">
+      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-border/60 bg-background/50 shadow-inner">
         <Clock className="h-5 w-5" />
       </div>
       <div className="min-w-0 flex-1">
-        <p className="text-sm font-black text-amber-700 uppercase tracking-tight leading-tight">Currently Unavailable</p>
-        <p className="mt-0.5 text-[11px] font-bold text-amber-600/70">
+        <p className="text-sm font-bold uppercase tracking-wider leading-tight">Currently Unavailable</p>
+        <p className="mt-0.5 text-xs opacity-90">
           {returnDate ? (
-            <>Estimated availability <span className="text-amber-700 font-black">{returnDate}</span></>
+            <>Estimated availability <span className="font-bold underline underline-offset-2">{returnDate}</span></>
           ) : (
             'Join the queue to be first in line when a copy returns.'
           )}
@@ -177,24 +177,24 @@ function CopyMeter({ available, total }: { available: number; total: number }) {
 
   return (
     <div className="space-y-2">
-      <div className="flex items-center justify-between text-[11px] font-bold text-muted-foreground">
-        <span className="uppercase tracking-widest">Copy Availability</span>
-        <span>{available}/{total} free</span>
+      <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+        <span>Copy Availability</span>
+        <span className="tabular-nums">{available}/{total} free</span>
       </div>
-      <div className="h-2 w-full overflow-hidden rounded-full bg-muted/60">
+      <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
         <div
-          className="h-full rounded-full bg-emerald-500 transition-all duration-700"
+          className="h-full rounded-full bg-primary transition-all duration-700"
           style={{ width: `${pct}%` }}
         />
       </div>
-      <div className="flex gap-3 text-[10px] font-bold">
-        <span className="flex items-center gap-1 text-emerald-600">
-          <span className="h-2 w-2 rounded-full bg-emerald-500 inline-block" />
-          {available} on shelf
+      <div className="flex gap-4 text-xs font-semibold">
+        <span className="flex items-center gap-1.5 text-muted-foreground">
+          <span className="h-2 w-2 rounded-full bg-primary inline-block" />
+          <span className="tabular-nums text-foreground">{available}</span> on shelf
         </span>
-        <span className="flex items-center gap-1 text-amber-600">
-          <span className="h-2 w-2 rounded-full bg-amber-400 inline-block" />
-          {borrowed} borrowed
+        <span className="flex items-center gap-1.5 text-muted-foreground">
+          <span className="h-2 w-2 rounded-full bg-muted-foreground/40 inline-block" />
+          <span className="tabular-nums text-foreground">{borrowed}</span> borrowed
         </span>
       </div>
     </div>
@@ -213,12 +213,12 @@ function MetaTile({
   value: React.ReactNode;
 }) {
   return (
-    <div className="group rounded-2xl border border-border/40 bg-card/20 p-4 shadow-none transition-all hover:border-primary/20 hover:bg-muted/30 backdrop-blur-sm">
-      <p className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/50 mb-2">
-        <Icon className="h-3 w-3" />
+    <div className="group rounded-xl border border-border/60 bg-card/40 p-4 shadow-none transition-all hover:bg-card/60">
+      <p className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-2">
+        <Icon className="h-3.5 w-3.5" />
         {label}
       </p>
-      <p className="text-sm font-black text-foreground uppercase tracking-tight leading-snug">{value || '—'}</p>
+      <p className="text-sm font-bold text-foreground leading-snug">{value || '—'}</p>
     </div>
   );
 }
@@ -281,7 +281,7 @@ export function StudentBookDetailClient({ bookPromise, availabilityPromise, id }
   if (!book) {
     return (
       <div className="flex flex-col items-center justify-center gap-4 py-20 text-center">
-        <div className="flex h-16 w-16 items-center justify-center rounded-2xl border-2 border-dashed border-border/60 bg-muted/20">
+        <div className="flex h-16 w-16 items-center justify-center rounded-xl border-2 border-dashed border-border/60 bg-muted/20">
           <BookOpen className="h-7 w-7 text-muted-foreground/20" />
         </div>
         <div>
@@ -332,7 +332,7 @@ export function StudentBookDetailClient({ bookPromise, availabilityPromise, id }
 
         {/* Left: Cover */}
         <div className="shrink-0 mx-auto md:mx-0 space-y-4">
-          <div className="relative h-[280px] w-[190px] overflow-hidden rounded-2xl border border-border/40 bg-muted/20 shadow-none backdrop-blur-sm">
+          <div className="relative h-[280px] w-[190px] overflow-hidden rounded-xl border border-border/60 bg-muted/20 shadow-none">
             <Image
               src={book.cover_url || "/images/default-book-cover.png"}
               alt={book.title}
@@ -343,15 +343,16 @@ export function StudentBookDetailClient({ bookPromise, availabilityPromise, id }
             />
 
             {/* Availability ribbon */}
-            <div className={`absolute bottom-0 left-0 right-0 px-3 py-2 text-[10px] font-extrabold uppercase tracking-wider text-center backdrop-blur-sm ${
+            <div className={cn(
+              "absolute bottom-0 left-0 right-0 px-3 py-2 text-xs font-semibold uppercase tracking-wider text-center border-t border-border/60",
               availability.isReady
-                ? 'bg-emerald-500/90 text-white'
+                ? 'status-success'
                 : availability.hasReservation
-                ? 'bg-primary/90 text-primary-foreground'
+                ? 'bg-primary text-primary-foreground'
                 : isAvailable
-                ? 'bg-emerald-500/85 text-white'
-                : 'bg-amber-500/90 text-white'
-            }`}>
+                ? 'status-success'
+                : 'status-warning'
+            )}>
               {availability.isReady
                 ? '✦ Ready for Pickup'
                 : availability.hasReservation
@@ -366,13 +367,13 @@ export function StudentBookDetailClient({ bookPromise, availabilityPromise, id }
           {book.tags && book.tags.length > 0 && (
             <div className="flex flex-wrap gap-1 w-[190px]">
               {book.tags.slice(0, 4).map((tag, i) => (
-                <Badge key={i} variant="secondary" className="text-[9px] px-1.5 py-0.5 font-bold">
-                  <Tag className="mr-1 h-2.5 w-2.5" />
+                <Badge key={i} variant="secondary" className="text-xs font-semibold uppercase tracking-wider px-2 py-0.5 rounded-lg border border-border/60">
+                  <Tag className="mr-1 h-3 w-3" />
                   {tag}
                 </Badge>
               ))}
               {book.tags.length > 4 && (
-                <Badge variant="outline" className="text-[9px] px-1.5 py-0.5 font-bold text-muted-foreground">
+                <Badge variant="outline" className="text-xs font-semibold uppercase tracking-wider px-2 py-0.5 rounded-lg border border-border/60 text-muted-foreground">
                   +{book.tags.length - 4}
                 </Badge>
               )}
@@ -390,7 +391,7 @@ export function StudentBookDetailClient({ bookPromise, availabilityPromise, id }
           </div>
 
           {/* Copy Meter */}
-          <div className="rounded-2xl border border-border/40 bg-card/20 p-4 shadow-none backdrop-blur-sm">
+          <div className="rounded-xl border border-border/60 bg-card/40 p-4 shadow-none">
             <CopyMeter available={book.available_copies} total={book.total_copies} />
           </div>
 
@@ -399,7 +400,7 @@ export function StudentBookDetailClient({ bookPromise, availabilityPromise, id }
             <MetaTile
               icon={Hash}
               label="ISBN"
-              value={<span className="font-mono text-xs">{book.isbn || 'N/A'}</span>}
+              value={<span className="font-mono text-xs tabular-nums">{book.isbn || 'N/A'}</span>}
             />
             <MetaTile
               icon={Layers}
@@ -420,10 +421,10 @@ export function StudentBookDetailClient({ bookPromise, availabilityPromise, id }
 
           {/* Pickup Deadline (only if READY) */}
           {availability.isReady && availability.holdExpiresAt && (
-            <div className="flex items-center gap-3 rounded-xl border border-emerald-300/50 bg-emerald-50/50 px-4 py-3">
-              <CalendarDays className="h-4 w-4 shrink-0 text-emerald-600" />
+            <div className="status-success flex items-center gap-3 rounded-xl border p-4">
+              <CalendarDays className="h-4 w-4 shrink-0" />
               <div>
-                <p className="text-xs font-black text-emerald-700">
+                <p className="text-xs font-bold uppercase tracking-wider">
                   Pick up by{' '}
                   {new Date(availability.holdExpiresAt).toLocaleDateString(undefined, {
                     weekday: 'long',
@@ -431,7 +432,7 @@ export function StudentBookDetailClient({ bookPromise, availabilityPromise, id }
                     day: 'numeric',
                   })}
                 </p>
-                <p className="mt-0.5 text-[10px] text-emerald-600/70">
+                <p className="mt-0.5 text-xs opacity-90">
                   After this date, your hold will expire and the next person in queue will be notified.
                 </p>
               </div>
@@ -440,11 +441,11 @@ export function StudentBookDetailClient({ bookPromise, availabilityPromise, id }
 
           {/* Return date hint (only if unavailable and no personal reservation) */}
           {!isAvailable && !availability.hasReservation && availability.nextAvailableDate && (
-            <div className="flex items-center gap-3 rounded-xl border border-amber-200/50 bg-amber-50/40 px-4 py-3">
-              <CalendarDays className="h-4 w-4 shrink-0 text-amber-600" />
-              <p className="text-xs font-bold text-amber-700">
+            <div className="status-warning flex items-center gap-3 rounded-xl border p-4">
+              <CalendarDays className="h-4 w-4 shrink-0" />
+              <p className="text-xs opacity-90">
                 A copy is expected to be returned by{' '}
-                <span className="font-black">
+                <span className="font-bold underline underline-offset-2">
                   {new Date(availability.nextAvailableDate).toLocaleDateString(undefined, {
                     month: 'long',
                     day: 'numeric',
@@ -466,7 +467,7 @@ export function StudentBookDetailClient({ bookPromise, availabilityPromise, id }
               holdExpiresAt={availability.holdExpiresAt}
               nextAvailableDate={availability.nextAvailableDate}
               onReserveSuccess={handleReserveSuccess}
-              className="h-11 px-6 text-sm shadow-md"
+              className="h-10 px-6 text-xs font-semibold rounded-lg shadow-sm"
             />
             {availability.hasReservation && (
               <Button
@@ -474,7 +475,7 @@ export function StudentBookDetailClient({ bookPromise, availabilityPromise, id }
                 size="default"
                 disabled={isPending}
                 onClick={() => setCancelDialogOpen(true)}
-                className="h-11 px-5 text-sm text-destructive border-destructive/30 hover:bg-destructive/5"
+                className="h-10 px-5 text-xs font-semibold rounded-lg text-destructive border-destructive/30 hover:bg-destructive/5"
               >
                 {isPending ? 'Cancelling…' : 'Cancel Reservation'}
               </Button>
@@ -483,7 +484,7 @@ export function StudentBookDetailClient({ bookPromise, availabilityPromise, id }
 
           {/* Cancel Confirmation Dialog */}
           <Dialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>
-            <DialogContent className="sm:max-w-md">
+            <DialogContent className="sm:max-w-md rounded-xl border border-border/60 bg-background shadow-xl">
               <DialogHeader>
                 <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10">
                   <XCircle className="h-6 w-6 text-destructive" />
@@ -504,7 +505,7 @@ export function StudentBookDetailClient({ bookPromise, availabilityPromise, id }
               </DialogHeader>
               <DialogFooter className="flex gap-2 sm:justify-center pt-2">
                 <DialogClose asChild>
-                  <Button variant="outline" className="flex-1 sm:flex-none">
+                  <Button variant="outline" className="flex-1 sm:flex-none rounded-lg">
                     Keep Reservation
                   </Button>
                 </DialogClose>
@@ -512,7 +513,7 @@ export function StudentBookDetailClient({ bookPromise, availabilityPromise, id }
                   variant="destructive"
                   onClick={handleCancelReservation}
                   disabled={isPending}
-                  className="flex-1 sm:flex-none"
+                  className="flex-1 sm:flex-none rounded-lg"
                 >
                   {isPending ? 'Cancelling…' : 'Yes, Cancel'}
                 </Button>
@@ -522,21 +523,21 @@ export function StudentBookDetailClient({ bookPromise, availabilityPromise, id }
 
           {/* Help hints */}
           <div className="grid gap-2 sm:grid-cols-2 pt-1">
-            <div className="rounded-xl border border-border/40 bg-muted/20 p-3">
-              <p className="mb-1 text-[10px] font-black uppercase tracking-widest text-muted-foreground/50 flex items-center gap-1.5">
-                <AlertTriangle className="h-3 w-3" />
+            <div className="rounded-xl border border-border/60 bg-card/40 p-4">
+              <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                <AlertTriangle className="h-3.5 w-3.5" />
                 Can&apos;t find the book?
               </p>
-              <p className="text-[11px] text-muted-foreground leading-relaxed">
+              <p className="text-xs text-muted-foreground leading-relaxed">
                 Use the shelf label first, then scan adjacent call numbers. Ask staff at the desk to check the return queue.
               </p>
             </div>
-            <div className="rounded-xl border border-border/40 bg-muted/20 p-3">
-              <p className="mb-1 text-[10px] font-black uppercase tracking-widest text-muted-foreground/50 flex items-center gap-1.5">
-                <CalendarDays className="h-3 w-3" />
+            <div className="rounded-xl border border-border/60 bg-card/40 p-4">
+              <p className="mb-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                <CalendarDays className="h-3.5 w-3.5" />
                 Borrow Policy
               </p>
-              <p className="text-[11px] text-muted-foreground leading-relaxed">
+              <p className="text-xs text-muted-foreground leading-relaxed">
                 Check your dashboard for borrow periods and current borrowing status.
               </p>
             </div>

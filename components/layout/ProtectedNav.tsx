@@ -267,7 +267,7 @@ export function ProtectedNav({
       className="border-r border-sidebar-border bg-sidebar"
     >
       <SidebarHeader className="flex flex-row h-16 shrink-0 items-center gap-4 px-4 group-data-[collapsible=icon]:px-0 group-data-[collapsible=icon]:justify-center">
-        <SidebarTrigger className="hidden md:flex h-8 w-8 shrink-0 items-center justify-center text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent rounded-md transition-colors group-data-[collapsible=icon]:flex" />
+        <SidebarTrigger className="hidden md:flex h-8 w-8 shrink-0 items-center justify-center text-sidebar-foreground/60 hover:text-sidebar-foreground hover:bg-sidebar-accent rounded-lg transition-colors group-data-[collapsible=icon]:flex" />
         <Link 
           href="/dashboard" 
           className="flex items-center gap-3 shrink-0 group-data-[collapsible=icon]:hidden" 
@@ -276,7 +276,7 @@ export function ProtectedNav({
           <Logo size={20} className="scale-90 shrink-0" />
           <div className="flex flex-col whitespace-nowrap">
             <span className="leading-none text-base font-bold tracking-tight text-sidebar-foreground">Lumina</span>
-            <span className="mt-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-sidebar-foreground/70">LMS Platform</span>
+            <span className="mt-1 text-xs font-semibold uppercase tracking-wider text-sidebar-foreground/70">LMS Platform</span>
           </div>
         </Link>
       </SidebarHeader>
@@ -334,13 +334,13 @@ export function ProtectedNav({
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
               <DropdownMenuContent
-                className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-lg"
+                className="w-[--radix-dropdown-menu-trigger-width] min-w-56 rounded-xl border border-border/60 shadow-lg"
                 side="bottom"
                 align="end"
                 sideOffset={4}
               >
                 <DropdownMenuLabel className="p-0 font-normal">
-                  <div className="flex items-center gap-2 px-1.8 py-1.5 text-left text-sm">
+                  <div className="flex items-center gap-2 px-2 py-1.5 text-left text-sm">
                     <Avatar className="h-8 w-8 rounded-lg">
                       <AvatarImage src={avatarUrl || ""} alt={name} />
                       <AvatarFallback className="rounded-lg bg-sidebar-accent text-sidebar-accent-foreground font-bold">
@@ -372,7 +372,7 @@ export function ProtectedNav({
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
-                  className="cursor-pointer font-semibold text-red-600 focus:text-red-600"
+                  className="cursor-pointer font-semibold text-destructive focus:text-destructive"
                   onSelect={(event) => {
                     event.preventDefault();
                     setLogoutDialogOpen(true);
@@ -387,7 +387,7 @@ export function ProtectedNav({
         </SidebarMenu>
 
         <Dialog open={logoutDialogOpen} onOpenChange={setLogoutDialogOpen}>
-          <DialogContent className="max-w-sm rounded-xl p-5">
+          <DialogContent className="max-w-sm rounded-xl border border-border/60 p-5">
             <DialogHeader>
               <DialogTitle className="text-base">Log out?</DialogTitle>
               <DialogDescription>
@@ -415,7 +415,7 @@ export function ProtectedNav({
         <Dialog open={isLoggingOut}>
           <DialogContent className="border-none bg-transparent p-0 shadow-none outline-none ring-0 focus:ring-0 [&>button]:hidden">
             <div className="fixed inset-0 z-[99999] flex flex-col items-center justify-center bg-background/80 backdrop-blur-xl animate-in fade-in duration-500">
-              <div className="flex flex-col items-center gap-6 p-12 rounded-3xl bg-card border shadow-2xl scale-110 animate-in zoom-in-95 duration-300">
+              <div className="flex flex-col items-center gap-6 p-12 rounded-xl bg-card border border-border/60 shadow-2xl scale-110 animate-in zoom-in-95 duration-300">
                 <div className="relative">
                   <Loader2 className="h-12 w-12 animate-spin text-primary opacity-20" />
                   <Loader2 className="absolute inset-0 h-12 w-12 animate-spin text-primary [animation-duration:3s]" />

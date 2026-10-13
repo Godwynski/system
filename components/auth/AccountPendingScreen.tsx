@@ -58,15 +58,15 @@ export function AccountPendingScreen({
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-background to-muted/20">
-      <Card className="max-w-md w-full border-border shadow-2xl animate-in fade-in zoom-in duration-500">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-background">
+      <Card className="max-w-md w-full border border-border/60 bg-card shadow-sm rounded-xl">
         <CardHeader className="text-center space-y-4 pb-2">
-          <div className="mx-auto w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center animate-pulse-slow">
-            <ShieldAlert className="w-8 h-8 text-primary" />
+          <div className="mx-auto w-16 h-16 rounded-xl bg-status-warning/15 border border-status-warning/30 flex items-center justify-center">
+            <ShieldAlert className="w-8 h-8 text-status-warning" />
           </div>
           <div className="space-y-1">
-            <CardTitle className="text-2xl font-bold tracking-tight">Activation Required</CardTitle>
-            <CardDescription className="text-base font-medium text-muted-foreground">
+            <CardTitle className="text-xl font-bold tracking-tight">Activation Required</CardTitle>
+            <CardDescription className="text-xs text-muted-foreground">
               Your account is currently pending approval.
             </CardDescription>
           </div>
@@ -74,7 +74,7 @@ export function AccountPendingScreen({
         
         <CardContent className="space-y-6 pt-4">
           <div className="space-y-4">
-            <h4 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/70 text-center px-4">
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground text-center px-4">
               Verification Protocol
             </h4>
             
@@ -98,9 +98,9 @@ export function AccountPendingScreen({
               ].map((step, idx) => (
                 <div 
                   key={idx}
-                  className="flex gap-4 p-4 rounded-xl bg-muted/40 border border-border/50 group transition-all hover:bg-muted hover:border-primary/20"
+                  className="flex gap-4 p-4 rounded-xl bg-card/40 border border-border/60 transition-colors hover:bg-muted/30 hover:border-border"
                 >
-                  <div className="shrink-0 w-10 h-10 rounded-lg bg-background flex items-center justify-center border group-hover:border-primary/30 transition-colors shadow-sm">
+                  <div className="shrink-0 w-10 h-10 rounded-lg bg-background flex items-center justify-center border border-border/60 shadow-xs">
                     <step.icon className="w-5 h-5 text-primary" />
                   </div>
                   <div className="space-y-0.5">
@@ -114,9 +114,9 @@ export function AccountPendingScreen({
             </div>
           </div>
 
-          <div className="p-4 rounded-xl bg-primary/5 border border-primary/10 flex gap-3 items-start mx-1 shadow-inner">
+          <div className="p-4 rounded-xl bg-card/40 border border-border/60 flex gap-3 items-start mx-1">
             <School className="w-5 h-5 text-primary shrink-0 mt-0.5 opacity-70" />
-            <p className="text-xs text-primary/70 leading-relaxed font-medium italic">
+            <p className="text-xs text-muted-foreground leading-relaxed italic">
               &quot;This security measure ensures that library resources are reserved exclusively for active students and faculty members.&quot;
             </p>
           </div>
@@ -126,15 +126,15 @@ export function AccountPendingScreen({
           <div className="grid grid-cols-2 gap-3 w-full">
             <Button 
               variant="outline" 
-              className="w-full h-11 rounded-xl group font-semibold shadow-sm"
+              className="w-full h-10 rounded-lg text-xs font-semibold uppercase tracking-wider border border-border/60 shadow-xs"
               onClick={() => window.location.reload()}
             >
               Status
-              <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              <ArrowRight className="ml-2 w-4 h-4" />
             </Button>
             <Button 
               variant="outline" 
-              className="w-full h-11 rounded-xl group border-primary/20 hover:bg-primary/5 font-semibold shadow-sm transition-all"
+              className="w-full h-10 rounded-lg text-xs font-semibold uppercase tracking-wider border border-border/60 shadow-xs"
               onClick={() => setIsEditing(true)}
             >
               Edit Info
@@ -143,7 +143,7 @@ export function AccountPendingScreen({
           
           <Button 
             variant="ghost" 
-            className="w-full text-muted-foreground hover:text-destructive h-10 rounded-lg font-medium transition-colors"
+            className="w-full text-muted-foreground hover:text-destructive h-10 rounded-lg text-xs font-semibold uppercase tracking-wider transition-colors"
             onClick={() => logout()}
             disabled={isLoggingOut}
           >

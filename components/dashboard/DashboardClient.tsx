@@ -1,6 +1,7 @@
 'use client';
 
 import type { User } from '@supabase/supabase-js';
+import Link from 'next/link';
 import { 
   Library, 
   Users, 
@@ -12,7 +13,10 @@ import {
   BarChart3, 
   AlertTriangle, 
   ArrowRight, 
-  BookMarked
+  BookMarked,
+  ShieldCheck,
+  Plus,
+  ScanLine
 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { cancelReservation } from '@/lib/actions/reservations';
@@ -20,7 +24,6 @@ import { toast } from 'sonner';
 import { useTransition, useMemo, useState, useEffect, use, useRef, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
-import Image from 'next/image';
 
 import { resolveStudentId, getDeterministicQrUrl } from "@/lib/library-card-assets";
 import { DEFAULT_STUDENT_FAQS } from "@/lib/actions/policy-constants";
@@ -30,6 +33,8 @@ import type { BorrowingRecord } from '@/lib/actions/history';
 
 import { LiveActivityTicker } from './LiveActivityTicker';
 import { BookDetailModal } from '@/components/catalog/BookDetailModal';
+import { EmptyState } from '@/components/ui/empty-state';
+import { BookCover } from '@/components/ui/book-cover';
 import { ActivitySection } from './ActivitySection';
 import { SupportSection } from './SupportSection';
 
@@ -50,6 +55,8 @@ type DashboardStats = {
   attendanceToday: number;
   totalBooks: number;
   totalUsers: number;
+  archivedBooks?: number;
+  archivedUsers?: number;
   overdueBorrows: number;
   readyHolds: number;
 };
@@ -318,29 +325,78 @@ export function DashboardClient({
       },
     ].filter(item => item.show);
 
+    const totalActionsCount = (isPendingApprovals ? stats.pendingApprovals : 0) + 
+                              (isOverdue ? stats.overdueBorrows : 0) + 
+                              (isReadyHolds ? stats.readyHolds : 0);
+
     return (
-      <div className="space-y-6 pb-14 overflow-x-hidden relative">
+      <div className="space-y-8 pb-14 overflow-x-hidden relative text-left">
         <LiveActivityTicker />
 
-        {/* ==================== ACTION CENTER ==================== */}
+        {/* ==================== INSTITUTIONAL HEADER ==================== */}
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-3 border-b border-border/40">
+          <div>
+            <div className="flex items-center gap-2.5 mb-1">
+              <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+                Institutional Operations
+              </h1>
+              <span className="inline-flex items-center px-2 py-0.5 rounded-md text-2xs font-mono font-semibold uppercase tracking-wider bg-primary/10 text-primary border border-primary/20">
+                {role === 'super_admin' ? 'Super Administrator' : 'Librarian'}
+              </span>
+            </div>
+            <p className="text-xs sm:text-sm text-muted-foreground">
+              Circulation triage, catalog governance, and operational command dispatch.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2.5">
+            <span className="hidden sm:inline-flex items-center gap-1.5 text-xs font-mono text-muted-foreground border border-border/60 bg-muted/20 px-2.5 py-1.5 rounded-lg">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              Live Kiosk Active
+            </span>
+
+            {/* Quick Operational Jump Buttons */}
+            <Link
+              href="/circulation"
+              className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg border border-border/60 bg-card hover:bg-muted/40 transition-colors shadow-2xs"
+            >
+              <ScanLine size={13} className="text-primary" />
+              <span>Circulation Desk</span>
+            </Link>
+
+            <Link
+              href="/inventory/add"
+              className="inline-flex items-center gap-1.5 text-xs font-semibold px-3 py-1.5 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors shadow-2xs"
+            >
+              <Plus size={13} />
+              <span>Catalog Volume</span>
+            </Link>
+          </div>
+        </div>
+
+        {/* ==================== ACTION & TRIAGE CENTER ==================== */}
         <section className="space-y-3">
-          <div className="border border-border/20 bg-card/30 backdrop-blur-sm rounded-xl p-5 shadow-sm space-y-4">
-            <div className="flex items-center justify-between border-b border-border/10 pb-3">
+          <div className="border border-border/60 bg-card/40 rounded-xl p-4 sm:p-5 shadow-xs space-y-3.5">
+            <div className="flex items-center justify-between border-b border-border/30 pb-2.5">
               <div className="flex items-center gap-2">
-                <div className={`h-2 w-2 rounded-full ${hasActions ? 'bg-amber-500 animate-pulse' : 'bg-green-500'}`} />
-                <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground">Action Center</span>
+                <div className={`h-2 w-2 rounded-full ${hasActions ? 'bg-amber-500 animate-pulse' : 'bg-emerald-500'}`} />
+                <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Action Center
+                </span>
               </div>
-              <span className="text-[10px] text-muted-foreground/60 font-medium">Pending Administrative Tasks</span>
+              <span className="text-2xs font-mono text-muted-foreground">
+                {hasActions ? `${totalActionsCount} Pending Items` : "0 Pending Items"}
+              </span>
             </div>
 
             {!hasActions ? (
-              <div className="flex items-center gap-3 p-4 bg-primary/[0.03] rounded-xl border border-border/20">
-                <div className="p-1.5 rounded-full bg-green-500/10 text-green-600 shrink-0">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+              <div className="flex items-center gap-3 p-3.5 bg-muted/20 rounded-lg border border-border/30">
+                <div className="p-1 rounded-full bg-emerald-500/10 text-emerald-600 shrink-0">
+                  <ShieldCheck size={16} />
                 </div>
-                <div className="text-[11px] font-black uppercase tracking-wider text-muted-foreground/80">
-                  All caught up. No pending administrative actions.
-                </div>
+                <p className="text-xs font-medium text-muted-foreground">
+                  All administrative queues cleared. No pending card verifications or overdue escalations.
+                </p>
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -348,20 +404,20 @@ export function DashboardClient({
                   <Card 
                     role="button"
                     onClick={() => router.push('/users')}
-                    className="group border border-border/20 bg-card/40 hover:bg-card/60 hover:border-primary/20 transition-all cursor-pointer p-4 flex items-center justify-between rounded-xl shadow-none"
+                    className="group border border-border/60 bg-card/40 hover:bg-muted/30 hover:border-border/80 transition-all cursor-pointer p-3.5 flex items-center justify-between rounded-xl shadow-xs"
                   >
                     <div className="flex items-center gap-3 min-w-0">
-                      <div className="p-2 rounded-lg bg-primary/10 text-primary group-hover:scale-105 transition-transform shrink-0">
+                      <div className="p-2 rounded-lg bg-amber-500/10 text-amber-600 group-hover:scale-105 transition-transform shrink-0">
                         <Users size={16} />
                       </div>
                       <div className="min-w-0">
-                        <p className="text-xs font-bold text-foreground truncate">Card Applications</p>
-                        <p className="text-[10px] text-muted-foreground mt-0.5 font-medium truncate">
-                          <span className="font-bold text-foreground">{stats.pendingApprovals}</span> pending review
+                        <p className="text-xs sm:text-sm font-semibold text-foreground truncate">Card Applications</p>
+                        <p className="text-xs text-muted-foreground mt-0.5 truncate">
+                          <span className="font-semibold text-foreground font-mono">{stats.pendingApprovals}</span> pending review
                         </p>
                       </div>
                     </div>
-                    <ArrowRight size={14} className="text-muted-foreground/60 group-hover:text-primary group-hover:translate-x-0.5 transition-all shrink-0 ml-2" />
+                    <ArrowRight size={14} className="text-muted-foreground group-hover:text-foreground group-hover:translate-x-0.5 transition-all shrink-0 ml-2" />
                   </Card>
                 )}
 
@@ -369,20 +425,20 @@ export function DashboardClient({
                   <Card 
                     role="button"
                     onClick={() => router.push('/history?view=logs&status=OVERDUE')}
-                    className="group border border-border/20 bg-card/40 hover:bg-card/60 hover:border-primary/20 transition-all cursor-pointer p-4 flex items-center justify-between rounded-xl shadow-none"
+                    className="group border border-border/60 bg-card/40 hover:bg-muted/30 hover:border-border/80 transition-all cursor-pointer p-3.5 flex items-center justify-between rounded-xl shadow-xs"
                   >
                     <div className="flex items-center gap-3 min-w-0">
-                      <div className="p-2 rounded-lg bg-primary/10 text-primary group-hover:scale-105 transition-transform shrink-0">
+                      <div className="p-2 rounded-lg bg-destructive/10 text-destructive group-hover:scale-105 transition-transform shrink-0">
                         <AlertTriangle size={16} />
                       </div>
                       <div className="min-w-0">
-                        <p className="text-xs font-bold text-foreground truncate">Overdue Borrows</p>
-                        <p className="text-[10px] text-muted-foreground mt-0.5 font-medium truncate">
-                          <span className="font-bold text-foreground">{stats.overdueBorrows}</span> books outstanding
+                        <p className="text-xs sm:text-sm font-semibold text-foreground truncate">Overdue Borrows</p>
+                        <p className="text-xs text-muted-foreground mt-0.5 truncate">
+                          <span className="font-semibold text-foreground font-mono">{stats.overdueBorrows}</span> books outstanding
                         </p>
                       </div>
                     </div>
-                    <ArrowRight size={14} className="text-muted-foreground/60 group-hover:text-primary group-hover:translate-x-0.5 transition-all shrink-0 ml-2" />
+                    <ArrowRight size={14} className="text-muted-foreground group-hover:text-foreground group-hover:translate-x-0.5 transition-all shrink-0 ml-2" />
                   </Card>
                 )}
 
@@ -390,20 +446,20 @@ export function DashboardClient({
                   <Card 
                     role="button"
                     onClick={() => router.push('/circulation')}
-                    className="group border border-border/20 bg-card/40 hover:bg-card/60 hover:border-primary/20 transition-all cursor-pointer p-4 flex items-center justify-between rounded-xl shadow-none"
+                    className="group border border-border/60 bg-card/40 hover:bg-muted/30 hover:border-border/80 transition-all cursor-pointer p-3.5 flex items-center justify-between rounded-xl shadow-xs"
                   >
                     <div className="flex items-center gap-3 min-w-0">
-                      <div className="p-2 rounded-lg bg-primary/10 text-primary group-hover:scale-105 transition-transform shrink-0">
+                      <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-600 group-hover:scale-105 transition-transform shrink-0">
                         <BookMarked size={16} />
                       </div>
                       <div className="min-w-0">
-                        <p className="text-xs font-bold text-foreground truncate">Holds Ready</p>
-                        <p className="text-[10px] text-muted-foreground mt-0.5 font-medium truncate">
-                          <span className="font-bold text-foreground">{stats.readyHolds}</span> waiting for pickup
+                        <p className="text-xs sm:text-sm font-semibold text-foreground truncate">Holds Ready</p>
+                        <p className="text-xs text-muted-foreground mt-0.5 truncate">
+                          <span className="font-semibold text-foreground font-mono">{stats.readyHolds}</span> waiting for pickup
                         </p>
                       </div>
                     </div>
-                    <ArrowRight size={14} className="text-muted-foreground/60 group-hover:text-primary group-hover:translate-x-0.5 transition-all shrink-0 ml-2" />
+                    <ArrowRight size={14} className="text-muted-foreground group-hover:text-foreground group-hover:translate-x-0.5 transition-all shrink-0 ml-2" />
                   </Card>
                 )}
               </div>
@@ -411,112 +467,211 @@ export function DashboardClient({
           </div>
         </section>
 
-        {/* ==================== SYSTEM METRICS GRID ==================== */}
-        <section className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <Card 
-            role="button"
-            onClick={() => router.push('/attendance')}
-            className="border border-border/20 bg-card/40 backdrop-blur-sm shadow-sm hover:shadow-md hover:border-primary/20 transition-all cursor-pointer p-5 flex flex-col justify-between rounded-xl group"
-          >
-            <div className="flex items-start justify-between mb-4">
-              <div className="text-[10px] font-black uppercase tracking-wider text-muted-foreground/80 group-hover:text-foreground transition-colors">
-                Today&apos;s Visitors
-              </div>
-              <div className="p-2 rounded-lg bg-primary/10 text-primary group-hover:scale-105 transition-transform">
-                <UserCheck size={16} />
-              </div>
-            </div>
-            <div className="text-3xl font-black text-foreground tracking-tight">
-              {stats.attendanceToday}
-            </div>
-          </Card>
+        {/* ==================== SYSTEM METRICS LEDGER STRIP ==================== */}
+        <section>
+          <div className="rounded-xl border border-border/60 bg-card/40 overflow-hidden shadow-xs">
+            <div className="grid grid-cols-2 lg:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-border/60">
+              <button
+                type="button"
+                onClick={() => router.push('/attendance')}
+                className="p-5 sm:p-6 text-left hover:bg-muted/30 transition-colors group"
+              >
+                <div className="flex items-center justify-between text-muted-foreground mb-2">
+                  <span className="text-2xs font-semibold uppercase tracking-wider">Today&apos;s Visitors</span>
+                  <UserCheck className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
+                </div>
+                <div className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground font-mono">
+                  {stats.attendanceToday}
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Kiosk gate entries logged
+                </p>
+              </button>
 
-          <Card 
-            role="button"
-            onClick={() => router.push('/history?view=logs&status=ACTIVE')}
-            className="border border-border/20 bg-card/40 backdrop-blur-sm shadow-sm hover:shadow-md hover:border-primary/20 transition-all cursor-pointer p-5 flex flex-col justify-between rounded-xl group"
-          >
-            <div className="flex items-start justify-between mb-4">
-              <div className="text-[10px] font-black uppercase tracking-wider text-muted-foreground/80 group-hover:text-foreground transition-colors">
-                Active Borrows
-              </div>
-              <div className="p-2 rounded-lg bg-primary/10 text-primary group-hover:scale-105 transition-transform">
-                <RefreshCw size={16} />
-              </div>
-            </div>
-            <div className="text-3xl font-black text-foreground tracking-tight">
-              {stats.activeBorrows}
-            </div>
-          </Card>
+              <button
+                type="button"
+                onClick={() => router.push('/history?view=logs&status=ACTIVE')}
+                className="p-5 sm:p-6 text-left hover:bg-muted/30 transition-colors group"
+              >
+                <div className="flex items-center justify-between text-muted-foreground mb-2">
+                  <span className="text-2xs font-semibold uppercase tracking-wider">Active Loans</span>
+                  <RefreshCw className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
+                </div>
+                <div className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground font-mono">
+                  {stats.activeBorrows}
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Circulated collection items
+                </p>
+              </button>
 
-          <Card 
-            role="button"
-            onClick={() => router.push('/inventory')}
-            className="border border-border/20 bg-card/40 backdrop-blur-sm shadow-sm hover:shadow-md hover:border-primary/20 transition-all cursor-pointer p-5 flex flex-col justify-between rounded-xl group"
-          >
-            <div className="flex items-start justify-between mb-4">
-              <div className="text-[10px] font-black uppercase tracking-wider text-muted-foreground/80 group-hover:text-foreground transition-colors">
-                Book Catalog
-              </div>
-              <div className="p-2 rounded-lg bg-primary/10 text-primary group-hover:scale-105 transition-transform">
-                <BookMarked size={16} />
-              </div>
-            </div>
-            <div className="text-3xl font-black text-foreground tracking-tight">
-              {stats.totalBooks}
-            </div>
-          </Card>
+              <button
+                type="button"
+                onClick={() => router.push('/inventory')}
+                className="p-5 sm:p-6 text-left hover:bg-muted/30 transition-colors group"
+              >
+                <div className="flex items-center justify-between text-muted-foreground mb-2">
+                  <span className="text-2xs font-semibold uppercase tracking-wider">Catalog Volumes</span>
+                  <BookMarked className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
+                </div>
+                <div className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground font-mono">
+                  {stats.totalBooks}
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Physical titles in catalog
+                </p>
+              </button>
 
-          <Card 
-            role="button"
-            onClick={() => router.push('/users')}
-            className="border border-border/20 bg-card/40 backdrop-blur-sm shadow-sm hover:shadow-md hover:border-primary/20 transition-all cursor-pointer p-5 flex flex-col justify-between rounded-xl group"
-          >
-            <div className="flex items-start justify-between mb-4">
-              <div className="text-[10px] font-black uppercase tracking-wider text-muted-foreground/80 group-hover:text-foreground transition-colors">
-                User Profiles
+              <button
+                type="button"
+                onClick={() => router.push('/users')}
+                className="p-5 sm:p-6 text-left hover:bg-muted/30 transition-colors group"
+              >
+                <div className="flex items-center justify-between text-muted-foreground mb-2">
+                  <span className="text-2xs font-semibold uppercase tracking-wider">Patron Directory</span>
+                  <Users className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
+                </div>
+                <div className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground font-mono">
+                  {stats.totalUsers}
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Enrolled student & staff accounts
+                </p>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        {/* ==================== HOLDINGS & GOVERNANCE LEDGER ==================== */}
+        <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Collection Status */}
+          <div className="border border-border/60 bg-card/40 rounded-xl p-5 shadow-xs space-y-4">
+            <div className="flex items-center justify-between border-b border-border/30 pb-3">
+              <div className="flex items-center gap-2">
+                <BookOpen size={15} className="text-primary" />
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Collection Holdings & Capacity
+                </h3>
               </div>
-              <div className="p-2 rounded-lg bg-primary/10 text-primary group-hover:scale-105 transition-transform">
-                <Users size={16} />
+              <Link href="/inventory" className="text-xs font-medium text-primary hover:underline">
+                Catalog →
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1">
+                <span className="text-2xs text-muted-foreground uppercase tracking-wider font-semibold">Active Titles</span>
+                <p className="text-xl font-bold font-mono text-foreground">{stats.totalBooks}</p>
+                <p className="text-xs text-muted-foreground">Cataloged & searchable</p>
+              </div>
+
+              <div className="space-y-1">
+                <span className="text-2xs text-muted-foreground uppercase tracking-wider font-semibold">Archived Titles</span>
+                <p className="text-xl font-bold font-mono text-muted-foreground">{stats.archivedBooks ?? 0}</p>
+                <p className="text-xs text-muted-foreground">Decommissioned items</p>
               </div>
             </div>
-            <div className="text-3xl font-black text-foreground tracking-tight">
-              {stats.totalUsers}
+
+            <div className="pt-2 border-t border-border/20 flex items-center justify-between text-xs text-muted-foreground font-mono">
+              <span>Circulation Velocity Ratio:</span>
+              <span className="text-foreground font-semibold">
+                {stats.totalBooks > 0 ? Math.round((stats.activeBorrows / stats.totalBooks) * 100) : 0}% of collection deployed
+              </span>
             </div>
-          </Card>
+          </div>
+
+          {/* Patron Community & Risk */}
+          <div className="border border-border/60 bg-card/40 rounded-xl p-5 shadow-xs space-y-4">
+            <div className="flex items-center justify-between border-b border-border/30 pb-3">
+              <div className="flex items-center gap-2">
+                <ShieldCheck size={15} className="text-primary" />
+                <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Governance & Compliance
+                </h3>
+              </div>
+              <Link href="/history?view=logs&status=OVERDUE" className="text-xs font-medium text-primary hover:underline">
+                Overdue Ledger →
+              </Link>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-1">
+                <span className="text-2xs text-muted-foreground uppercase tracking-wider font-semibold">Overdue Rate</span>
+                <p className="text-xl font-bold font-mono text-destructive">
+                  {stats.activeBorrows > 0 ? Math.round((stats.overdueBorrows / stats.activeBorrows) * 100) : 0}%
+                </p>
+                <p className="text-xs text-muted-foreground">{stats.overdueBorrows} delinquent loans</p>
+              </div>
+
+              <div className="space-y-1">
+                <span className="text-2xs text-muted-foreground uppercase tracking-wider font-semibold">Patron Roster</span>
+                <p className="text-xl font-bold font-mono text-foreground">{stats.totalUsers}</p>
+                <p className="text-xs text-muted-foreground">{stats.archivedUsers ?? 0} archived accounts</p>
+              </div>
+            </div>
+
+            <div className="pt-2 border-t border-border/20 flex items-center justify-between text-xs text-muted-foreground font-mono">
+              <span>Security Governance:</span>
+              <span className="text-foreground font-semibold">
+                Audit Trail Active
+              </span>
+            </div>
+          </div>
         </section>
 
         {/* ==================== SYSTEM SHORTCUTS GRID ==================== */}
-        <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {quickShortcuts.map((shortcut) => (
-            <Card 
-              key={shortcut.path}
-              role="button"
-              onClick={() => router.push(shortcut.path)}
-              className={`group border border-border/20 bg-card/40 backdrop-blur-sm shadow-sm hover:shadow-md transition-all cursor-pointer p-4 flex items-center gap-4 rounded-xl ${shortcut.color}`}
-            >
-              <div className={`p-2.5 rounded-lg transition-all duration-300 shrink-0 ${shortcut.iconBg}`}>
-                <shortcut.icon size={18} />
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-sm font-bold text-foreground/90 truncate">{shortcut.title}</p>
-                <p className="text-[10px] text-muted-foreground/80 truncate mt-0.5">{shortcut.desc}</p>
-              </div>
-            </Card>
-          ))}
+        <section className="space-y-3">
+          <div className="flex items-center justify-between px-1">
+            <h2 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+              Command Shortcuts
+            </h2>
+            <span className="text-2xs font-mono text-muted-foreground">Quick Access</span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3.5">
+            {quickShortcuts.map((shortcut) => (
+              <Card 
+                key={shortcut.path}
+                role="button"
+                onClick={() => router.push(shortcut.path)}
+                className="group border border-border/60 bg-card/40 shadow-xs hover:bg-muted/30 hover:border-border/80 transition-all cursor-pointer p-4 flex items-center gap-3.5 rounded-xl"
+              >
+                <div className="p-2.5 rounded-lg bg-muted/60 text-muted-foreground group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-200 shrink-0">
+                  <shortcut.icon size={18} />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs sm:text-sm font-semibold text-foreground truncate">{shortcut.title}</p>
+                  <p className="text-xs text-muted-foreground truncate mt-0.5">{shortcut.desc}</p>
+                </div>
+              </Card>
+            ))}
+          </div>
         </section>
 
         {/* ==================== RECENTLY CATALOGED BOOKS ==================== */}
         <section className="space-y-3">
-          <div className="border border-border/20 bg-card/30 backdrop-blur-sm rounded-xl p-4 shadow-sm">
-            <div className="flex items-center gap-1.5 border-b border-border/10 pb-3 mb-4">
-              <BookOpen size={12} className="text-primary" />
-              <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground">Recently Cataloged Books</span>
+          <div className="border border-border/60 bg-card/40 rounded-xl p-4 sm:p-5 shadow-xs">
+            <div className="flex items-center justify-between border-b border-border/30 pb-3 mb-4">
+              <div className="flex items-center gap-2">
+                <BookOpen size={14} className="text-primary" />
+                <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Recently Cataloged Volumes
+                </span>
+              </div>
+              <Link href="/inventory" className="text-xs font-medium text-primary hover:underline">
+                Full Catalog →
+              </Link>
             </div>
             {stats.recentBooks.length === 0 ? (
-              <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest py-4 text-center">No recent additions</p>
+              <EmptyState
+                icon={BookOpen}
+                title="No recent collection additions"
+                description="New volumes added to the library collection will appear here."
+                className="border-dashed border-border/60 bg-card/40"
+                contentClassName="min-h-[200px] py-8"
+              />
             ) : (
-              <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+              <div className="grid gap-3.5 grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
                 {stats.recentBooks.map((book) => (
                   <Card 
                     key={book.id}
@@ -525,25 +680,20 @@ export function DashboardClient({
                       setSelectedBookId(book.id);
                       setModalOpen(true);
                     }}
-                    className="group relative overflow-hidden border border-border/20 bg-card hover:bg-muted/[0.03] shadow-sm hover:shadow-md hover:border-primary/20 transition-all cursor-pointer flex items-center gap-3 p-3 rounded-xl"
+                    className="group border border-border/60 bg-card/60 hover:bg-muted/30 hover:border-border/80 shadow-xs transition-all cursor-pointer flex flex-col p-3 rounded-xl"
                   >
-                    <div className="relative h-12 w-9 shrink-0 rounded bg-muted/20 overflow-hidden ring-1 ring-border/10 group-hover:ring-primary/25 transition-all shadow-sm">
-                      <Image 
-                        src={book.cover_url || "/images/default-book-cover.png"} 
-                        alt="" 
-                        fill 
-                        className="object-cover group-hover:scale-105 transition-transform duration-300" 
-                        unoptimized 
+                    <div className="relative aspect-[2/3] w-full rounded-lg overflow-hidden border border-border/40 bg-muted/30 shadow-2xs mb-2.5 group-hover:scale-[1.02] transition-transform">
+                      <BookCover 
+                        src={book.cover_url} 
+                        alt={book.title} 
                       />
                     </div>
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-[13px] font-bold text-foreground/95 group-hover:text-primary transition-colors">
-                        {book.title}
-                      </p>
-                      <p className="truncate text-[10px] text-muted-foreground/80 mt-0.5">
-                        {book.author}
-                      </p>
-                    </div>
+                    <p className="truncate text-xs font-semibold text-foreground group-hover:text-primary transition-colors">
+                      {book.title}
+                    </p>
+                    <p className="truncate text-2xs text-muted-foreground mt-0.5">
+                      {book.author}
+                    </p>
                   </Card>
                 ))}
               </div>
@@ -551,11 +701,13 @@ export function DashboardClient({
           </div>
         </section>
 
+        {/* Administrative Book Detail Modal with Full Management Controls */}
         <BookDetailModal
           bookId={selectedBookId || ''}
           open={modalOpen}
           onOpenChange={setModalOpen}
-          variant="student"
+          variant="super_admin"
+          canManage={true}
           initialData={initialData}
         />
       </div>
@@ -570,32 +722,44 @@ export function DashboardClient({
   const hasAttendancePerm = !!profileData?.permissions?.manage_attendance;
 
   return (
-    <div className="space-y-6 pb-14 overflow-x-hidden relative">
+    <div className="space-y-8 pb-14 overflow-x-hidden relative text-left">
       <LiveActivityTicker />
+
+      {/* ==================== PAGE HEADER ==================== */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-border/40">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+            Patron Workspace
+          </h1>
+          <p className="text-xs sm:text-sm text-muted-foreground mt-1">
+            Digital credential, active collection loans, and reserve queue status.
+          </p>
+        </div>
+      </div>
 
       {/* ==================== LIBRARY CARD CONTAINER ==================== */}
       <section className="grid gap-6 items-start">
-        <Card className="border border-border/20 bg-card/30 backdrop-blur-sm shadow-sm overflow-hidden relative p-5 sm:p-7 rounded-xl">
+        <Card className="border border-border/60 bg-card/40 shadow-xs overflow-hidden relative p-5 sm:p-7 rounded-xl">
           {studentCard ? (
             <div className="space-y-4">
               <MyCardContainer initialData={studentCard} variant="dashboard" />
               {activeAttendance && (
-                <div className="flex items-center justify-between px-3 py-2.5 bg-green-500/[0.03] rounded-xl border border-green-500/20 animate-in fade-in slide-in-from-top-2 duration-500">
-                  <div className="flex items-center gap-3">
-                    <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
-                    <span className="text-[10px] font-bold text-green-700 uppercase tracking-widest">Currently Timed In</span>
+                <div className="flex items-center justify-between px-3.5 py-2.5 bg-emerald-500/10 rounded-xl border border-emerald-500/30 animate-in fade-in slide-in-from-top-2 duration-300">
+                  <div className="flex items-center gap-2.5">
+                    <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                    <span className="text-xs font-semibold text-emerald-700 dark:text-emerald-400 uppercase tracking-wider">Currently Timed In</span>
                   </div>
-                  <span className="text-[10px] font-bold text-green-600/80">
+                  <span className="text-xs font-mono font-medium text-emerald-600 dark:text-emerald-300">
                     Since {new Date(activeAttendance.check_in_at).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true })}
                   </span>
                 </div>
               )}
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center py-10 text-center">
-              <Library size={42} className="text-muted-foreground/20 mb-3" />
-              <h2 className="text-lg font-bold text-muted-foreground/40">No Digital Card Available</h2>
-              <p className="text-xs text-muted-foreground/40 mt-1">Please contact the librarian if you believe this is an error.</p>
+            <div className="flex flex-col items-center justify-center py-12 text-center">
+              <Library size={44} className="text-muted-foreground/30 mb-3" />
+              <h2 className="text-base font-semibold text-muted-foreground">No Digital Card Assigned</h2>
+              <p className="text-xs text-muted-foreground mt-1">Please visit the circulation desk to activate your institutional card.</p>
             </div>
           )}
         </Card>
@@ -604,24 +768,24 @@ export function DashboardClient({
       {/* ==================== ASSISTANT DESK TOOLBAR (SA ONLY) ==================== */}
       {isAssistant && (
         <section className="space-y-3">
-          <div className="border border-border/20 bg-card/30 backdrop-blur-sm rounded-xl p-4 shadow-sm space-y-3">
-            <div className="flex items-center gap-2 border-b border-border/10 pb-2">
+          <div className="border border-border/60 bg-card/40 rounded-xl p-4 sm:p-5 shadow-xs space-y-3.5">
+            <div className="flex items-center gap-2 border-b border-border/30 pb-2.5">
               <div className="h-1.5 w-1.5 rounded-full bg-primary" />
-              <span className="text-[10px] font-black uppercase tracking-wider text-muted-foreground">Assistant Desk Shortcuts</span>
+              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Assistant Desk Shortcuts</span>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               {hasCirculationPerm && (
                 <Card 
                   role="button"
                   onClick={() => router.push('/circulation')}
-                  className="group border border-border/20 bg-card hover:bg-muted/[0.03] hover:border-primary/20 transition-all cursor-pointer p-4 flex items-center gap-3 rounded-xl shadow-none"
+                  className="group border border-border/60 bg-card/60 hover:bg-muted/30 hover:border-border/80 transition-all cursor-pointer p-4 flex items-center gap-3.5 rounded-xl shadow-xs"
                 >
                   <div className="p-2 rounded-lg bg-primary/10 text-primary group-hover:scale-105 transition-transform shrink-0">
                     <RefreshCw size={16} />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-xs font-bold text-foreground/90 truncate">Circulation Desk</p>
-                    <p className="text-[10px] text-muted-foreground mt-0.5 truncate">Checkout & return books</p>
+                    <p className="text-xs sm:text-sm font-semibold text-foreground truncate">Circulation Desk</p>
+                    <p className="text-xs text-muted-foreground mt-0.5 truncate">Checkout & return books</p>
                   </div>
                 </Card>
               )}
@@ -630,14 +794,14 @@ export function DashboardClient({
                 <Card 
                   role="button"
                   onClick={() => router.push('/attendance')}
-                  className="group border border-border/20 bg-card hover:bg-muted/[0.03] hover:border-primary/20 transition-all cursor-pointer p-4 flex items-center gap-3 rounded-xl shadow-none"
+                  className="group border border-border/60 bg-card/60 hover:bg-muted/30 hover:border-border/80 transition-all cursor-pointer p-4 flex items-center gap-3.5 rounded-xl shadow-xs"
                 >
                   <div className="p-2 rounded-lg bg-primary/10 text-primary group-hover:scale-105 transition-transform shrink-0">
                     <UserCheck size={16} />
                   </div>
                   <div className="min-w-0">
-                    <p className="text-xs font-bold text-foreground/90 truncate">Attendance Logs</p>
-                    <p className="text-[10px] text-muted-foreground mt-0.5 truncate">Scanner & visitor logs</p>
+                    <p className="text-xs sm:text-sm font-semibold text-foreground truncate">Attendance Logs</p>
+                    <p className="text-xs text-muted-foreground mt-0.5 truncate">Scanner & visitor logs</p>
                   </div>
                 </Card>
               )}
@@ -645,14 +809,14 @@ export function DashboardClient({
               <Card 
                 role="button"
                 onClick={() => router.push('/student-catalog')}
-                className="group border border-border/20 bg-card hover:bg-muted/[0.03] hover:border-primary/20 transition-all cursor-pointer p-4 flex items-center gap-3 rounded-xl shadow-none"
+                className="group border border-border/60 bg-card/60 hover:bg-muted/30 hover:border-border/80 transition-all cursor-pointer p-4 flex items-center gap-3.5 rounded-xl shadow-xs"
               >
                 <div className="p-2 rounded-lg bg-primary/10 text-primary group-hover:scale-105 transition-transform shrink-0">
                   <BookOpen size={16} />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-xs font-bold text-foreground/90 truncate">Book Catalog</p>
-                  <p className="text-[10px] text-muted-foreground mt-0.5 truncate">Search & explore books</p>
+                  <p className="text-xs sm:text-sm font-semibold text-foreground truncate">Book Catalog</p>
+                  <p className="text-xs text-muted-foreground mt-0.5 truncate">Search & explore books</p>
                 </div>
               </Card>
             </div>

@@ -1,0 +1,77 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-11T20:10:00Z",
+  "title": "Design System: Lumina LMS",
+  "extensions": {
+    "colorMeta": {
+      "primary": { "role": "primary", "displayName": "Institutional Slate", "canonical": "hsl(221 39% 20%)" },
+      "neutral-bg": { "role": "neutral", "displayName": "Page Canvas", "canonical": "hsl(210 20% 98%)" },
+      "neutral-surface": { "role": "neutral", "displayName": "Surface Pure", "canonical": "#ffffff" },
+      "neutral-text": { "role": "neutral", "displayName": "Deep Slate Text", "canonical": "hsl(222 47% 11%)" },
+      "neutral-muted": { "role": "neutral", "displayName": "Muted Steel", "canonical": "hsl(215 16% 38%)" },
+      "border": { "role": "neutral", "displayName": "Border Subtle", "canonical": "hsl(214 20% 87%)" },
+      "destructive": { "role": "semantic", "displayName": "Critical Crimson", "canonical": "hsl(0 65% 45%)" },
+      "status-success": { "role": "semantic", "displayName": "Success Forest", "canonical": "hsl(142 72% 32%)" },
+      "status-warning": { "role": "semantic", "displayName": "Warning Amber", "canonical": "hsl(38 92% 38%)" }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Major dashboard and portal entrances." },
+      "headline": { "displayName": "Headline", "purpose": "Page headers and primary section titles." },
+      "title": { "displayName": "Title", "purpose": "Cards, table headers, and modal dialog titles." },
+      "body": { "displayName": "Body", "purpose": "Standard table content and form labels." },
+      "label": { "displayName": "Label", "purpose": "Metadata, chips, and uppercase badges." }
+    },
+    "shadows": [
+      { "name": "subtle-rest", "value": "0 1px 2px 0 rgb(0 0 0 / 0.05)", "purpose": "Default rest state for containers." },
+      { "name": "elevated-hover", "value": "0 4px 6px -1px rgb(0 0 0 / 0.1)", "purpose": "Hover and elevated states." }
+    ],
+    "motion": [
+      { "name": "ease-standard", "value": "cubic-bezier(0.4, 0, 0.2, 1)", "purpose": "Default easing for micro-interactions." }
+    ],
+    "breakpoints": [
+      { "name": "sm", "value": "640px" },
+      { "name": "md", "value": "768px" },
+      { "name": "lg", "value": "1024px" },
+      { "name": "xl", "value": "1280px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Primary action button across forms and headers.",
+      "html": "<button class=\"ds-btn-primary\">Confirm Checkout</button>",
+      "css": ".ds-btn-primary { background: #1e293b; color: #ffffff; padding: 10px 16px; font-family: 'Manrope', sans-serif; font-size: 14px; font-weight: 600; border-radius: 8px; border: none; cursor: pointer; transition: background-color 0.15s ease; } .ds-btn-primary:hover { background: #0f172a; }"
+    },
+    {
+      "name": "Status Badge",
+      "kind": "chip",
+      "refersTo": "badge-status",
+      "description": "Circulation status pill.",
+      "html": "<span class=\"ds-badge-success\">Available</span>",
+      "css": ".ds-badge-success { background: rgba(21, 128, 61, 0.15); color: #15803d; border: 1px solid rgba(21, 128, 61, 0.35); padding: 2px 8px; border-radius: 9999px; font-family: 'Manrope', sans-serif; font-size: 12px; font-weight: 600; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Modern Institutional Ledger",
+    "overview": "Lumina LMS pairs academic rigor and administrative durability with contemporary software ergonomics.",
+    "keyCharacteristics": [
+      "Disciplined slate-navy primary foundation with purposeful status accents.",
+      "Structured card and table containers with subtle borders and micro-shadows.",
+      "High visual scannability optimized for high-density checkout and inventory flows."
+    ],
+    "rules": [
+      { "name": "The Status Purpose Rule", "body": "Status colors are reserved exclusively for operational state.", "section": "colors" },
+      { "name": "The Crisp Boundary Rule", "body": "Every elevated surface or card container must carry a subtle border.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do maintain tabular numerals for ISBNs, barcode scans, counts, and financial amounts.",
+      "Do preserve 12px outer radius for primary card containers and 8px for controls."
+    ],
+    "donts": [
+      "Don't use decorative gradients or ungrounded heavy shadows behind text.",
+      "Don't mix multiple sans-serif fonts; preserve Manrope consistently."
+    ]
+  }
+}

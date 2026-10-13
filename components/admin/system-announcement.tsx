@@ -60,27 +60,27 @@ export function SystemAnnouncement() {
   const isFormValid = title.trim() && content.trim()
 
   return (
-    <div className="w-full space-y-8 p-1">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="space-y-2.5">
-          <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/50 ml-1 flex items-center gap-2">
+    <div className="w-full space-y-6 p-1">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground ml-1 flex items-center gap-2">
             <Target className="h-3 w-3" />
             Target Audience
           </label>
           <Select value={target} onValueChange={(v: 'all' | 'students') => setTarget(v)}>
-            <SelectTrigger className="h-12 rounded-2xl border-border/20 bg-muted/5 backdrop-blur-sm text-xs font-bold focus:ring-4 focus:ring-primary/5 transition-all duration-300">
+            <SelectTrigger className="h-10 rounded-lg border border-border/60 bg-background text-xs font-semibold">
               <SelectValue placeholder="Select target" />
             </SelectTrigger>
-            <SelectContent className="rounded-2xl border-border/40 shadow-2xl backdrop-blur-xl bg-background/95">
-              <SelectItem value="students" className="py-3 px-4 text-xs font-bold">
+            <SelectContent className="rounded-xl border border-border/60 shadow-xl bg-popover">
+              <SelectItem value="students" className="py-2.5 px-3 text-xs font-semibold">
                 <div className="flex items-center gap-2">
-                  <Users className="h-3.5 w-3.5 opacity-40" />
+                  <Users className="h-3.5 w-3.5 opacity-50" />
                   All Students Only
                 </div>
               </SelectItem>
-              <SelectItem value="all" className="py-3 px-4 text-xs font-bold">
+              <SelectItem value="all" className="py-2.5 px-3 text-xs font-semibold">
                 <div className="flex items-center gap-2">
-                  <Megaphone className="h-3.5 w-3.5 opacity-40" />
+                  <Megaphone className="h-3.5 w-3.5 opacity-50" />
                   Universal Broadcast (Everyone)
                 </div>
               </SelectItem>
@@ -88,26 +88,26 @@ export function SystemAnnouncement() {
           </Select>
         </div>
 
-        <div className="space-y-2.5">
-          <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/50 ml-1">
+        <div className="space-y-2">
+          <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground ml-1">
             Subject Heading
           </label>
           <Input
             placeholder="e.g. Mandatory System Maintenance"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="h-12 rounded-2xl border-border/20 bg-muted/5 backdrop-blur-sm text-xs font-bold focus-visible:ring-4 focus-visible:ring-primary/5 transition-all duration-300 placeholder:text-muted-foreground/30"
+            className="h-10 rounded-lg border border-border/60 bg-background text-xs font-semibold placeholder:text-muted-foreground/50"
           />
         </div>
       </div>
 
-      <div className="space-y-2.5">
-        <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/50 ml-1">
+      <div className="space-y-2">
+        <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground ml-1">
           Detailed Message Payload
         </label>
         <Textarea
           placeholder="Craft your system announcement here. Use clear and concise language..."
-          className="min-h-[160px] rounded-[1.5rem] border-border/20 bg-muted/5 backdrop-blur-sm text-xs font-medium p-5 focus-visible:ring-4 focus-visible:ring-primary/5 resize-none transition-all duration-500 shadow-inner"
+          className="min-h-[140px] rounded-lg border border-border/60 bg-background text-xs font-medium p-3 resize-none placeholder:text-muted-foreground/50"
           value={content}
           onChange={(e) => setContent(e.target.value)}
         />
@@ -116,19 +116,18 @@ export function SystemAnnouncement() {
       <div className="flex items-center gap-4">
         <Button
           className={cn(
-            "h-14 flex-1 rounded-2xl text-[10px] font-black uppercase tracking-[0.2em] shadow-xl transition-all duration-500",
-            isFormValid ? "shadow-primary/20 hover:shadow-primary/30 hover:scale-[1.01]" : "opacity-50 grayscale",
-            "active:scale-95"
+            "h-10 flex-1 rounded-lg text-xs font-semibold uppercase tracking-wider shadow-xs transition-colors",
+            !isFormValid && "opacity-50"
           )}
           disabled={loading || !isFormValid}
           onClick={handleSend}
         >
           {loading ? (
-            <Loader2 className="w-4 h-4 mr-2.5 animate-spin" />
+            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
           ) : (
-            <Send className="w-4 h-4 mr-2.5" />
+            <Send className="w-4 h-4 mr-2" />
           )}
-          Dispatch Protocol
+          Dispatch Announcement
         </Button>
       </div>
     </div>

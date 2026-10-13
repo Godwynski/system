@@ -17,7 +17,7 @@ export function CirculationStepper({ steps, currentStep }: CirculationStepperPro
     <div className="w-full">
       <div className="flex items-center justify-between w-full max-w-2xl mx-auto relative px-4">
         {/* Background Connection Line */}
-        <div className="absolute top-1/2 left-8 right-8 h-[1px] bg-border/40 -translate-y-1/2 z-0" />
+        <div className="absolute top-1/2 left-8 right-8 h-[1px] bg-border/60 -translate-y-1/2 z-0" />
         
         {steps.map((step) => {
           const active = currentStep === step.id;
@@ -31,7 +31,7 @@ export function CirculationStepper({ steps, currentStep }: CirculationStepperPro
                     ? 'bg-primary/10 border-primary text-primary' 
                     : active 
                       ? 'border-primary bg-primary text-primary-foreground ring-4 ring-primary/10' 
-                      : 'border-border bg-muted/30 text-muted-foreground'
+                      : 'border-border/60 bg-muted/40 text-muted-foreground'
                 }`}
               >
                 {done ? (
@@ -43,7 +43,7 @@ export function CirculationStepper({ steps, currentStep }: CirculationStepperPro
                 )}
               </div>
               
-              <span className={`text-[9px] font-bold uppercase tracking-wider text-center absolute -bottom-6 w-max ${
+              <span className={`text-xs font-semibold uppercase tracking-wider text-center absolute -bottom-6 w-max ${
                 active || done ? 'text-foreground' : 'text-muted-foreground'
               }`}>
                 {step.label}

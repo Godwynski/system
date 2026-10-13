@@ -3,6 +3,7 @@ import { getMe } from "@/lib/auth-helpers";
 import { redirect } from "next/navigation";
 import { AttendanceClient } from "./AttendanceClient";
 import { getAttendanceHistory } from "@/lib/actions/attendance";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export const metadata = {
   title: "Attendance Logs",
@@ -43,13 +44,12 @@ export default async function AttendancePage({ searchParams }: PageProps) {
 function AttendanceSkeleton() {
   return (
     <div className="w-full space-y-6 animate-pulse">
-
-      <div className="h-12 w-full bg-muted/30 rounded-2xl" />
-      <div className="rounded-2xl border border-border/10 bg-card/50 overflow-hidden">
-        <div className="h-10 w-full bg-muted/20 border-b border-border/10" />
-        <div className="p-1 space-y-1">
+      <Skeleton className="h-12 w-full rounded-xl" />
+      <div className="rounded-xl border border-border/60 bg-card/40 overflow-hidden shadow-xs">
+        <Skeleton className="h-10 w-full rounded-none" />
+        <div className="p-2 space-y-2">
           {[1, 2, 3, 4, 5, 6].map((i) => (
-            <div key={i} className="h-16 w-full bg-muted/5 rounded-xl" />
+            <Skeleton key={i} className="h-14 w-full rounded-lg" />
           ))}
         </div>
       </div>

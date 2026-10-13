@@ -5,6 +5,7 @@ import { Section } from "../SettingsShared";
 import { SettingsShell } from "../SettingsShell";
 import { PolicyLayout } from "@/components/admin/policies/PolicyLayout";
 
+import { Skeleton } from "@/components/ui/skeleton";
 import { PolicySetting, Category } from "@/types/admin";
 
 interface PoliciesSectionProps {
@@ -18,7 +19,12 @@ export function PoliciesSection({ role, settingsPromise, categoriesPromise }: Po
   return (
     <SettingsShell>
       <Section>
-        <Suspense fallback={<div className="h-32 w-full animate-pulse bg-muted rounded-xl" />}>
+        <Suspense fallback={
+          <div className="space-y-4">
+            <Skeleton className="h-10 w-48 rounded-lg" />
+            <Skeleton className="h-40 w-full rounded-xl border border-border/60" />
+          </div>
+        }>
           <PolicyStreamWrapper 
             promise={settingsPromise} 
             categoriesPromise={categoriesPromise} 

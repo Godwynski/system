@@ -47,7 +47,7 @@ export function AdminTableShell({
       {(title || headerActions) && (
         <div className={cn(
           "flex flex-col gap-4 pb-2 sm:flex-row sm:items-end sm:justify-between",
-          !isGhost && "border-b border-border/5 pb-6"
+          !isGhost && "border-b border-border/40 pb-6"
         )}>
           <div className="flex flex-col gap-1.5">
             {title && (
@@ -70,7 +70,7 @@ export function AdminTableShell({
       {feedback}
 
       {controls && (
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center bg-muted/5 p-2 rounded-3xl border border-border/5 backdrop-blur-[2px]">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center bg-card/40 p-2 rounded-xl border border-border/60">
           {controls}
         </div>
       )}
@@ -79,7 +79,7 @@ export function AdminTableShell({
         "overflow-hidden transition-all duration-500",
         isGhost 
           ? "rounded-none border-none bg-transparent shadow-none" 
-          : "rounded-3xl border border-border/10 bg-card/40 backdrop-blur-sm"
+          : "rounded-xl border border-border/60 bg-card/40 shadow-sm"
       )}>
         <div className={cn("relative group/table", !isGhost && "overflow-hidden")}>
           <div className={cn(
@@ -88,15 +88,12 @@ export function AdminTableShell({
           )}>
             {children}
           </div>
-          
-          {/* Mobile scroll indicator gradient */}
-          <div className="pointer-events-none absolute inset-y-0 right-0 w-12 bg-gradient-to-l from-card/80 to-transparent opacity-0 sm:hidden group-hover/table:opacity-100 transition-opacity duration-300" />
         </div>
 
         {pagination && (
           <div className={cn(
             "p-4",
-            isGhost ? "mt-6" : "border-t border-border/10 bg-muted/10"
+            isGhost ? "mt-6" : "border-t border-border/40 bg-muted/10"
           )}>
             {pagination}
           </div>

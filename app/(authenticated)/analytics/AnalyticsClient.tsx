@@ -2,7 +2,7 @@
 
 import { use, useState, useEffect, useTransition, useCallback } from 'react';
 import Link from 'next/link';
-import { Clock, BookOpen, Library, UserCircle2 } from 'lucide-react';
+import { Clock, BookOpen, Library, Users, ArrowUpRight } from 'lucide-react';
 import { TrendChart, CategoryPieChart, PeakHoursBarChart, ChartSkeleton } from './AnalyticsCharts';
 import { getAnalyticsSummary, type AnalyticsSummary, type AnalyticsRange } from '@/lib/actions/analytics';
 import { BookDetailModal } from '@/components/catalog/BookDetailModal';
@@ -54,7 +54,7 @@ export function AnalyticsClient({ statsPromise, role }: AnalyticsProps) {
     });
   }, [loadSummary]);
 
-  // Real-time Subscriptions
+  // Real-time Subscriptions via Supabase CDC
   useEffect(() => {
     const supabase = createClient();
     
@@ -74,70 +74,99 @@ export function AnalyticsClient({ statsPromise, role }: AnalyticsProps) {
   }, [loadSummary]);
 
   return (
-    <div className="space-y-8 animate-in fade-in duration-700">
-      <div className="flex justify-end px-1">
-        <div className="flex bg-muted/40 p-1 rounded-xl border border-border/60">
-          {RANGES.map((r) => (
-            <button
-              key={r.value}
-              onClick={() => setRange(r.value)}
-              className={cn(
-                "px-4 py-1.5 text-[10px] font-black uppercase tracking-widest rounded-lg transition-all",
-                range === r.value 
-                  ? "bg-foreground text-background shadow-lg scale-[1.02]" 
-                  : "text-muted-foreground/80 hover:text-foreground hover:bg-muted/70"
-              )}
-            >
-              {r.label}
-            </button>
-          ))}
+    <div className="space-y-8 animate-in fade-in duration-500 text-left">
+      {/* Header & Controls Bar */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-border/40">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+            Circulation & Collection Analytics
+          </h1>
+          <p className="text-xs sm:text-sm text-muted-foreground mt-1">
+            Real-time patron footfall, circulation velocity, and inventory demand metrics.
+          </p>
+        </div>
+
+        <div className="flex items-center gap-3 self-start sm:self-auto">
+          <span className="hidden md:inline-flex items-center gap-1.5 text-xs font-mono text-muted-foreground border border-border/60 bg-muted/20 px-2.5 py-1.5 rounded-lg">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            Live Sync Active
+          </span>
+
+          {/* Time Window Switcher */}
+          <div className="flex bg-muted/40 p-1 rounded-lg border border-border/60">
+            {RANGES.map((r) => (
+              <button
+                key={r.value}
+                type="button"
+                onClick={() => setRange(r.value)}
+                className={cn(
+                  "px-3 py-1.5 text-xs font-medium rounded-md transition-all",
+                  range === r.value 
+                    ? "bg-foreground text-background shadow-xs font-semibold" 
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                {r.label}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* Main Stats Grid */}
-      <section className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* Institutional KPI Strip (Unified architectural strip, not generic separate cards) */}
+      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 rounded-xl border border-border/70 bg-card divide-y sm:divide-y-0 sm:divide-x divide-border/50 shadow-xs overflow-hidden">
         {[
           { 
             label: "Daily Traffic", 
             value: stats.attendanceToday, 
             icon: Clock, 
-            desc: "Check-ins today",
+            desc: "Attendance check-ins today",
             href: "/attendance"
           },
           { 
             label: "Active Borrows", 
             value: stats.activeBorrows, 
             icon: BookOpen, 
-            desc: "Currently out",
+            desc: "Circulating off-shelf",
             href: "/history?status=ACTIVE"
           },
           { 
-            label: "Inventory", 
+            label: "Total Collection", 
             value: stats.totalBooks, 
             icon: Library, 
-            desc: "Total volumes",
+            desc: "Accessioned physical volumes",
             href: "/inventory"
           },
           { 
-            label: "Members", 
+            label: "Registered Patrons", 
             value: stats.totalUsers, 
-            icon: UserCircle2, 
-            desc: "Registered users",
+            icon: Users, 
+            desc: "Active student & staff accounts",
             href: "/users"
           },
         ].map((stat, i) => (
           <Link 
             key={i} 
             href={stat.href}
-            className="relative group bg-muted/5 border border-border/40 p-6 rounded-2xl hover:bg-muted/10 hover:border-primary/20 transition-all duration-300 block cursor-pointer active:scale-[0.98]"
+            className="group p-5 hover:bg-muted/30 transition-all flex flex-col justify-between"
           >
-            <div className="absolute top-4 right-4 text-muted-foreground/40 group-hover:text-primary/60 transition-colors">
-              <stat.icon size={24} strokeWidth={2.5} />
+            <div className="flex items-center justify-between text-xs text-muted-foreground mb-3">
+              <span className="font-semibold uppercase tracking-wider font-mono">
+                {stat.label}
+              </span>
+              <stat.icon className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
             </div>
-            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/80 mb-4">{stat.label}</p>
-            <div className="flex flex-col gap-0.5">
-              <p className="text-3xl font-black text-foreground tracking-tighter">{stat.value}</p>
-              <p className="text-[9px] font-bold text-muted-foreground/70 uppercase tracking-tight">{stat.desc}</p>
+
+            <div className="space-y-1">
+              <span className="text-2xl sm:text-3xl font-bold font-mono tracking-tight text-foreground block">
+                {stat.value.toLocaleString()}
+              </span>
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-muted-foreground">
+                  {stat.desc}
+                </span>
+                <ArrowUpRight className="h-3.5 w-3.5 opacity-0 group-hover:opacity-100 transition-opacity text-foreground shrink-0" />
+              </div>
             </div>
           </Link>
         ))}
@@ -152,12 +181,11 @@ export function AnalyticsClient({ statsPromise, role }: AnalyticsProps) {
             <PeakHoursBarChart 
               data={summary.peakHours} 
               title="Peak Visiting Hours" 
-              color="hsl(var(--primary))" 
             />
           )}
           {isPending && summary && (
-            <div className="absolute inset-x-0 bottom-0 h-1 bg-primary/20 overflow-hidden">
-               <div className="h-full bg-primary animate-[shimmer_2s_infinite_linear]" style={{ width: '30%', background: 'linear-gradient(90deg, transparent, hsl(var(--primary)), transparent)' }} />
+            <div className="absolute inset-x-0 bottom-0 h-0.5 bg-primary/20 overflow-hidden">
+              <div className="h-full bg-primary animate-pulse w-full" />
             </div>
           )}
         </div>
@@ -169,93 +197,99 @@ export function AnalyticsClient({ statsPromise, role }: AnalyticsProps) {
             <TrendChart 
               data={summary.borrowingTrends} 
               title="Circulation Trends" 
-              color="hsl(var(--primary))" 
               href="/history"
             />
           )}
           {isPending && summary && (
-            <div className="absolute inset-x-0 bottom-0 h-1 bg-primary/20 overflow-hidden">
-               <div className="h-full bg-primary animate-[shimmer_2s_infinite_linear]" style={{ width: '30%', background: 'linear-gradient(90deg, transparent, hsl(var(--primary)), transparent)' }} />
+            <div className="absolute inset-x-0 bottom-0 h-0.5 bg-primary/20 overflow-hidden">
+              <div className="h-full bg-primary animate-pulse w-full" />
             </div>
           )}
         </div>
       </section>
 
-      {/* Deep Insights */}
-      <section className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Pie Chart */}
+      {/* Deep Collection Telemetry */}
+      <section className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+        {/* Category Distribution Breakdown */}
         <div className="lg:col-span-5 flex flex-col">
           {summary ? (
-            <CategoryPieChart data={summary.categoryDistribution} title="Genre Popularity" />
+            <CategoryPieChart data={summary.categoryDistribution} title="Genre & Classification" />
           ) : (
-            <div className="w-full h-[280px] flex flex-col animate-pulse border border-border/40 rounded-2xl p-4 bg-muted/[0.02]">
-              <div className="w-24 h-3 bg-muted/20 rounded mb-8" />
-              <div className="flex-1 flex flex-col items-center justify-center gap-4">
-                <div className="w-32 h-32 rounded-full border-[12px] border-muted/10" />
-                <div className="w-24 h-2 bg-muted/10 rounded" />
-              </div>
-            </div>
+            <ChartSkeleton title="Genre & Classification" />
           )}
         </div>
 
-        {/* Popular List */}
-        <div className="lg:col-span-7 bg-muted/5 border border-border/40 rounded-2xl overflow-hidden flex flex-col">
-          <div className="p-6 flex items-center justify-between border-b border-border/5">
-            <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/90">High Demand Catalog</p>
-            <span className="text-[9px] font-black text-muted-foreground/60 uppercase tracking-widest">Top Performance</span>
+        {/* High Demand Catalog Ledger */}
+        <div className="lg:col-span-7 rounded-xl border border-border/70 bg-card p-5 flex flex-col justify-between">
+          <div>
+            <div className="flex items-center justify-between pb-3 border-b border-border/40 mb-3">
+              <div className="space-y-0.5">
+                <h3 className="text-sm sm:text-base font-semibold text-foreground">
+                  High-Demand Volumes
+                </h3>
+                <p className="text-xs text-muted-foreground">
+                  Most frequently circulated titles in this period
+                </p>
+              </div>
+              <span className="text-xs font-mono text-muted-foreground">
+                Ranked by borrows
+              </span>
+            </div>
+
+            <div className="divide-y divide-border/30">
+              {summary ? (
+                summary.popularBooks.length > 0 ? (
+                  summary.popularBooks.slice(0, 5).map((book, i) => (
+                    <button 
+                      key={book.id || i} 
+                      type="button"
+                      onClick={() => {
+                        setSelectedBookId(book.id);
+                        setModalOpen(true);
+                      }}
+                      className="w-full text-left py-3 px-2 flex items-center justify-between gap-4 hover:bg-muted/40 transition-colors rounded-lg group"
+                    >
+                      <div className="flex items-center gap-3 min-w-0">
+                        <span className="font-mono text-xs font-semibold text-muted-foreground/60 w-5">
+                          0{i + 1}
+                        </span>
+                        <p className="text-xs sm:text-sm font-medium text-foreground truncate group-hover:text-primary transition-colors">
+                          {book.title}
+                        </p>
+                      </div>
+
+                      <div className="flex items-center gap-2 font-mono text-xs text-muted-foreground shrink-0">
+                        <span className="font-bold text-foreground">{book.count}</span>
+                        <span>checkouts</span>
+                        <ArrowUpRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                      </div>
+                    </button>
+                  ))
+                ) : (
+                  <div className="py-12 text-center text-xs text-muted-foreground">
+                    No borrowing transactions recorded during this interval.
+                  </div>
+                )
+              ) : (
+                <div className="space-y-3 py-3 animate-pulse">
+                  {[1, 2, 3, 4, 5].map((idx) => (
+                    <div key={idx} className="h-8 bg-muted/30 rounded w-full" />
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
-          
-          <div className="flex-1">
-            {summary ? (
-              <div className="divide-y divide-border/5">
-                {summary.popularBooks.length > 0 ? summary.popularBooks.map((book, i) => (
-                  <button 
-                    key={i} 
-                    onClick={() => {
-                      setSelectedBookId(book.id);
-                      setModalOpen(true);
-                    }}
-                    className="w-full text-left flex items-center justify-between py-5 px-6 hover:bg-primary/[0.04] transition-colors group focus:outline-none focus:bg-primary/[0.04]"
-                  >
-                    <div className="flex items-center gap-4 min-w-0">
-                      <span className="text-[10px] font-black text-muted-foreground/20 w-4 group-hover:text-primary/40 transition-colors">0{i + 1}</span>
-                      <p className="text-sm font-bold text-foreground truncate group-hover:text-primary transition-colors">{book.title}</p>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      <div className="h-1 w-12 bg-muted/20 rounded-full overflow-hidden hidden sm:block">
-                        <div 
-                          className="h-full bg-primary/40 rounded-full" 
-                          style={{ width: `${(book.count / (summary.popularBooks[0]?.count || 1)) * 100}%` }}
-                        />
-                      </div>
-                      <div className="flex items-baseline gap-1 text-foreground">
-                        <span className="font-black text-sm">{book.count}</span>
-                        <span className="text-[9px] font-bold text-muted-foreground/70 uppercase tracking-tight">borrows</span>
-                      </div>
-                    </div>
-                  </button>
-                )) : (
-                  <div className="flex items-center justify-center py-20">
-                    <p className="text-[10px] uppercase tracking-[0.2em] font-black text-muted-foreground/30 italic">No circulation data recorded</p>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div className="divide-y divide-border/5 animate-pulse">
-                {[1, 2, 3, 4, 5].map((i) => (
-                  <div key={i} className="flex items-center justify-between py-5 px-6">
-                    <div className="flex items-center gap-4 flex-1">
-                      <div className="w-4 h-2 bg-muted/20 rounded" />
-                      <div className="w-1/2 h-3 bg-muted/10 rounded" />
-                    </div>
-                    <div className="w-12 h-3 bg-muted/10 rounded" />
-                  </div>
-                ))}
-              </div>
-            )}
+
+          <div className="pt-3 border-t border-border/40 flex items-center justify-between text-xs text-muted-foreground">
+            <span>Click any title to view copy availability & catalog details</span>
+            <Link href="/catalog" className="hover:text-foreground font-medium transition-colors">
+              Full Catalog →
+            </Link>
           </div>
         </div>
       </section>
+
+      {/* Book Detail Modal */}
       {selectedBookId && (
         <BookDetailModal
           bookId={selectedBookId}

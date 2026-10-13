@@ -36,10 +36,56 @@ async function ProfileContent() {
   );
 }
 
+import { Skeleton } from "@/components/ui/skeleton";
+
+function ProfileSkeleton() {
+  return (
+    <div className="mx-auto flex w-full max-w-5xl flex-col gap-6 p-4 md:p-6 animate-pulse">
+      <div className="flex flex-col gap-2 pb-4 border-b border-border/40">
+        <Skeleton className="h-8 w-48 rounded-lg" />
+        <Skeleton className="h-4 w-72 rounded-md" />
+      </div>
+      <div className="grid gap-6 md:grid-cols-12">
+        <div className="md:col-span-4 rounded-xl border border-border/60 bg-card/40 p-6 flex flex-col items-center gap-4">
+          <Skeleton className="h-28 w-28 rounded-full" />
+          <Skeleton className="h-5 w-36 rounded-md" />
+          <Skeleton className="h-4 w-44 rounded-md" />
+          <div className="w-full pt-4 border-t border-border/40 space-y-2">
+            <Skeleton className="h-9 w-full rounded-lg" />
+          </div>
+        </div>
+        <div className="md:col-span-8 rounded-xl border border-border/60 bg-card/40 p-6 space-y-6">
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-28 rounded-md" />
+              <Skeleton className="h-10 w-full rounded-lg" />
+            </div>
+            <div className="space-y-2">
+              <Skeleton className="h-4 w-24 rounded-md" />
+              <Skeleton className="h-10 w-full rounded-lg" />
+            </div>
+          </div>
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-24 rounded-md" />
+            <Skeleton className="h-10 w-full rounded-lg" />
+          </div>
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-28 rounded-md" />
+            <Skeleton className="h-10 w-full rounded-lg" />
+          </div>
+          <div className="flex justify-end gap-3 pt-4 border-t border-border/40">
+            <Skeleton className="h-10 w-28 rounded-lg" />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function ProfilePage() {
   return (
     <div className="space-y-6 w-full">
-      <Suspense fallback={<div className="p-8 animate-pulse space-y-8"><div className="h-8 w-48 bg-muted rounded" /><div className="h-96 w-full bg-muted rounded" /></div>}>
+      <Suspense fallback={<ProfileSkeleton />}>
         <ProfileContent />
       </Suspense>
     </div>

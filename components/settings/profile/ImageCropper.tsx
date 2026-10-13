@@ -55,7 +55,7 @@ export function ImageCropper({ image, onCropComplete, onCancel }: ImageCropperPr
 
   return (
     <Dialog open={!!image} onOpenChange={(open) => !open && onCancel()}>
-      <DialogContent className="sm:max-w-md bg-background/95 backdrop-blur-xl border-border/40 p-0 overflow-hidden rounded-[2rem]">
+      <DialogContent className="sm:max-w-md rounded-xl border border-border/60 bg-card p-0 overflow-hidden">
         <DialogHeader className="p-6 pb-0">
           <DialogTitle className="text-xl font-black uppercase tracking-tight">Adjust Profile Photo</DialogTitle>
         </DialogHeader>
@@ -77,8 +77,8 @@ export function ImageCropper({ image, onCropComplete, onCancel }: ImageCropperPr
         <div className="p-6 space-y-6">
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Zoom Level</span>
-              <span className="text-[10px] font-bold text-primary">{Math.round(zoom * 100)}%</span>
+              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Zoom Level</span>
+              <span className="text-xs font-semibold text-primary tabular-nums">{Math.round(zoom * 100)}%</span>
             </div>
             <Slider
               value={[zoom]}
@@ -94,14 +94,14 @@ export function ImageCropper({ image, onCropComplete, onCancel }: ImageCropperPr
             <Button 
               variant="outline" 
               onClick={onCancel}
-              className="flex-1 rounded-2xl font-bold uppercase tracking-widest text-[10px] border-border/40"
+              className="flex-1 rounded-lg font-semibold uppercase tracking-wider text-xs border-border/60 shadow-xs transition-colors"
             >
               Cancel
             </Button>
             <Button 
               onClick={handleSave}
               disabled={isProcessing}
-              className="flex-1 rounded-2xl font-bold uppercase tracking-widest text-[10px] shadow-lg shadow-primary/20"
+              className="flex-1 rounded-lg font-semibold uppercase tracking-wider text-xs shadow-xs transition-colors"
             >
               {isProcessing ? (
                 <Loader2 className="h-3 w-3 animate-spin" />

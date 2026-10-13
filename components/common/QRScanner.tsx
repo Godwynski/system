@@ -231,16 +231,16 @@ export function QRScanner({
   }, [autoStart, startScanner, stopScanner]);
 
   return (
-    <div className={cn("relative flex flex-col items-center justify-center overflow-hidden rounded-2xl bg-black/90", className)}>
+    <div className={cn("relative flex flex-col items-center justify-center overflow-hidden rounded-xl bg-black/90", className)}>
       <div id={regionId} className="w-full h-full" />
       
       {showCooldown && !stopOnScan && (
-        <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/10 backdrop-blur-[0.5px] transition-all duration-300">
-          <div className="bg-background/80 backdrop-blur-md px-6 py-3 rounded-2xl border border-primary/20 shadow-2xl flex flex-col items-center gap-2 animate-in zoom-in fade-in duration-300">
+        <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/20 transition-all duration-300">
+          <div className="bg-background px-6 py-3 rounded-xl border border-border/60 shadow-md flex flex-col items-center gap-2 animate-in zoom-in fade-in duration-300">
             <div className="h-1 w-24 bg-muted rounded-full overflow-hidden">
               <div className="h-full bg-primary animate-cooldown-progress" />
             </div>
-            <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-primary">Cooldown Active</span>
+            <span className="text-xs font-semibold uppercase tracking-wider text-primary">Cooldown Active</span>
           </div>
         </div>
       )}
@@ -248,7 +248,7 @@ export function QRScanner({
       {error && (
         <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-background/95 backdrop-blur-sm">
           <p className="text-sm font-bold text-destructive mb-4">{error}</p>
-          <Button variant="outline" size="sm" onClick={() => void startScanner()} className="h-8">
+          <Button variant="outline" size="sm" onClick={() => void startScanner()} className="h-8 rounded-lg">
             <RefreshCw className="mr-2 h-3.5 w-3.5" />
             Retry
           </Button>
@@ -264,7 +264,7 @@ export function QRScanner({
               void stopScanner();
               onClose?.();
             }} 
-            className="h-8 bg-red-600/20 hover:bg-red-600/40 text-red-500 border-red-500/20 backdrop-blur-md"
+            className="h-8 rounded-lg"
           >
             <StopCircle className="mr-2 h-3.5 w-3.5" />
             Stop Scanner
@@ -275,7 +275,7 @@ export function QRScanner({
               variant="secondary" 
               size="sm" 
               onClick={() => void startScanner()} 
-              className="h-8 bg-white/10 hover:bg-white/20 text-white border-white/10 backdrop-blur-md"
+              className="h-8 rounded-lg"
             >
               <Camera className="mr-2 h-3.5 w-3.5" />
               Open Camera

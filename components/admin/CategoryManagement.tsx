@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Plus, Layers, Edit3, Save, X, Loader2 } from "lucide-react";
 import { CategoryItem } from "./categories/CategoryItem";
 import { CategoryDialog } from "./categories/CategoryDialog";
+import { EmptyState } from "@/components/ui/empty-state";
 
 import { toast } from "sonner";
 import { Category } from "@/types/admin";
@@ -203,14 +204,14 @@ export function CategoryManagement({ initialCategories }: { initialCategories: C
     <div className="w-full space-y-8 p-1">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="h-10 w-10 rounded-xl bg-primary/[0.03] flex items-center justify-center text-primary/40 border border-primary/10">
+          <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary border border-primary/20">
             <Layers className="h-5 w-5" />
           </div>
           <div>
-            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/40 leading-none mb-1">
+            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground leading-none mb-1">
               Registry Overview
             </p>
-            <h2 className="text-sm font-black text-foreground tracking-tight">
+            <h2 className="text-sm font-bold text-foreground tracking-tight">
               {categories.length} Registered {categories.length === 1 ? 'Category' : 'Categories'}
             </h2>
           </div>
@@ -218,9 +219,9 @@ export function CategoryManagement({ initialCategories }: { initialCategories: C
 
         <div className="flex items-center gap-3">
           {isBulkEditing ? (
-            <div className="flex items-center gap-3 animate-in fade-in slide-in-from-right-4 duration-500">
+            <div className="flex items-center gap-3">
               {changedIds.length > 0 && (
-                <div className="px-4 py-1.5 rounded-full bg-primary/[0.03] border border-primary/10 text-[9px] font-black uppercase tracking-[0.2em] text-primary shadow-xs">
+                <div className="px-3 py-1 rounded-md bg-primary/10 border border-primary/20 text-xs font-semibold uppercase tracking-wider text-primary">
                   {changedIds.length} Pending Mods
                 </div>
               )}
@@ -228,7 +229,7 @@ export function CategoryManagement({ initialCategories }: { initialCategories: C
                 variant="ghost"
                 onClick={resetBulkEdit}
                 disabled={loading}
-                className="h-11 rounded-2xl px-6 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 hover:text-foreground hover:bg-muted/10 transition-all"
+                className="h-10 rounded-lg px-4 text-xs font-semibold uppercase tracking-wider text-muted-foreground hover:text-foreground"
               >
                 <X className="h-4 w-4 mr-2" />
                 Discard
@@ -236,7 +237,7 @@ export function CategoryManagement({ initialCategories }: { initialCategories: C
               <Button
                 onClick={handleBulkSave}
                 disabled={loading || changedIds.length === 0}
-                className="h-11 rounded-2xl px-8 text-[10px] font-black uppercase tracking-[0.2em] shadow-xl shadow-primary/20 hover:shadow-primary/30 active:scale-95 transition-all"
+                className="h-10 rounded-lg px-4 text-xs font-semibold uppercase tracking-wider"
               >
                 {loading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Save className="h-4 w-4 mr-2" />}
                 Commit Changes
@@ -247,14 +248,14 @@ export function CategoryManagement({ initialCategories }: { initialCategories: C
               <Button
                 variant="outline"
                 onClick={() => setIsBulkEditing(true)}
-                className="h-11 rounded-2xl px-6 text-[10px] font-black uppercase tracking-[0.2em] border-border/20 bg-muted/5 text-muted-foreground/60 hover:text-foreground hover:bg-muted/10 hover:border-border/40 transition-all shadow-xs"
+                className="h-10 rounded-lg px-4 text-xs font-semibold uppercase tracking-wider border border-border/60 text-muted-foreground hover:text-foreground"
               >
                 <Edit3 className="h-4 w-4 mr-2" />
                 Bulk Management
               </Button>
               <Button
                 onClick={() => openDialog()}
-                className="h-11 rounded-2xl gap-2.5 px-8 text-[10px] font-black uppercase tracking-[0.2em] shadow-xl shadow-primary/10 hover:shadow-primary/20 transition-all hover:scale-[1.02] active:scale-95"
+                className="h-10 rounded-lg gap-2 px-4 text-xs font-semibold uppercase tracking-wider"
               >
                 <Plus className="h-4 w-4" />
                 Add Category
@@ -265,15 +266,12 @@ export function CategoryManagement({ initialCategories }: { initialCategories: C
       </div>
 
       {categories.length === 0 ? (
-        <div className="rounded-[2.5rem] border border-dashed border-border/20 bg-muted/[0.02] p-16 text-center group hover:bg-muted/[0.04] transition-all duration-700">
-          <div className="h-20 w-20 rounded-[2rem] bg-muted/5 flex items-center justify-center text-muted-foreground/20 mx-auto mb-6 group-hover:scale-110 group-hover:text-primary/30 group-hover:bg-primary/5 transition-all duration-700">
-            <Layers className="h-10 w-10" />
-          </div>
-          <h3 className="text-sm font-black text-foreground/60 group-hover:text-foreground transition-colors mb-2">No categories defined</h3>
-          <p className="text-xs text-muted-foreground/40 font-medium max-w-[280px] mx-auto leading-relaxed">
-            Initialize your organization&apos;s classification system by adding your first category.
-          </p>
-        </div>
+        <EmptyState
+          icon={Layers}
+          title="No categories defined"
+          description="Initialize your organization's classification system by adding your first category."
+          className="border-dashed border-border/60 bg-card/40 rounded-xl"
+        />
       ) : (
         <div className="grid gap-4">
           {(isBulkEditing ? draftCategories : categories).map((category) => (

@@ -24,6 +24,7 @@ import { StudentBookCard } from '@/components/library/StudentBookCard';
 import { AnimatePresence, m } from 'framer-motion';
 import { AdminTableShell } from '@/components/admin/AdminTableShell';
 import { createClient } from '@/lib/supabase/client';
+import { EmptyState } from '@/components/ui/empty-state';
 
 
 
@@ -232,7 +233,7 @@ export function StudentCatalogClient({
               placeholder="Search by title, author, or ISBN..."
               value={localQuery}
               onChange={(e) => setLocalQuery(e.target.value)}
-              className="h-10 pl-9 pr-10 rounded-xl border-border/40 bg-background/50 backdrop-blur-sm focus-visible:ring-primary/20"
+              className="h-10 pl-9 pr-10 rounded-lg border border-border/60 bg-background focus-visible:ring-2 focus-visible:ring-primary/20"
             />
             {localQuery && (
               <Button 
@@ -253,8 +254,8 @@ export function StudentCatalogClient({
                   variant="outline"
                   size="sm"
                   className={cn(
-                    "h-9 min-w-[140px] rounded-xl border-border/40 bg-background/50 text-[11px] font-bold shadow-none hover:bg-muted/10 justify-between px-3",
-                    selectedIds.length > 0 && "border-primary/20 bg-primary/5 text-primary hover:bg-primary/10"
+                    "h-9 min-w-[140px] rounded-lg border border-border/60 bg-background text-xs font-semibold uppercase tracking-wider text-muted-foreground shadow-none hover:bg-muted/10 justify-between px-3",
+                    selectedIds.length > 0 && "border-primary/40 bg-primary/5 text-primary hover:bg-primary/10"
                   )}
                 >
                   <span>
@@ -267,7 +268,7 @@ export function StudentCatalogClient({
                   <ChevronDown className="ml-2 h-3.5 w-3.5 opacity-60" />
                 </Button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" className="w-56 max-h-[300px] overflow-y-auto no-scrollbar bg-card border border-border/10 rounded-xl">
+              <DropdownMenuContent align="start" className="w-56 max-h-[300px] overflow-y-auto no-scrollbar bg-background border border-border/60 rounded-xl shadow-xl">
                 <DropdownMenuCheckboxItem
                   checked={selectedIds.length === 0}
                   onCheckedChange={handleCatClear}
@@ -275,7 +276,7 @@ export function StudentCatalogClient({
                 >
                   All Categories
                 </DropdownMenuCheckboxItem>
-                <DropdownMenuSeparator className="bg-border/10" />
+                <DropdownMenuSeparator className="bg-border/60" />
                 {categories.map((category) => (
                   <DropdownMenuCheckboxItem
                     key={category.id}
@@ -295,20 +296,20 @@ export function StudentCatalogClient({
               size="sm"
               onClick={handleAvailableToggle}
               className={cn(
-                "h-9 px-4 rounded-xl text-[11px] font-bold uppercase tracking-tight transition-all",
-                availableOnly ? "bg-primary/10 text-primary border-primary/20 hover:bg-primary/20 shadow-none" : "border-border/40 bg-background/50 text-muted-foreground shadow-none"
+                "h-9 px-4 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all",
+                availableOnly ? "bg-primary/10 text-primary border border-primary/40 hover:bg-primary/20 shadow-none" : "border border-border/60 bg-background text-muted-foreground shadow-none"
               )}
             >
               Available
             </Button>
 
-            <div className="h-6 w-[1px] bg-border/40 mx-1 hidden sm:block" />
+            <div className="h-6 w-[1px] bg-border/60 mx-1 hidden sm:block" />
 
             <Select value={sortBy} onValueChange={handleSortChange}>
-              <SelectTrigger className="h-9 w-[130px] rounded-xl border-border/40 bg-background/50 px-3 text-[11px] font-bold shadow-none focus:ring-0">
+              <SelectTrigger className="h-9 w-[140px] rounded-lg border border-border/60 bg-background px-3 text-xs font-semibold uppercase tracking-wider shadow-none focus:ring-0">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="rounded-xl border border-border/60 bg-background shadow-xl">
                 <SelectItem value="newest">Recently Added</SelectItem>
                 <SelectItem value="title">Title A-Z</SelectItem>
                 <SelectItem value="author">Author</SelectItem>
@@ -318,7 +319,7 @@ export function StudentCatalogClient({
           </div>
 
           {(selectedCategory || availableOnly || localQuery || sortBy !== 'title') && (
-            <Button variant="ghost" size="sm" onClick={clearFilters} className="h-9 px-3 text-[11px] font-bold uppercase text-muted-foreground hover:text-destructive transition-colors ml-auto sm:ml-0">
+            <Button variant="ghost" size="sm" onClick={clearFilters} className="h-9 px-3 rounded-lg text-xs font-semibold uppercase tracking-wider text-muted-foreground hover:text-destructive transition-colors ml-auto sm:ml-0">
               Reset
             </Button>
           )}
@@ -358,18 +359,15 @@ export function StudentCatalogClient({
         </AnimatePresence>
 
         {books.length === 0 && (
-          <div className="flex flex-col items-center justify-center rounded-3xl border-2 border-dashed border-border/40 bg-muted/5 px-4 py-20 text-center backdrop-blur-sm">
-            <div className="mb-4 rounded-full bg-primary/5 p-5 text-primary/30 ring-1 ring-primary/10">
-              <Search className="h-10 w-10" />
-            </div>
-            <h3 className="text-xl font-bold tracking-tight text-foreground">No matching books found</h3>
-            <p className="mt-2 max-w-[320px] text-sm text-muted-foreground/70 leading-relaxed">
-              We couldn&apos;t find any titles matching your current search criteria. Try broadening your terms or clear all filters.
-            </p>
-            <Button variant="outline" onClick={clearFilters} className="mt-8 rounded-xl font-bold px-6 border-primary/20 text-primary hover:bg-primary/5">
-              Clear all filters
-            </Button>
-          </div>
+          <EmptyState
+            icon={Search}
+            title="No matching books found"
+            description="We couldn't find any titles matching your current search criteria. Try broadening your terms or clear all filters."
+            action={{
+              label: "Clear all filters",
+              onClick: clearFilters,
+            }}
+          />
         )}
       </div>
     </AdminTableShell>

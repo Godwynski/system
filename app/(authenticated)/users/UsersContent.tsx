@@ -158,7 +158,7 @@ export function UsersContent({ usersPromise, currentRole }: UsersContentProps) {
     {
       header: "ID",
       className: "w-[120px]",
-      cell: (user) => <span className="font-mono text-xs font-medium">{user.student_id || "No ID"}</span>
+      cell: (user) => <span className="font-mono text-xs font-medium tabular-nums">{user.student_id || "No ID"}</span>
     },
     {
       header: "Role",
@@ -202,7 +202,7 @@ export function UsersContent({ usersPromise, currentRole }: UsersContentProps) {
                   <Filter size={14} />
                   <span className="hidden sm:inline">Filter</span>
                   {activeTab !== "all" && (
-                    <Badge variant="secondary" className="h-5 px-1.5 text-[10px] min-w-5 justify-center">
+                    <Badge variant="secondary" className="h-5 px-1.5 text-xs min-w-5 justify-center">
                       {roleFilterLabels[activeTab]}
                     </Badge>
                   )}
@@ -249,6 +249,10 @@ export function UsersContent({ usersPromise, currentRole }: UsersContentProps) {
           isLoading={isLoadingUsers}
           onRowClick={handleUserClick}
           noBorder
+          emptyState={{
+            title: "No users found",
+            description: "No patrons or staff match your current search query or filter selection.",
+          }}
           renderMobileRow={(user) => (
             <div className="flex items-start gap-3">
               <Avatar className="h-10 w-10 shrink-0">
@@ -264,7 +268,7 @@ export function UsersContent({ usersPromise, currentRole }: UsersContentProps) {
                 <div className="mt-2 flex items-center flex-wrap gap-2 text-xs text-muted-foreground">
                   <RoleBadge role={user.role} />
                   <span className="opacity-40">•</span>
-                  <span className="font-mono">{user.student_id || "No ID"}</span>
+                  <span className="font-mono tabular-nums">{user.student_id || "No ID"}</span>
                   <span className="opacity-40">•</span>
                   <span className="truncate">{user.department}</span>
                 </div>

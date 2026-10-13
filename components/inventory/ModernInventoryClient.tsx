@@ -512,7 +512,7 @@ export function ModernInventoryClient({
 
   return (
     <div className="w-full space-y-6 pb-10">
-      <div className="sticky top-0 z-30 flex flex-col gap-4 rounded-3xl border border-border/10 bg-background/60 p-2.5 backdrop-blur-2xl transition-all duration-300">
+      <div className="sticky top-0 z-30 flex flex-col gap-4 rounded-xl border border-border/60 bg-card/40 p-2.5 backdrop-blur-sm transition-all duration-300">
         <div className="flex items-center gap-3 w-full">
           {/* Search Box */}
           <form onSubmit={handleSearch} className="relative flex flex-1 items-center gap-2">
@@ -526,13 +526,13 @@ export function ModernInventoryClient({
                 placeholder="Search inventory..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="h-11 w-full rounded-2xl border border-border/20 bg-muted/5 pl-11 pr-11 text-sm font-medium transition-all focus:border-primary/30 focus:bg-background focus:outline-none focus:ring-4 focus:ring-primary/5 placeholder:text-muted-foreground/30"
+                className="h-11 w-full rounded-lg border border-border/60 bg-muted/5 pl-11 pr-11 text-sm font-medium transition-all focus:border-primary/30 focus:bg-background focus:outline-none focus:ring-4 focus:ring-primary/5 placeholder:text-muted-foreground/30"
               />
               {searchQuery && (
                 <button
                   type="button"
                   onClick={clearSearch}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full p-1.5 text-muted-foreground/30 hover:bg-muted hover:text-foreground transition-all active:scale-90"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full p-1.5 text-muted-foreground/30 hover:bg-muted hover:text-foreground transition-colors"
                 >
                   <X className="h-4 w-4" />
                 </button>
@@ -544,18 +544,18 @@ export function ModernInventoryClient({
             <SheetTrigger asChild>
               <Button 
                 variant="outline" 
-                className="h-11 rounded-2xl px-4 gap-2 border-border/20 bg-muted/5 hover:bg-background transition-all active:scale-95 relative"
+                className="h-10 rounded-lg px-4 gap-2 border-border/60 bg-muted/20 hover:bg-muted transition-colors relative"
               >
                 <SlidersHorizontal className="h-4 w-4 text-primary/80" />
-                <span className="hidden sm:inline text-[10px] font-bold uppercase tracking-wider">Filters</span>
+                <span className="hidden sm:inline text-xs font-semibold uppercase tracking-wider">Filters</span>
                 {activeFilterCount > 0 && (
-                  <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 rounded-full text-[10px] bg-primary text-primary-foreground border-2 border-background">
+                  <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 rounded-full text-xs font-semibold bg-primary text-primary-foreground border-2 border-background tabular-nums">
                     {activeFilterCount}
                   </Badge>
                 )}
               </Button>
             </SheetTrigger>
-            <SheetContent showCloseButton={false} side="right" className="w-full sm:max-w-md rounded-l-3xl border-l-border/10 bg-background p-0 overflow-hidden flex flex-col">
+            <SheetContent showCloseButton={false} side="right" className="w-full sm:max-w-md rounded-l-xl border-l border-border/60 bg-background p-0 overflow-hidden flex flex-col">
               <div className="absolute top-0 right-0 p-4 z-10">
                 <SheetClose className="rounded-full h-8 w-8 flex items-center justify-center bg-muted/20 text-muted-foreground hover:bg-muted transition-colors">
                    <X className="h-4 w-4" />
@@ -570,12 +570,12 @@ export function ModernInventoryClient({
                   <SheetDescription className="text-xs text-muted-foreground font-medium">Refine your search results</SheetDescription>
                 </div>
 
-                <Separator className="bg-border/10" />
+                <Separator className="bg-border/60" />
 
                 <div className="space-y-6">
                   {/* Status Selection */}
                   <div className="space-y-3">
-                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Availability Status</label>
+                    <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground ml-1">Availability Status</label>
                     <div className="grid grid-cols-3 gap-2">
                       {(["ACTIVE", "ARCHIVED", "ALL"] as const).map((s) => (
                         <Button
@@ -584,8 +584,8 @@ export function ModernInventoryClient({
                           size="sm"
                           onClick={() => setStatus(s)}
                           className={cn(
-                            "h-9 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all",
-                            status === s ? "bg-primary text-primary-foreground" : "bg-muted/5 border-border/10 hover:bg-muted/10"
+                            "h-9 rounded-lg text-xs font-semibold uppercase tracking-wider transition-all",
+                            status === s ? "bg-primary text-primary-foreground" : "bg-muted/20 border-border/60 hover:bg-muted"
                           )}
                         >
                           {s === "ACTIVE" ? "Visible" : s === "ARCHIVED" ? "Archived" : "All"}
@@ -596,34 +596,34 @@ export function ModernInventoryClient({
 
                   {/* Sort Selection */}
                   <div className="space-y-3">
-                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Sorting Order</label>
+                    <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground ml-1">Sorting Order</label>
                     <Select value={sortBy} onValueChange={(value) => setSortBy(value as typeof sortBy)}>
-                      <SelectTrigger className="h-10 w-full rounded-lg border border-border/10 bg-muted/5 px-3 text-[11px] font-medium shadow-none focus:ring-0">
+                      <SelectTrigger className="h-10 w-full rounded-lg border border-border/60 bg-muted/20 px-3 text-xs font-medium shadow-none focus:ring-1 focus:ring-ring">
                         <div className="flex items-center gap-2">
                           <ArrowUpDown className="h-3.5 w-3.5 text-muted-foreground/50" />
                           <SelectValue />
                         </div>
                       </SelectTrigger>
-                      <SelectContent className="rounded-lg border-border/10">
-                        <SelectItem value="newest" className="text-[11px]">Recently Added</SelectItem>
-                        <SelectItem value="title_asc" className="text-[11px]">Title A-Z</SelectItem>
-                        <SelectItem value="title_desc" className="text-[11px]">Title Z-A</SelectItem>
-                        <SelectItem value="availability_desc" className="text-[11px]">By Availability</SelectItem>
+                      <SelectContent className="rounded-lg border-border/60">
+                        <SelectItem value="newest" className="text-xs">Recently Added</SelectItem>
+                        <SelectItem value="title_asc" className="text-xs">Title A-Z</SelectItem>
+                        <SelectItem value="title_desc" className="text-xs">Title Z-A</SelectItem>
+                        <SelectItem value="availability_desc" className="text-xs">By Availability</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
 
                   {/* Categories Selection */}
                   <div className="space-y-4">
-                    <label className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Categories</label>
+                    <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground ml-1">Categories</label>
                     <div className="flex flex-wrap gap-2">
                       <Button
                         variant={selectedCategoryIds.length === 0 ? "default" : "outline"}
                         size="sm"
                         onClick={() => setCategoryId("all")}
                         className={cn(
-                          "h-9 rounded-lg px-4 text-[10px] font-bold uppercase tracking-wider transition-all",
-                          selectedCategoryIds.length === 0 ? "bg-primary text-primary-foreground" : "bg-muted/5 border-border/10"
+                          "h-9 rounded-lg px-4 text-xs font-semibold uppercase tracking-wider transition-all",
+                          selectedCategoryIds.length === 0 ? "bg-primary text-primary-foreground" : "bg-muted/20 border-border/60"
                         )}
                       >
                         All Items
@@ -637,8 +637,8 @@ export function ModernInventoryClient({
                             size="sm"
                             onClick={() => handleCategoryToggle(cat.id)}
                             className={cn(
-                              "h-10 rounded-xl px-5 text-[10px] font-bold uppercase tracking-widest transition-all",
-                              isSelected ? "bg-primary shadow-lg shadow-primary/20" : "bg-muted/5 border-border/10"
+                              "h-9 rounded-lg px-4 text-xs font-semibold uppercase tracking-wider transition-all",
+                              isSelected ? "bg-primary text-primary-foreground" : "bg-muted/20 border-border/60"
                             )}
                           >
                             {cat.name}
@@ -650,10 +650,10 @@ export function ModernInventoryClient({
                 </div>
               </div>
 
-              <div className="p-6 bg-muted/5 border-t border-border/10 flex gap-3">
+              <div className="p-6 bg-muted/20 border-t border-border/60 flex gap-3">
                 <Button 
                   variant="outline" 
-                  className="flex-1 h-12 rounded-xl text-xs font-black uppercase tracking-widest border-border/10"
+                  className="flex-1 h-10 rounded-lg text-xs font-semibold uppercase tracking-wider border-border/60"
                   onClick={() => {
                     setCategoryId("all");
                     setStatus("ACTIVE");
@@ -663,7 +663,7 @@ export function ModernInventoryClient({
                   Reset All
                 </Button>
                 <SheetClose asChild>
-                  <Button className="flex-1 h-12 rounded-xl text-xs font-black uppercase tracking-widest shadow-lg shadow-primary/20">
+                  <Button className="flex-1 h-10 rounded-lg text-xs font-semibold uppercase tracking-wider bg-primary text-primary-foreground">
                     Apply Filters
                   </Button>
                 </SheetClose>
@@ -676,12 +676,12 @@ export function ModernInventoryClient({
             <div className="flex gap-2 shrink-0">
               <Dialog open={isBatchOpen} onOpenChange={setIsBatchOpen}>
                 <DialogTrigger asChild>
-                  <Button variant="outline" className="h-11 rounded-2xl px-4 gap-2 border-border/20 bg-muted/5 hover:bg-background transition-all active:scale-95 text-[10px] font-bold uppercase tracking-wider">
+                  <Button variant="outline" className="h-10 rounded-lg px-4 gap-2 border-border/60 bg-muted/20 hover:bg-muted transition-colors text-xs font-semibold uppercase tracking-wider">
                     <Upload className="h-4 w-4 text-primary/80" />
                     <span className="hidden sm:inline">Batch Ops</span>
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="w-full sm:max-w-2xl rounded-3xl border border-border/10 bg-background/95 backdrop-blur-xl p-6 shadow-2xl overflow-hidden flex flex-col max-h-[85vh] z-[9999]">
+                <DialogContent className="w-full sm:max-w-2xl rounded-xl border border-border/60 bg-background p-6 shadow-xl overflow-hidden flex flex-col max-h-[85vh] z-[9999]">
                   <DialogHeader className="pb-4">
                     <DialogTitle className="text-xl font-bold tracking-tight text-foreground flex items-center gap-2">
                       <FileSpreadsheet className="h-5 w-5 text-primary" />
@@ -689,13 +689,13 @@ export function ModernInventoryClient({
                     </DialogTitle>
                   </DialogHeader>
                   
-                  {/* Beautiful Glassmorphic Tab Selectors */}
-                  <div className="flex gap-1 p-1 rounded-xl bg-muted/20 border border-border/5 mb-6">
+                  {/* Glassmorphic Tab Selectors */}
+                  <div className="flex gap-1 p-1 rounded-lg bg-muted/20 border border-border/60 mb-6">
                     <button
                       onClick={() => setActiveTab("import")}
                       className={cn(
-                        "flex-1 py-2 px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2",
-                        activeTab === "import" ? "bg-primary text-primary-foreground shadow-md" : "text-muted-foreground hover:text-foreground"
+                        "flex-1 py-2 px-3 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-2",
+                        activeTab === "import" ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
                       )}
                     >
                       <Upload className="h-3.5 w-3.5" />
@@ -704,8 +704,8 @@ export function ModernInventoryClient({
                     <button
                       onClick={() => setActiveTab("isbn")}
                       className={cn(
-                        "flex-1 py-2 px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2",
-                        activeTab === "isbn" ? "bg-primary text-primary-foreground shadow-md" : "text-muted-foreground hover:text-foreground"
+                        "flex-1 py-2 px-3 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-2",
+                        activeTab === "isbn" ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
                       )}
                     >
                       <Play className="h-3.5 w-3.5" />
@@ -714,8 +714,8 @@ export function ModernInventoryClient({
                     <button
                       onClick={() => setActiveTab("export")}
                       className={cn(
-                        "flex-1 py-2 px-3 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-2",
-                        activeTab === "export" ? "bg-primary text-primary-foreground shadow-md" : "text-muted-foreground hover:text-foreground"
+                        "flex-1 py-2 px-3 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-2",
+                        activeTab === "export" ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
                       )}
                     >
                       <Download className="h-3.5 w-3.5" />
@@ -726,7 +726,7 @@ export function ModernInventoryClient({
                   {/* Tab 1: Import Sheet */}
                   {activeTab === "import" && (
                     <div className="flex-1 overflow-y-auto space-y-4 pr-1">
-                      <div className="border-2 border-dashed border-border/20 rounded-2xl p-8 flex flex-col items-center justify-center bg-muted/5 transition-all hover:border-primary/30 relative">
+                      <div className="border-2 border-dashed border-border/60 rounded-xl p-8 flex flex-col items-center justify-center bg-muted/10 transition-all hover:border-primary/40 relative">
                         <input
                           type="file"
                           accept=".json,.csv,.xlsx,.xls"
@@ -743,7 +743,7 @@ export function ModernInventoryClient({
                           <>
                             <FileSpreadsheet className="h-8 w-8 text-primary mb-3" />
                             <p className="text-sm font-semibold">{importFile.name}</p>
-                            <p className="text-xs text-muted-foreground mt-1">{(importFile.size / 1024).toFixed(1)} KB • {parsedBooks.length} ready rows</p>
+                            <p className="text-xs text-muted-foreground mt-1 tabular-nums">{(importFile.size / 1024).toFixed(1)} KB • {parsedBooks.length} ready rows</p>
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
@@ -751,7 +751,7 @@ export function ModernInventoryClient({
                                 setParsedBooks([]);
                                 setImportResults(null);
                               }}
-                              className="mt-3 text-xs text-destructive font-bold hover:underline"
+                              className="mt-3 text-xs text-destructive font-semibold hover:underline"
                             >
                               Remove File
                             </button>
@@ -761,27 +761,27 @@ export function ModernInventoryClient({
                             <Upload className="h-8 w-8 text-muted-foreground/50 mb-3" />
                             <p className="text-sm font-semibold">Choose JSON, CSV or Excel File</p>
                             <p className="text-xs text-muted-foreground mt-1">Drag and drop or click to browse</p>
-                            <p className="text-[10px] text-muted-foreground/40 mt-3 uppercase tracking-wider">Required headers: Title, Author (Optional: ISBN, Category, Copies)</p>
+                            <p className="text-xs text-muted-foreground/60 mt-3 uppercase tracking-wider">Required headers: Title, Author (Optional: ISBN, Category, Copies)</p>
                           </>
                         )}
                       </div>
 
                       {parsedBooks.length > 0 && !importResults && (
-                        <div className="bg-muted/10 border border-border/10 rounded-2xl p-4 space-y-3">
+                        <div className="bg-card/40 border border-border/60 rounded-xl p-4 space-y-3">
                           <div className="flex justify-between items-center">
-                            <span className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Dry-Run Preview Summary</span>
-                            <Badge className="bg-primary/20 text-primary border-none">{parsedBooks.length} Books Detected</Badge>
+                            <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Dry-Run Preview Summary</span>
+                            <Badge className="bg-primary/20 text-primary border-border/60 rounded-lg text-xs font-semibold tabular-nums">{parsedBooks.length} Books Detected</Badge>
                           </div>
                           <div className="max-h-32 overflow-y-auto text-xs space-y-1.5 custom-scrollbar pr-1">
                             {parsedBooks.slice(0, 5).map((b, idx) => (
-                              <div key={idx} className="flex justify-between border-b border-border/5 py-1 text-muted-foreground">
+                              <div key={idx} className="flex justify-between border-b border-border/60 py-1 text-muted-foreground">
                                 <span className="font-semibold text-foreground truncate max-w-[200px]">{b.title}</span>
                                 <span>by {b.author}</span>
-                                <span>{b.stock} cop{b.stock > 1 ? "ies" : "y"}</span>
+                                <span className="tabular-nums">{b.stock} cop{b.stock > 1 ? "ies" : "y"}</span>
                               </div>
                             ))}
                             {parsedBooks.length > 5 && (
-                              <div className="text-center pt-1.5 text-muted-foreground/60 text-[10px]">
+                              <div className="text-center pt-1.5 text-muted-foreground/60 text-xs">
                                 + {parsedBooks.length - 5} more records
                               </div>
                             )}
@@ -790,7 +790,7 @@ export function ModernInventoryClient({
                           <Button
                             onClick={handleStartImport}
                             disabled={isImporting}
-                            className="w-full h-11 rounded-xl text-xs font-black uppercase tracking-widest bg-primary text-primary-foreground shadow-lg shadow-primary/20"
+                            className="w-full h-10 rounded-lg text-xs font-semibold uppercase tracking-wider bg-primary text-primary-foreground"
                           >
                             {isImporting ? (
                               <>
@@ -805,27 +805,27 @@ export function ModernInventoryClient({
                       )}
 
                       {importResults && (
-                        <div className="bg-emerald-500/5 border border-emerald-500/20 rounded-2xl p-5 space-y-3">
-                          <div className="flex items-center gap-2 text-emerald-500 font-bold text-sm">
+                        <div className="status-success border rounded-xl p-5 space-y-3">
+                          <div className="flex items-center gap-2 font-semibold text-sm">
                             <CheckCircle2 className="h-5 w-5" />
                             Spreadsheet Import Successful!
                           </div>
-                          <div className="grid grid-cols-3 gap-3 text-center py-2 bg-emerald-500/10 rounded-xl">
+                          <div className="grid grid-cols-3 gap-3 text-center py-2 bg-background/50 rounded-lg border border-border/60">
                             <div>
-                              <div className="text-xl font-bold text-emerald-400">{importResults.imported}</div>
-                              <div className="text-[10px] text-muted-foreground uppercase font-black">Created</div>
+                              <div className="text-xl font-bold tabular-nums">{importResults.imported}</div>
+                              <div className="text-xs text-muted-foreground uppercase font-semibold tracking-wider">Created</div>
                             </div>
                             <div>
-                              <div className="text-xl font-bold text-emerald-400">{importResults.copiesAdded}</div>
-                              <div className="text-[10px] text-muted-foreground uppercase font-black">Copies Added</div>
+                              <div className="text-xl font-bold tabular-nums">{importResults.copiesAdded}</div>
+                              <div className="text-xs text-muted-foreground uppercase font-semibold tracking-wider">Copies Added</div>
                             </div>
                             <div>
-                              <div className="text-xl font-bold text-amber-400">{importResults.duplicates}</div>
-                              <div className="text-[10px] text-muted-foreground uppercase font-black">Duplicates</div>
+                              <div className="text-xl font-bold tabular-nums">{importResults.duplicates}</div>
+                              <div className="text-xs text-muted-foreground uppercase font-semibold tracking-wider">Duplicates</div>
                             </div>
                           </div>
                           {importResults.logs.length > 0 && (
-                            <div className="max-h-24 overflow-y-auto text-[10px] font-mono bg-black/40 rounded-lg p-2.5 space-y-1 text-emerald-300 custom-scrollbar">
+                            <div className="max-h-24 overflow-y-auto text-xs font-mono bg-black/40 rounded-lg p-2.5 space-y-1 text-foreground border border-border/60 custom-scrollbar">
                               {importResults.logs.map((log, idx) => (
                                 <div key={idx}>{log}</div>
                               ))}
@@ -840,30 +840,30 @@ export function ModernInventoryClient({
                   {activeTab === "isbn" && (
                     <div className="flex-1 overflow-y-auto space-y-4 pr-1 flex flex-col">
                       <div className="space-y-2">
-                        <label className="text-[10px] font-black uppercase tracking-wider text-muted-foreground ml-1">Paste ISBN List</label>
+                        <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground ml-1">Paste ISBN List</label>
                         <textarea
                           placeholder="9780743273565&#10;9780451524935&#10;9780061120084"
                           value={isbnInput}
                           onChange={(e) => setIsbnInput(e.target.value)}
                           disabled={isISBNProcessing}
-                          className="h-32 w-full rounded-2xl border border-border/20 bg-muted/5 p-4 text-xs font-medium focus:border-primary/30 focus:bg-background focus:outline-none focus:ring-4 focus:ring-primary/5 placeholder:text-muted-foreground/30 font-mono resize-none"
+                          className="h-32 w-full rounded-lg border border-border/60 bg-muted/20 p-4 text-xs font-medium focus:border-primary focus:bg-background focus:outline-none focus:ring-1 focus:ring-ring placeholder:text-muted-foreground/40 font-mono resize-none"
                         />
-                        <span className="text-[10px] text-muted-foreground ml-1 block">One ISBN code per line. We will lookup metadata, download optimized covers, and catalog them.</span>
+                        <span className="text-xs text-muted-foreground ml-1 block">One ISBN code per line. We will lookup metadata, download optimized covers, and catalog them.</span>
                       </div>
 
                       {isISBNProcessing && (
-                        <div className="bg-primary/5 border border-primary/20 rounded-2xl p-4 space-y-3">
+                        <div className="bg-card/40 border border-border/60 rounded-xl p-4 space-y-3">
                           <div className="flex justify-between items-center text-xs font-bold">
                             <span className="flex items-center gap-2 text-primary">
                               <Loader2 className="h-3.5 w-3.5 animate-spin" />
                               Searching API Catalog: {isbnProgress.currentIsbn}
                             </span>
-                            <span>{isbnProgress.current} / {isbnProgress.total}</span>
+                            <span className="tabular-nums">{isbnProgress.current} / {isbnProgress.total}</span>
                           </div>
                           {/* Animated Premium Progress Bar */}
                           <div className="h-2 w-full bg-muted rounded-full overflow-hidden relative">
                             <div 
-                              className="h-full bg-gradient-to-r from-primary to-indigo-500 transition-all duration-300 rounded-full"
+                              className="h-full bg-primary transition-all duration-300 rounded-full"
                               style={{ width: `${(isbnProgress.current / isbnProgress.total) * 100}%` }}
                             />
                           </div>
@@ -873,7 +873,7 @@ export function ModernInventoryClient({
                       <Button
                         onClick={handleStartISBNLookup}
                         disabled={isISBNProcessing || !isbnInput.trim()}
-                        className="w-full h-11 rounded-xl text-xs font-black uppercase tracking-widest bg-primary text-primary-foreground shadow-lg shadow-primary/20 shrink-0"
+                        className="w-full h-10 rounded-lg text-xs font-semibold uppercase tracking-wider bg-primary text-primary-foreground shrink-0"
                       >
                         {isISBNProcessing ? (
                           <>
@@ -887,8 +887,8 @@ export function ModernInventoryClient({
 
                       {isbnLogs.length > 0 && (
                         <div className="flex-1 min-h-[140px] flex flex-col">
-                          <div className="text-[10px] font-black uppercase tracking-wider text-muted-foreground mb-1 ml-1">Real-time Terminal Logs</div>
-                          <div className="flex-1 bg-black/40 border border-border/10 rounded-2xl p-3 font-mono text-[10px] space-y-1.5 overflow-y-auto max-h-36 custom-scrollbar">
+                          <div className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1 ml-1">Real-time Terminal Logs</div>
+                          <div className="flex-1 bg-black/40 border border-border/60 rounded-lg p-3 font-mono text-xs space-y-1.5 overflow-y-auto max-h-36 custom-scrollbar">
                             {isbnLogs.map((log, idx) => (
                               <div 
                                 key={idx} 
@@ -912,17 +912,17 @@ export function ModernInventoryClient({
                   {activeTab === "export" && (
                     <div className="flex-1 overflow-y-auto space-y-4 pr-1 flex flex-col justify-start">
                       <div className="text-center max-w-sm mx-auto space-y-1 mb-2">
-                        <div className="h-10 w-10 bg-primary/10 rounded-full flex items-center justify-center mx-auto text-primary">
+                        <div className="h-10 w-10 bg-primary/10 rounded-lg flex items-center justify-center mx-auto text-primary">
                           <Download className="h-5 w-5" />
                         </div>
-                        <h4 className="text-sm font-bold">Export Catalog Elements</h4>
-                        <p className="text-[11px] text-muted-foreground">Select columns and download the active catalog in your preferred format.</p>
+                        <h4 className="text-sm font-semibold">Export Catalog Elements</h4>
+                        <p className="text-xs text-muted-foreground">Select columns and download the active catalog in your preferred format.</p>
                       </div>
 
                       {/* Columns Selector Checklist */}
                       <div className="space-y-2">
                         <div className="flex justify-between items-center px-1">
-                          <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                          <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
                             <Settings className="h-3.5 w-3.5 text-primary" />
                             Customize Columns ({selectedExportColumns.length} / {AVAILABLE_BOOK_COLUMNS.length})
                           </label>
@@ -930,22 +930,22 @@ export function ModernInventoryClient({
                             <button
                               type="button"
                               onClick={() => setSelectedExportColumns(AVAILABLE_BOOK_COLUMNS.map(c => c.id))}
-                              className="text-[10px] font-bold text-primary hover:underline bg-transparent border-0 p-0"
+                              className="text-xs font-semibold text-primary hover:underline bg-transparent border-0 p-0"
                             >
                               Select All
                             </button>
-                            <span className="text-[10px] text-muted-foreground/30">|</span>
+                            <span className="text-xs text-muted-foreground/40">|</span>
                             <button
                               type="button"
                               onClick={() => setSelectedExportColumns([])}
-                              className="text-[10px] font-bold text-muted-foreground/60 hover:text-foreground hover:underline bg-transparent border-0 p-0"
+                              className="text-xs font-semibold text-muted-foreground hover:text-foreground hover:underline bg-transparent border-0 p-0"
                             >
                               Clear
                             </button>
                           </div>
                         </div>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 p-3 rounded-2xl bg-muted/10 border border-border/10 max-h-[160px] overflow-y-auto custom-scrollbar">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 p-3 rounded-xl bg-card/40 border border-border/60 max-h-[160px] overflow-y-auto custom-scrollbar">
                           {AVAILABLE_BOOK_COLUMNS.map((col) => {
                             const isSelected = selectedExportColumns.includes(col.id);
                             return (
@@ -959,19 +959,19 @@ export function ModernInventoryClient({
                                   );
                                 }}
                                 className={cn(
-                                  "flex items-start gap-2 p-1.5 rounded-xl border border-transparent cursor-pointer transition-all hover:bg-muted/20 select-none",
-                                  isSelected ? "bg-muted/10 border-border/5" : "opacity-60 hover:opacity-100"
+                                  "flex items-start gap-2 p-1.5 rounded-lg border border-transparent cursor-pointer transition-all hover:bg-muted select-none",
+                                  isSelected ? "bg-muted/40 border-border/60" : "opacity-60 hover:opacity-100"
                                 )}
                               >
                                 <input
                                   type="checkbox"
                                   checked={isSelected}
                                   readOnly
-                                  className="mt-0.5 accent-primary h-3.5 w-3.5 rounded border-border/20 cursor-pointer"
+                                  className="mt-0.5 accent-primary h-3.5 w-3.5 rounded border-border/60 cursor-pointer"
                                 />
                                 <div className="min-w-0">
-                                  <span className="text-xs font-bold block">{col.label}</span>
-                                  <span className="text-[9px] text-muted-foreground leading-tight block truncate">
+                                  <span className="text-xs font-semibold block">{col.label}</span>
+                                  <span className="text-xs text-muted-foreground leading-tight block truncate">
                                     {col.desc}
                                   </span>
                                 </div>
@@ -988,16 +988,16 @@ export function ModernInventoryClient({
                           variant="outline"
                           onClick={handleExportExcel}
                           disabled={isExportingExcel || selectedExportColumns.length === 0}
-                          className="h-24 rounded-2xl flex flex-col justify-center gap-2 border-border/10 hover:border-emerald-500/30 hover:bg-emerald-500/5 transition-all text-center"
+                          className="h-24 rounded-lg flex flex-col justify-center gap-2 border-border/60 hover:bg-muted/40 transition-all text-center"
                         >
                           {isExportingExcel ? (
-                            <Loader2 className="h-5 w-5 animate-spin text-emerald-500" />
+                            <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
                           ) : (
-                            <FileSpreadsheet className="h-5 w-5 text-emerald-500" />
+                            <FileSpreadsheet className="h-5 w-5 text-foreground" />
                           )}
                           <div className="w-full">
-                            <span className="block text-[9px] font-black uppercase tracking-wider text-foreground">Spreadsheet</span>
-                            <span className="block text-[8px] text-muted-foreground font-semibold">Excel (.xlsx)</span>
+                            <span className="block text-xs font-semibold uppercase tracking-wider text-foreground">Spreadsheet</span>
+                            <span className="block text-xs text-muted-foreground font-medium">Excel (.xlsx)</span>
                           </div>
                         </Button>
 
@@ -1006,16 +1006,16 @@ export function ModernInventoryClient({
                           variant="outline"
                           onClick={handleExportCSV}
                           disabled={isExportingCSV || selectedExportColumns.length === 0}
-                          className="h-24 rounded-2xl flex flex-col justify-center gap-2 border-border/10 hover:border-blue-500/30 hover:bg-blue-500/5 transition-all text-center"
+                          className="h-24 rounded-lg flex flex-col justify-center gap-2 border-border/60 hover:bg-muted/40 transition-all text-center"
                         >
                           {isExportingCSV ? (
-                            <Loader2 className="h-5 w-5 animate-spin text-blue-500" />
+                            <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
                           ) : (
-                            <FileCode className="h-5 w-5 text-blue-500" />
+                            <FileCode className="h-5 w-5 text-foreground" />
                           )}
                           <div className="w-full">
-                            <span className="block text-[9px] font-black uppercase tracking-wider text-foreground">Text CSV</span>
-                            <span className="block text-[8px] text-muted-foreground font-semibold">Comma-Sep (.csv)</span>
+                            <span className="block text-xs font-semibold uppercase tracking-wider text-foreground">Text CSV</span>
+                            <span className="block text-xs text-muted-foreground font-medium">Comma-Sep (.csv)</span>
                           </div>
                         </Button>
 
@@ -1024,16 +1024,16 @@ export function ModernInventoryClient({
                           variant="outline"
                           onClick={handleExportJSON}
                           disabled={isExportingJSON || selectedExportColumns.length === 0}
-                          className="h-24 rounded-2xl flex flex-col justify-center gap-2 border-border/10 hover:border-amber-500/30 hover:bg-amber-500/5 transition-all text-center"
+                          className="h-24 rounded-lg flex flex-col justify-center gap-2 border-border/60 hover:bg-muted/40 transition-all text-center"
                         >
                           {isExportingJSON ? (
-                            <Loader2 className="h-5 w-5 animate-spin text-amber-500" />
+                            <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
                           ) : (
-                            <FileCode className="h-5 w-5 text-amber-500" />
+                            <FileCode className="h-5 w-5 text-foreground" />
                           )}
                           <div className="w-full">
-                            <span className="block text-[9px] font-black uppercase tracking-wider text-foreground">JSON Data</span>
-                            <span className="block text-[8px] text-muted-foreground font-semibold">Developer (.json)</span>
+                            <span className="block text-xs font-semibold uppercase tracking-wider text-foreground">JSON Data</span>
+                            <span className="block text-xs text-muted-foreground font-medium">Developer (.json)</span>
                           </div>
                         </Button>
 
@@ -1042,25 +1042,25 @@ export function ModernInventoryClient({
                           variant="outline"
                           onClick={handleExportCoversZip}
                           disabled={isExportingZip}
-                          className="h-24 rounded-2xl flex flex-col justify-center gap-2 border-border/10 hover:border-indigo-500/30 hover:bg-indigo-500/5 transition-all text-center"
+                          className="h-24 rounded-lg flex flex-col justify-center gap-2 border-border/60 hover:bg-muted/40 transition-all text-center"
                         >
                           {isExportingZip ? (
-                            <Loader2 className="h-5 w-5 animate-spin text-indigo-500" />
+                            <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
                           ) : (
-                            <ImageIcon className="h-5 w-5 text-indigo-500" />
+                            <ImageIcon className="h-5 w-5 text-foreground" />
                           )}
                           <div className="w-full">
-                            <span className="block text-[9px] font-black uppercase tracking-wider text-foreground">Covers ZIP</span>
-                            <span className="block text-[8px] text-muted-foreground font-semibold">Images (.zip)</span>
+                            <span className="block text-xs font-semibold uppercase tracking-wider text-foreground">Covers ZIP</span>
+                            <span className="block text-xs text-muted-foreground font-medium">Images (.zip)</span>
                           </div>
                         </Button>
                       </div>
                     </div>
                   )}
 
-                  <div className="pt-4 border border-t border-border/10 flex justify-end shrink-0">
+                  <div className="pt-4 border-t border-border/60 flex justify-end shrink-0">
                     <DialogClose asChild>
-                      <Button variant="outline" className="h-10 rounded-xl px-5 text-xs font-bold tracking-wide border-border/10">
+                      <Button variant="outline" className="h-10 rounded-lg px-5 text-xs font-semibold uppercase tracking-wider border-border/60">
                         Close Panel
                       </Button>
                     </DialogClose>
@@ -1069,7 +1069,7 @@ export function ModernInventoryClient({
               </Dialog>
 
               <Link href="/inventory/add" className="shrink-0">
-                <Button className="h-11 rounded-2xl px-5 text-[10px] font-black uppercase tracking-widest bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/20 transition-all active:scale-95 group">
+                <Button className="h-10 rounded-lg px-5 text-xs font-semibold uppercase tracking-wider bg-primary text-primary-foreground hover:bg-primary/90 transition-colors group">
                   <Plus className="sm:mr-2 h-4 w-4 transition-transform group-hover:rotate-90" />
                   <span className="hidden sm:inline">Add Item</span>
                 </Button>

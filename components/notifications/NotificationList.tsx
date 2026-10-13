@@ -4,6 +4,7 @@ import React from 'react'
 import { Bell, Loader2 } from 'lucide-react'
 import { Notification } from '@/hooks/use-notifications'
 import { NotificationItem } from './NotificationItem'
+import { EmptyState } from '@/components/ui/empty-state'
 
 interface NotificationListProps {
   notifications: Notification[]
@@ -33,14 +34,13 @@ export function NotificationList({
 
   if (notifications.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-16 text-center gap-3">
-        <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center">
-          <Bell className="w-5 h-5 text-muted-foreground" />
-        </div>
-        <p className="text-sm text-muted-foreground">
-          {emptyMessage}
-        </p>
-      </div>
+      <EmptyState
+        icon={Bell}
+        title="No notifications"
+        description={emptyMessage}
+        className="border-none bg-transparent shadow-none"
+        contentClassName="min-h-[180px] py-8"
+      />
     )
   }
 

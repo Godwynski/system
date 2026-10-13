@@ -14,21 +14,23 @@ const statusStyles: Record<string, string> = {
   active: "status-success",
   pending: "status-warning",
   suspended: "status-danger",
+  archived: "status-neutral",
+  graduated: "status-neutral",
   
   // Book Copies (Uppercase from DB)
   AVAILABLE: "status-success",
   BORROWED: "status-warning",
-  MAINTENANCE: "status-neutral bg-amber-100 text-amber-700 border-amber-200",
+  MAINTENANCE: "status-warning",
   LOST: "status-danger",
 
   // Reservations/General logic
-  READY: "status-success bg-emerald-50 text-emerald-700 border-emerald-200",
+  READY: "status-success",
   ACTIVE: "status-warning",
-  CANCELLED: "status-danger opacity-70",
+  CANCELLED: "status-neutral",
   COMPLETED: "status-neutral",
-  EXPIRED: "status-danger brightness-90",
-  RETURNED: "status-success bg-emerald-50 text-emerald-700 border-emerald-200",
-  OVERDUE: "status-danger brightness-90",
+  EXPIRED: "status-danger",
+  RETURNED: "status-success",
+  OVERDUE: "status-danger",
 };
 
 const statusLabels: Record<string, string> = {
@@ -63,7 +65,7 @@ export function StatusBadge({ status, className }: StatusBadgeProps) {
   return (
     <span 
       className={cn(
-        "inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider leading-none transition-colors",
+        "inline-flex items-center rounded-lg border px-2 py-0.5 text-xs font-semibold uppercase tracking-wider leading-none transition-colors",
         styleClass,
         className
       )}

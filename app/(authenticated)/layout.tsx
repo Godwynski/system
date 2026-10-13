@@ -69,7 +69,7 @@ export default async function ProtectedLayout({
 
             <SidebarInset className="flex min-h-screen min-w-0 flex-1 flex-col bg-background">
               {/* Mobile header */}
-              <div className="md:hidden sticky top-0 z-40 flex w-full h-[52px] shrink-0 items-center justify-between border-b border-border bg-background/90 backdrop-blur-md px-3.5 shadow-sm">
+              <div className="md:hidden sticky top-0 z-40 flex w-full h-[52px] shrink-0 items-center justify-between border-b border-border/60 bg-background/95 backdrop-blur-md px-3.5 shadow-sm">
                 <div className="flex flex-1 items-center gap-3 overflow-hidden">
                   <SidebarTrigger className="shrink-0" />
                   <div className="truncate text-sm font-semibold tracking-tight">
@@ -85,7 +85,7 @@ export default async function ProtectedLayout({
               </div>
 
               {/* Desktop header */}
-              <Suspense fallback={<div className="h-16 border-b border-border/40 bg-background/60 animate-pulse hidden md:block" />}>
+              <Suspense fallback={<div className="h-16 border-b border-border/60 bg-background/95 animate-pulse hidden md:block" />}>
                 <MainHeader />
               </Suspense>
 

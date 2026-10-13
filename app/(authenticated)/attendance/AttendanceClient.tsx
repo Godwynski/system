@@ -15,6 +15,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { QRScanner } from "@/components/common/QRScanner";
 import { createClient } from "@/lib/supabase/client";
 import { CompactPagination } from "@/components/ui/compact-pagination";
+import { Skeleton } from "@/components/ui/skeleton";
 import type { AttendanceRecord } from "@/lib/actions/attendance";
 
 export function AttendanceClient({ 
@@ -63,7 +64,7 @@ export function AttendanceClient({
         toast.success("Transaction recorded", {
           id: "attendance-toast",
           description: result.data.message,
-          icon: result.data.status === "IN" ? <LogIn className="w-4 h-4 text-green-500" /> : <LogOut className="w-4 h-4 text-orange-500" />
+          icon: result.data.status === "IN" ? <LogIn className="w-4 h-4 status-success !bg-transparent !border-0" /> : <LogOut className="w-4 h-4 status-warning !bg-transparent !border-0" />
         });
         setCardNumber("");
       } else {
@@ -158,7 +159,7 @@ export function AttendanceClient({
           toast.success("Transaction recorded", {
             id: "attendance-qr-toast",
             description: result.data.message,
-            icon: result.data.status === "IN" ? <LogIn className="w-4 h-4 text-green-500" /> : <LogOut className="w-4 h-4 text-orange-500" />
+            icon: result.data.status === "IN" ? <LogIn className="w-4 h-4 status-success !bg-transparent !border-0" /> : <LogOut className="w-4 h-4 status-warning !bg-transparent !border-0" />
           });
 
           setShowScanner(false);
@@ -214,7 +215,7 @@ export function AttendanceClient({
           className="h-9 px-4 flex-1 md:flex-none justify-center shrink-0"
           disabled={isPending}
         >
-          <Camera className={cn("w-4 h-4 mr-2", showScanner && "animate-pulse")} />
+          <Camera className={cn("w-4 h-4 mr-2", showScanner && "text-primary")} />
           {showScanner ? "Close Camera" : "Scan Library Card"}
         </Button>
       </div>
@@ -231,14 +232,12 @@ export function AttendanceClient({
           className="max-w-none animate-in fade-in-50 duration-300"
         >
           {showScanner && (
-            <div className="p-4 border-b border-border/10 bg-muted/5 relative overflow-hidden">
+            <div className="p-4 border-b border-border/60 bg-muted/20 relative overflow-hidden">
               {isProcessing && (
-                <div className="absolute inset-0 z-10 bg-background/20 backdrop-blur-[0.5px] flex items-center justify-center pointer-events-none">
-                  <div className="bg-background/80 backdrop-blur-md px-4 py-2 rounded-full border border-border/50 shadow-xl flex items-center gap-3 animate-in fade-in zoom-in duration-300">
-                    <div className="h-2 w-2 bg-primary rounded-full animate-bounce [animation-delay:-0.3s]" />
-                    <div className="h-2 w-2 bg-primary rounded-full animate-bounce [animation-delay:-0.15s]" />
-                    <div className="h-2 w-2 bg-primary rounded-full animate-bounce" />
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-foreground">Processing...</span>
+                <div className="absolute inset-0 z-10 bg-background/40 flex items-center justify-center pointer-events-none">
+                  <div className="bg-card px-4 py-2 rounded-xl border border-border/60 shadow-md flex items-center gap-2.5 animate-in fade-in duration-200">
+                    <Loader2 className="w-4 h-4 animate-spin text-primary" />
+                    <span className="text-xs font-semibold uppercase tracking-wider text-foreground">Processing...</span>
                   </div>
                 </div>
               )}
@@ -246,7 +245,7 @@ export function AttendanceClient({
                 onScan={handleQRScan}
                 onClose={() => setShowScanner(false)}
                 stopOnScan={false}
-                className="w-full max-w-md mx-auto aspect-square shadow-2xl border border-border/20"
+                className="w-full max-w-md mx-auto aspect-square rounded-xl shadow-sm border border-border/60"
               />
             </div>
           )}
@@ -263,7 +262,7 @@ export function AttendanceClient({
     <div className="w-full">
       <AdminTableShell
         controls={
-          <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground bg-muted/20 px-3 py-1.5 rounded-lg border border-border/50">
+          <div className="flex items-center gap-2 text-xs font-bold text-muted-foreground bg-muted/20 px-3 py-1.5 rounded-lg border border-border/60">
             <CalendarIcon className="w-3.5 h-3.5 text-primary" />
             All-Time History
           </div>
@@ -291,9 +290,11 @@ export function AttendanceClient({
 
 function TableLoadingSkeleton() {
   return (
-    <div className="p-12 flex flex-col items-center justify-center gap-4 text-muted-foreground">
-      <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      <p className="text-xs font-bold uppercase tracking-widest animate-pulse">Syncing Logs...</p>
+    <div className="p-4 space-y-3">
+      <Skeleton className="h-10 w-full rounded-lg" />
+      {[1, 2, 3, 4, 5].map((i) => (
+        <Skeleton key={i} className="h-14 w-full rounded-lg border border-border/60" />
+      ))}
     </div>
   );
 }
@@ -314,13 +315,13 @@ function AttendanceTable({
         cell: (record) => (
           <div className="flex items-center gap-3">
             <Avatar className="h-8 w-8">
-              <AvatarFallback className="bg-muted text-muted-foreground text-[10px]">
+              <AvatarFallback className="bg-muted text-muted-foreground text-xs font-semibold">
                 {(record.profiles?.full_name || "Student").charAt(0)}
               </AvatarFallback>
             </Avatar>
             <div className="min-w-0">
               <p className="truncate font-medium text-foreground">{record.profiles?.full_name || "Student"}</p>
-              <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">
+              <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">
                 {format(new Date(record.check_in_at), "MMM dd, yyyy")}
               </p>
             </div>
@@ -343,7 +344,7 @@ function AttendanceTable({
       {
         header: "Check In",
         cell: (record) => (
-          <div className="flex items-center gap-1.5 text-xs font-medium">
+          <div className="flex items-center gap-1.5 text-xs font-medium tabular-nums">
             <LogIn className="w-3.5 h-3.5 text-muted-foreground/50" />
             {format(new Date(record.check_in_at), "hh:mm a")}
           </div>
@@ -352,14 +353,14 @@ function AttendanceTable({
       {
         header: "Check Out",
         cell: (record) => (
-          <div className="flex items-center gap-1.5 text-xs font-medium">
+          <div className="flex items-center gap-1.5 text-xs font-medium tabular-nums">
             {record.check_out_at ? (
               <>
                 <LogOut className="w-3.5 h-3.5 text-muted-foreground/50" />
-                {format(new Date(record.check_out_at), "hh:mm a")}
+                <span>{format(new Date(record.check_out_at), "hh:mm a")}</span>
               </>
             ) : (
-              <span className="text-green-600 font-bold uppercase tracking-widest text-[9px] animate-pulse">
+              <span className="status-success border px-2 py-0.5 rounded-lg text-xs font-semibold uppercase tracking-wider">
                 Active Session
               </span>
             )}
@@ -395,19 +396,19 @@ function AttendanceTable({
             {!isPersonal ? (
               <>
                 <Avatar className="h-10 w-10">
-                  <AvatarFallback className="bg-muted text-muted-foreground">
+                  <AvatarFallback className="bg-muted text-muted-foreground text-xs font-semibold">
                     {(record.profiles?.full_name || "S").charAt(0)}
                   </AvatarFallback>
                 </Avatar>
                 <div className="min-w-0">
                   <p className="font-bold text-sm truncate">{record.profiles?.full_name || "Student"}</p>
                   <div className="flex items-center gap-2 mt-0.5">
-                    <span className="text-[10px] text-muted-foreground font-bold uppercase">
+                    <span className="text-xs text-muted-foreground font-medium uppercase tracking-wider">
                       {format(new Date(record.check_in_at), "MMM dd")}
                     </span>
-                    <span className="opacity-20 text-[10px]">•</span>
-                    <div className="flex items-center gap-1 text-[10px] text-muted-foreground">
-                      <LogIn className="w-2.5 h-2.5" />
+                    <span className="text-muted-foreground/40 text-xs">•</span>
+                    <div className="flex items-center gap-1 text-xs text-muted-foreground tabular-nums">
+                      <LogIn className="w-3 h-3 text-muted-foreground" />
                       {format(new Date(record.check_in_at), "hh:mm a")}
                     </div>
                   </div>
@@ -419,8 +420,8 @@ function AttendanceTable({
                   {format(new Date(record.check_in_at), "MMMM dd, yyyy")}
                 </p>
                 <div className="flex items-center gap-2 mt-0.5">
-                  <div className="flex items-center gap-1 text-[10px] text-muted-foreground font-bold">
-                    <LogIn className="w-2.5 h-2.5 text-green-500" />
+                  <div className="flex items-center gap-1 text-xs text-muted-foreground font-medium tabular-nums">
+                    <LogIn className="w-3 h-3 text-muted-foreground" />
                     In: {format(new Date(record.check_in_at), "hh:mm a")}
                   </div>
                 </div>
@@ -430,8 +431,8 @@ function AttendanceTable({
           <div className="flex flex-col items-end gap-1.5">
             <StatusBadge status={record.check_out_at ? "COMPLETED" : "ACTIVE"} />
             {record.check_out_at && (
-              <div className="flex items-center gap-1 text-[10px] text-muted-foreground font-medium">
-                <LogOut className="w-2.5 h-2.5 text-orange-500" />
+              <div className="flex items-center gap-1 text-xs text-muted-foreground font-medium tabular-nums">
+                <LogOut className="w-3 h-3 text-muted-foreground" />
                 Out: {format(new Date(record.check_out_at), "hh:mm a")}
               </div>
             )}

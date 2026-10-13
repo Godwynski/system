@@ -1,7 +1,7 @@
 "use client";
 
-import { cn } from "@/lib/utils";
 import { Label } from "@/components/ui/label";
+import { StatusBadge } from "@/components/common/StatusBadge";
 
 interface PersonalInfoFormProps {
   role: string;
@@ -59,11 +59,8 @@ export function PersonalInfoForm({
 
         <div className="space-y-2">
           <InfoLabel>Account Status</InfoLabel>
-          <div className={cn(
-            "h-11 rounded-xl border border-border/20 px-4 flex items-center text-[11px] font-black uppercase tracking-widest shadow-sm",
-            initialProfile.status?.toUpperCase() === 'ACTIVE' ? "bg-emerald-500/10 text-emerald-600 border-emerald-500/20" : "bg-amber-500/10 text-amber-600 border-amber-500/20"
-          )}>
-            {initialProfile.status}
+          <div className="h-11 rounded-xl bg-muted/20 border border-border/40 px-4 flex items-center shadow-sm">
+            <StatusBadge status={initialProfile.status || "ACTIVE"} />
           </div>
         </div>
       </div>

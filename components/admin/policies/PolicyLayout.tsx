@@ -19,6 +19,7 @@ import { DEFAULT_POLICIES } from "@/lib/actions/policy-constants";
 import { cn } from "@/lib/utils";
 import { PolicyCommitModal } from "../PolicyCommitModal";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Skeleton } from "@/components/ui/skeleton";
 import { CategoryManagement } from "../CategoryManagement";
 import { PolicySimulationPanel } from "../PolicySimulationPanel";
 import { PolicyField } from "./PolicyField";
@@ -201,7 +202,7 @@ export function PolicyLayout({
       <div className="mb-4 space-y-2">
 
         {saved && (
-          <div className="flex items-center gap-3 rounded-lg border border-primary/10 bg-primary/5 px-4 py-2 text-[10px] font-bold text-primary/80">
+          <div className="status-success flex items-center gap-2 rounded-lg px-3 py-1.5 text-xs font-semibold">
             <ShieldCheck size={14} />
             Changes synchronized
           </div>
@@ -217,10 +218,10 @@ export function PolicyLayout({
                 key={item.id}
                 onClick={() => handleCategoryClick(item.id)}
                 className={cn(
-                  "flex items-center gap-2 px-4 py-2.5 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all whitespace-nowrap border",
+                  "flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-wider transition-colors whitespace-nowrap border",
                   activeCategory === item.id 
-                    ? "bg-primary text-primary-foreground border-primary shadow-sm" 
-                    : "bg-card/50 text-muted-foreground border-border/40 hover:border-primary/20"
+                    ? "bg-primary text-primary-foreground border-primary shadow-xs" 
+                    : "bg-card/50 text-muted-foreground border-border/60 hover:text-foreground hover:border-border"
                 )}
               >
                 <item.icon size={12} className="shrink-0" />
@@ -233,8 +234,8 @@ export function PolicyLayout({
         {/* Desktop Sidebar Navigation */}
         <aside className="hidden lg:block space-y-8 sticky top-12">
           {Object.entries(groupedSidebar).map(([group, items]) => (
-            <div key={group} className="space-y-2">
-              <p className="px-4 text-[10px] font-black text-muted-foreground/50 uppercase tracking-[0.2em]">
+            <div key={group} className="space-y-1.5">
+              <p className="px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                 {group}
               </p>
               <div className="space-y-0.5">
@@ -243,20 +244,20 @@ export function PolicyLayout({
                     key={item.id}
                     onClick={() => handleCategoryClick(item.id)}
                     className={cn(
-                      "w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm transition-all group relative",
+                      "w-full flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-semibold uppercase tracking-wider transition-colors group relative",
                       activeCategory === item.id 
-                        ? "text-primary font-semibold bg-primary/5" 
+                        ? "text-primary font-semibold bg-primary/10" 
                         : "text-muted-foreground hover:text-foreground hover:bg-muted/40"
                     )}
                   >
                     {activeCategory === item.id && (
-                      <div className="absolute left-0 w-1 h-4 bg-primary rounded-r-full" />
+                      <div className="absolute left-0 w-1 h-4 bg-primary rounded-r-sm" />
                     )}
-                    <item.icon size={16} className={cn(
+                    <item.icon size={15} className={cn(
                       "shrink-0 transition-colors",
-                      activeCategory === item.id ? "text-primary" : "text-muted-foreground/40 group-hover:text-muted-foreground"
+                      activeCategory === item.id ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
                     )} />
-                    <span className="flex-1 text-left font-bold uppercase tracking-widest text-[10px]">{item.label}</span>
+                    <span className="flex-1 text-left">{item.label}</span>
                   </button>
                 ))}
               </div>
@@ -272,27 +273,27 @@ export function PolicyLayout({
                 <div className="space-y-12">
                   <section className="space-y-6">
                     <div className="flex items-center gap-3">
-                      <div className="h-9 w-9 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20">
+                      <div className="h-9 w-9 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20">
                         <Megaphone className="h-4 w-4 text-primary" />
                       </div>
                       <div>
                         <h4 className="text-sm font-semibold text-foreground">Global Announcement</h4>
-                        <p className="text-[11px] text-muted-foreground leading-relaxed">Broadcast an immediate notification message to all student dashboards.</p>
+                        <p className="text-xs text-muted-foreground leading-relaxed">Broadcast an immediate notification message to all student dashboards.</p>
                       </div>
                     </div>
-                    <div className="p-6 rounded-2xl border border-border/40 bg-muted/5 shadow-sm">
+                    <div className="p-6 rounded-xl border border-border/60 bg-card/40">
                       <SystemAnnouncement />
                     </div>
                   </section>
 
                   <section className="space-y-6">
                     <div className="flex items-center gap-3">
-                      <div className="h-9 w-9 rounded-xl bg-primary/10 flex items-center justify-center border border-primary/20">
+                      <div className="h-9 w-9 rounded-lg bg-primary/10 flex items-center justify-center border border-primary/20">
                         <ShieldCheck className="h-4 w-4 text-primary" />
                       </div>
                       <div>
                         <h4 className="text-sm font-semibold text-foreground">Trigger Policies</h4>
-                        <p className="text-[11px] text-muted-foreground leading-relaxed">Set the rules for automated system alerts and borrowing reminders.</p>
+                        <p className="text-xs text-muted-foreground leading-relaxed">Set the rules for automated system alerts and borrowing reminders.</p>
                       </div>
                     </div>
                     <div className="space-y-0">
@@ -312,19 +313,19 @@ export function PolicyLayout({
                 </div>
               ) : activeCategory === "categories" ? (
                 <div className="space-y-6">
-                  <Suspense fallback={<div className="h-48 w-full animate-pulse bg-muted/40 rounded-xl" />}>
+                  <Suspense fallback={<Skeleton className="h-48 w-full rounded-xl" />}>
                      <CategoryManagementWrapper promise={categoriesPromise} />
                   </Suspense>
                 </div>
               ) : activeCategory === "lifecycle" ? (
                 <div className="space-y-6">
-                  <div className="p-6 rounded-2xl border border-border/40 bg-muted/5">
+                  <div className="p-6 rounded-xl border border-border/60 bg-card/40">
                     <AnnualResetTool />
                   </div>
-                  <div className="p-6 rounded-2xl border border-border/40 bg-muted/5">
+                  <div className="p-6 rounded-xl border border-border/60 bg-card/40">
                     <RunMaintenanceTool />
                   </div>
-                  <div className="p-6 rounded-2xl border border-border/40 bg-muted/5">
+                  <div className="p-6 rounded-xl border border-border/60 bg-card/40">
                     <TestEmailTool />
                   </div>
                 </div>
@@ -342,10 +343,10 @@ export function PolicyLayout({
                     />
                   ))}
                   {activeCategory === "reservations" && (
-                    <div className="mt-12 pt-12 border-t border-border/40">
+                    <div className="mt-12 pt-12 border-t border-border/60">
                       <div className="mb-6">
                         <h4 className="text-sm font-semibold text-foreground">Simulation Engine</h4>
-                        <p className="text-[11px] text-muted-foreground leading-relaxed">Preview the impact of reservation policies on system throughput.</p>
+                        <p className="text-xs text-muted-foreground leading-relaxed">Preview the impact of reservation policies on system throughput.</p>
                       </div>
                       <PolicySimulationPanel formData={formData} />
                     </div>
@@ -362,10 +363,10 @@ export function PolicyLayout({
       {/* ── Floating Review Bar ───────────────────────────────── */}
       {canEdit && changedKeys.length > 0 && (
         <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 px-4 w-full max-w-sm animate-in slide-in-from-bottom-8 duration-500">
-          <div className="flex items-center justify-between gap-4 rounded-2xl border border-primary/10 bg-background/90 p-2 pl-5 shadow-2xl backdrop-blur-xl">
+          <div className="flex items-center justify-between gap-4 rounded-xl border border-border/60 bg-card/95 p-2 pl-4 shadow-xl backdrop-blur-sm">
              <div className="flex items-center gap-2.5">
                 <div className="h-1.5 w-1.5 rounded-full bg-primary" />
-                <span className="text-[10px] font-bold uppercase tracking-widest text-foreground/70">
+                <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                   {changedKeys.length} unsaved changes
                 </span>
              </div>
@@ -376,13 +377,13 @@ export function PolicyLayout({
                     setFormData(initialValues);
                     toast.success("All unsaved changes discarded");
                   }}
-                  className="h-9 rounded-xl px-4 text-[10px] font-bold uppercase tracking-widest border-border/40 hover:bg-muted/50 transition-all"
+                  className="h-9 rounded-lg px-4 text-xs font-semibold uppercase tracking-wider border border-border/60 text-muted-foreground hover:text-foreground"
                >
                   Discard
                </Button>
                <Button
                   onClick={() => setIsCommitModalOpen(true)}
-                  className="h-9 rounded-xl px-5 text-[10px] font-bold uppercase tracking-widest shadow-sm active:scale-[0.98] transition-all"
+                  className="h-9 rounded-lg px-4 text-xs font-semibold uppercase tracking-wider"
                >
                   Review Changes
                </Button>
@@ -400,19 +401,19 @@ export function PolicyLayout({
         loading={loading}
       />
       <Dialog open={pendingCategory !== null} onOpenChange={(open) => { if (!open) setPendingCategory(null); }}>
-        <DialogContent className="sm:max-w-[400px] border border-border bg-background rounded-2xl p-0 overflow-hidden shadow-xl">
+        <DialogContent className="sm:max-w-[400px] border border-border/60 bg-background rounded-xl p-0 overflow-hidden shadow-xl">
           <div className="p-6 space-y-6">
             <div className="flex items-center justify-between">
-              <div className="h-11 w-11 rounded-lg bg-destructive/10 flex items-center justify-center text-destructive border border-destructive/10">
+              <div className="h-10 w-10 rounded-lg bg-destructive/10 flex items-center justify-center text-destructive border border-destructive/20">
                 <AlertTriangle className="h-5 w-5" />
               </div>
-              <div className="px-2.5 py-0.5 rounded-full bg-destructive/10 text-[9px] font-bold uppercase tracking-wider text-destructive border border-destructive/10">
+              <div className="px-2.5 py-0.5 rounded-md bg-destructive/10 text-xs font-semibold uppercase tracking-wider text-destructive border border-destructive/20">
                 Unsaved Changes
               </div>
             </div>
             <div className="space-y-1">
               <h3 className="text-lg font-bold tracking-tight text-foreground">Unsaved Policy Changes</h3>
-              <p className="text-xs text-muted-foreground/75 leading-relaxed font-medium">
+              <p className="text-xs text-muted-foreground leading-relaxed">
                 You have unsaved changes in the current policy section. Moving to another section will discard these changes. Do you want to proceed?
               </p>
             </div>
@@ -422,7 +423,7 @@ export function PolicyLayout({
             <Button
               variant="outline"
               onClick={() => setPendingCategory(null)}
-              className="flex-1 h-10 rounded-lg text-xs font-semibold uppercase tracking-wider border-border/60 hover:bg-muted/40 transition-all"
+              className="flex-1 h-10 rounded-lg text-xs font-semibold uppercase tracking-wider border border-border/60 hover:bg-muted/40 transition-colors"
             >
               Cancel
             </Button>
@@ -436,7 +437,7 @@ export function PolicyLayout({
                   toast.success("Changes discarded");
                 }
               }}
-              className="flex-1 h-10 rounded-lg text-xs font-semibold uppercase tracking-wider shadow-sm transition-all"
+              className="flex-1 h-10 rounded-lg text-xs font-semibold uppercase tracking-wider shadow-xs transition-colors"
             >
               Discard & Move
             </Button>

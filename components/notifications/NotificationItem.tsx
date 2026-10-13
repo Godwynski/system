@@ -30,28 +30,28 @@ interface NotificationItemProps {
 const typeConfig = {
   OVERDUE: {
     icon: AlertTriangle,
-    color: 'text-red-500',
-    bg: 'bg-red-500/10'
+    color: 'text-destructive',
+    bg: 'bg-destructive/10'
   },
   DUE_SOON: {
     icon: Clock,
-    color: 'text-blue-500',
-    bg: 'bg-blue-500/10'
+    color: 'text-[hsl(var(--status-warning))]',
+    bg: 'bg-[hsl(var(--status-warning)/0.15)]'
   },
   RESERVATION: {
     icon: Bookmark,
-    color: 'text-emerald-500',
-    bg: 'bg-emerald-500/10'
+    color: 'text-[hsl(var(--status-warning))]',
+    bg: 'bg-[hsl(var(--status-warning)/0.15)]'
   },
   RESERVATION_EXPIRED: {
     icon: CalendarOff,
-    color: 'text-orange-500',
-    bg: 'bg-orange-500/10'
+    color: 'text-destructive',
+    bg: 'bg-destructive/10'
   },
   SYSTEM: {
     icon: Info,
-    color: 'text-slate-500',
-    bg: 'bg-slate-500/10'
+    color: 'text-muted-foreground',
+    bg: 'bg-muted'
   }
 }
 
@@ -124,7 +124,7 @@ export const NotificationItem = memo(({
             <Button 
               variant="ghost" 
               size="icon" 
-              className="h-7 w-7 rounded-md opacity-100 sm:opacity-0 group-hover:opacity-100 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-primary transition-opacity text-muted-foreground hover:text-foreground"
+              className="h-7 w-7 rounded-lg opacity-100 sm:opacity-0 group-hover:opacity-100 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-primary transition-opacity text-muted-foreground hover:text-foreground"
               aria-label={`Actions for ${notification.title}`}
             >
               <MoreVertical className="h-3.5 w-3.5" />

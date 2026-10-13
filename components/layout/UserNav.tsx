@@ -78,24 +78,24 @@ export function UserNav({ user, profile: initialProfile, role: initialRole }: Us
         <DropdownMenuTrigger asChild>
           <Button
             variant="ghost"
-            className="relative h-10 w-10 rounded-xl transition-all hover:scale-[1.02] hover:bg-slate-100 focus-visible:ring-2 focus-visible:ring-slate-300 data-[state=open]:bg-slate-100"
+            className="relative h-10 w-10 rounded-lg transition-all hover:scale-[1.02] hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring data-[state=open]:bg-accent"
             aria-label="User navigation menu"
           >
-          <Avatar className="h-10 w-10 rounded-xl border border-slate-300">
+          <Avatar className="h-10 w-10 rounded-lg border border-border/60">
             <AvatarImage src={avatarUrl} alt={name} />
-            <AvatarFallback className="bg-slate-100 font-bold text-slate-700">
+            <AvatarFallback className="bg-muted font-bold text-muted-foreground rounded-lg">
               {initials}
             </AvatarFallback>
           </Avatar>
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className="w-56" align="end" forceMount>
+        <DropdownMenuContent className="w-56 rounded-xl border border-border/60 shadow-lg" align="end" forceMount>
           <DropdownMenuLabel className="font-normal">
             <div className="flex flex-col gap-1.5">
               <div className="flex items-center gap-2">
                 <p className="text-sm font-medium leading-none">{name}</p>
                 {role && (
-                  <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-slate-600">
+                  <span className="rounded-lg bg-muted px-2 py-0.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground border border-border/60">
                     {role}
                   </span>
                 )}
@@ -116,7 +116,7 @@ export function UserNav({ user, profile: initialProfile, role: initialRole }: Us
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
           <DropdownMenuItem
-            className="cursor-pointer font-semibold text-red-600 focus:text-red-600"
+            className="cursor-pointer font-semibold text-destructive focus:text-destructive"
             onSelect={(event) => {
               event.preventDefault();
               setLogoutDialogOpen(true);
@@ -129,7 +129,7 @@ export function UserNav({ user, profile: initialProfile, role: initialRole }: Us
       </DropdownMenu>
 
       <Dialog open={logoutDialogOpen} onOpenChange={setLogoutDialogOpen}>
-        <DialogContent className="max-w-sm rounded-xl p-5">
+        <DialogContent className="max-w-sm rounded-xl border border-border/60 p-5">
           <DialogHeader>
             <DialogTitle className="text-base">Log out?</DialogTitle>
             <DialogDescription>
@@ -156,7 +156,7 @@ export function UserNav({ user, profile: initialProfile, role: initialRole }: Us
         <Dialog open={isLoggingOut}>
           <DialogContent className="border-none bg-transparent p-0 shadow-none outline-none ring-0 focus:ring-0 [&>button]:hidden">
             <div className="fixed inset-0 z-[99999] flex flex-col items-center justify-center bg-background/80 backdrop-blur-xl animate-in fade-in duration-500">
-              <div className="flex flex-col items-center gap-6 p-12 rounded-3xl bg-card border shadow-2xl scale-110 animate-in zoom-in-95 duration-300">
+              <div className="flex flex-col items-center gap-6 p-12 rounded-xl bg-card border border-border/60 shadow-2xl scale-110 animate-in zoom-in-95 duration-300">
                 <div className="relative">
                   <Loader2 className="h-12 w-12 animate-spin text-primary opacity-20" />
                   <Loader2 className="absolute inset-0 h-12 w-12 animate-spin text-primary [animation-duration:3s]" />

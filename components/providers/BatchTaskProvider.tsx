@@ -153,13 +153,13 @@ export function BatchTaskProvider({ children }: { children: ReactNode }) {
       {/* Floating Global Progress Bar */}
       {isVisible && (
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[9999] w-[90vw] max-w-lg transition-all duration-500 ease-out animate-in slide-in-from-bottom-10 fade-in">
-          <div className="bg-background/95 backdrop-blur-xl border border-border/20 shadow-2xl rounded-3xl overflow-hidden ring-1 ring-primary/5">
+          <div className="bg-card border border-border/60 shadow-xl rounded-xl overflow-hidden">
             {/* Header / Main Bar */}
             <div className="p-4 flex items-center justify-between gap-4 cursor-pointer" onClick={() => setIsExpanded(!isExpanded)}>
               <div className="flex items-center gap-3">
                 <div className={cn(
-                  "h-10 w-10 rounded-2xl flex items-center justify-center shrink-0 transition-colors duration-300",
-                  showCompletion ? "bg-emerald-500/10 text-emerald-500" : "bg-primary/10 text-primary"
+                  "h-10 w-10 rounded-lg flex items-center justify-center shrink-0 transition-colors duration-300",
+                  showCompletion ? "status-success border" : "bg-primary/10 text-primary"
                 )}>
                   {showCompletion ? <CheckCircle2 className="h-5 w-5" /> : <Loader2 className="h-5 w-5 animate-spin" />}
                 </div>
@@ -170,8 +170,8 @@ export function BatchTaskProvider({ children }: { children: ReactNode }) {
                   <div className="text-xs text-muted-foreground flex items-center gap-1.5 font-medium mt-0.5">
                     {showCompletion ? (
                       <div className="flex items-center gap-3">
-                        <span className="flex items-center gap-1 text-emerald-500"><CheckCircle2 className="h-3 w-3" /> {successCount} Added</span>
-                        <span className="flex items-center gap-1 text-amber-500"><AlertCircle className="h-3 w-3" /> {existsCount} Exists</span>
+                        <span className="flex items-center gap-1 status-success !bg-transparent !border-0"><CheckCircle2 className="h-3 w-3" /> {successCount} Added</span>
+                        <span className="flex items-center gap-1 status-warning !bg-transparent !border-0"><AlertCircle className="h-3 w-3" /> {existsCount} Exists</span>
                         <span className="flex items-center gap-1 text-destructive"><X className="h-3 w-3" /> {errorCount} Failed</span>
                       </div>
                     ) : (
@@ -228,7 +228,7 @@ export function BatchTaskProvider({ children }: { children: ReactNode }) {
                   <span>{isbnLogs.length} Events</span>
                 </div>
                 
-                <div className="flex-1 overflow-y-auto space-y-2 pr-2 custom-scrollbar font-mono text-[10px]">
+                <div className="flex-1 overflow-y-auto space-y-2 pr-2 custom-scrollbar font-mono text-xs">
                   {isbnLogs.length === 0 ? (
                     <div className="text-center text-muted-foreground/50 py-4 italic">No logs generated yet...</div>
                   ) : (
@@ -236,10 +236,10 @@ export function BatchTaskProvider({ children }: { children: ReactNode }) {
                       <div 
                         key={idx} 
                         className={cn(
-                          "flex items-start gap-2 p-2 rounded-xl border border-transparent",
-                          log.status === "success" && "bg-emerald-500/5 text-emerald-500 border-emerald-500/10",
-                          log.status === "exists" && "bg-amber-500/5 text-amber-500 border-amber-500/10",
-                          log.status === "error" && "bg-destructive/5 text-destructive border-destructive/10"
+                          "flex items-start gap-2 p-2 rounded-lg border",
+                          log.status === "success" && "status-success",
+                          log.status === "exists" && "status-warning",
+                          log.status === "error" && "status-danger"
                         )}
                       >
                         {log.status === "success" ? <CheckCircle2 className="h-3.5 w-3.5 shrink-0 mt-0.5" /> : 

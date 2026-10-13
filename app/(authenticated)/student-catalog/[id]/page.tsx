@@ -9,26 +9,26 @@ function BookDetailSkeleton() {
   return (
     <div className="p-4 md:p-6 space-y-6 animate-pulse">
       {/* Status banner skeleton */}
-      <Skeleton className="h-14 w-full rounded-2xl" />
+      <Skeleton className="h-14 w-full rounded-xl border border-border/60" />
       <div className="flex flex-col md:flex-row gap-6">
         {/* Cover skeleton */}
         <div className="shrink-0 mx-auto md:mx-0">
-          <Skeleton className="h-[280px] w-[190px] rounded-2xl" />
+          <Skeleton className="h-[280px] w-[190px] rounded-xl border border-border/60" />
         </div>
         {/* Right side skeleton */}
         <div className="flex-1 space-y-4 min-w-0">
           <div className="space-y-2">
-            <Skeleton className="h-8 w-3/4 rounded" />
-            <Skeleton className="h-4 w-1/2 rounded" />
+            <Skeleton className="h-8 w-3/4 rounded-lg" />
+            <Skeleton className="h-4 w-1/2 rounded-md" />
           </div>
           <div className="grid grid-cols-2 gap-3">
             {[1, 2, 3, 4].map(i => (
-              <Skeleton key={i} className="h-16 rounded-xl" />
+              <Skeleton key={i} className="h-16 rounded-lg border border-border/40" />
             ))}
           </div>
           <div className="flex gap-3">
-            <Skeleton className="h-11 flex-1 rounded-xl" />
-            <Skeleton className="h-11 w-40 rounded-xl" />
+            <Skeleton className="h-11 flex-1 rounded-lg" />
+            <Skeleton className="h-11 w-40 rounded-lg" />
           </div>
         </div>
       </div>

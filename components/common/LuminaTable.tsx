@@ -2,9 +2,9 @@
 
 import * as React from "react";
 import { cn } from "@/lib/utils";
-import { type LucideIcon, Loader2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { type LucideIcon, Loader2, Inbox } from "lucide-react";
 import { CompactPagination } from "@/components/ui/compact-pagination";
+import { EmptyState } from "@/components/ui/empty-state";
 
 export interface LuminaColumn<T> {
   header: string;
@@ -15,7 +15,7 @@ export interface LuminaColumn<T> {
   mobileMain?: boolean;
 }
 
-interface EmptyState {
+export interface LuminaTableEmptyState {
   title: string;
   description: string;
   icon?: LucideIcon;
@@ -41,7 +41,7 @@ interface LuminaTableProps<T> {
   onPageChange?: (page: number) => void;
   
   // Empty State
-  emptyState?: EmptyState;
+  emptyState?: LuminaTableEmptyState;
 
   // Appearance
   noBorder?: boolean;
@@ -78,7 +78,7 @@ export function LuminaTable<T extends { id: string | number }>({
         <div className="font-bold">{renderCell(item, mainCol)}</div>
         <div className="grid grid-cols-2 gap-2 mt-2">
           {columns.filter(c => c !== mainCol).map((c, i) => (
-            <div key={i} className="text-[10px]">
+            <div key={i} className="text-xs">
               <span className="text-muted-foreground uppercase block mb-0.5">{c.header}</span>
               <div className="font-medium">{renderCell(item, c)}</div>
             </div>
@@ -96,10 +96,10 @@ export function LuminaTable<T extends { id: string | number }>({
         "w-full overflow-hidden transition-all duration-200",
         noBorder 
           ? "border-none bg-transparent shadow-none" 
-          : "border border-border/40 bg-card/40 rounded-2xl backdrop-blur-sm shadow-sm"
+          : "border border-border/60 bg-card/40 rounded-xl shadow-sm"
       )}>
         {/* ── Mobile view ── */}
-        <div className="md:hidden flex flex-col divide-y divide-border/50">
+        <div className="md:hidden flex flex-col divide-y divide-border/40">
           {isLoading ? (
             <div className="p-8 text-center text-sm text-muted-foreground animate-pulse">
               Loading...
@@ -119,19 +119,14 @@ export function LuminaTable<T extends { id: string | number }>({
               </div>
             ))
           ) : (
-            <div className="p-10 flex flex-col items-center justify-center text-center py-20">
-              {emptyState?.icon && (
-                <div className="mb-4 rounded-2xl bg-muted/20 p-4">
-                  <emptyState.icon size={28} className="text-muted-foreground" />
-                </div>
-              )}
-              <h3 className="text-sm font-bold text-foreground mb-1">{emptyState?.title || "No results found"}</h3>
-              <p className="text-xs text-muted-foreground mb-4 max-w-[250px] mx-auto">{emptyState?.description || "Try adjusting your search or filters."}</p>
-              {emptyState?.action && (
-                <Button variant="outline" size="sm" onClick={emptyState.action.onClick} className="h-8 text-[11px] font-bold rounded-xl">
-                  {emptyState.action.label}
-                </Button>
-              )}
+            <div className="p-6">
+              <EmptyState
+                icon={emptyState?.icon || Inbox}
+                title={emptyState?.title || "No results found"}
+                description={emptyState?.description || "Try adjusting your search or filters."}
+                action={emptyState?.action ? { label: emptyState.action.label, onClick: emptyState.action.onClick } : undefined}
+                className="border-none bg-transparent shadow-none"
+              />
             </div>
           )}
         </div>
@@ -139,12 +134,12 @@ export function LuminaTable<T extends { id: string | number }>({
         {/* ── Desktop table ── */}
         <table className="hidden md:table w-full text-left text-sm border-collapse">
           <thead>
-            <tr className="border-b border-border/10 bg-muted/30">
+            <tr className="border-b border-border/40 bg-muted/30">
               {columns.map((col, idx) => (
                 <th
                   key={`head-${idx}`}
                   className={cn(
-                    "px-4 py-3 text-[11px] font-black text-muted-foreground uppercase tracking-widest whitespace-nowrap",
+                    "px-4 py-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground whitespace-nowrap",
                     col.headerClassName
                   )}
                 >
@@ -153,13 +148,13 @@ export function LuminaTable<T extends { id: string | number }>({
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-border/10">
+          <tbody className="divide-y divide-border/40">
             {isLoading ? (
               <tr>
                 <td colSpan={columns.length} className="px-4 py-16 text-center">
                   <div className="flex flex-col items-center gap-3">
                     <Loader2 className="h-6 w-6 animate-spin text-primary" />
-                    <span className="text-[11px] font-black uppercase tracking-[0.2em] text-muted-foreground/50">Refreshing...</span>
+                    <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Refreshing...</span>
                   </div>
                 </td>
               </tr>
@@ -186,21 +181,14 @@ export function LuminaTable<T extends { id: string | number }>({
               ))
             ) : (
               <tr>
-                <td colSpan={columns.length}>
-                  <div className="p-10 flex flex-col items-center justify-center text-center py-20">
-                    {emptyState?.icon && (
-                      <div className="mb-4 rounded-2xl bg-muted/20 p-4">
-                        <emptyState.icon size={32} className="text-muted-foreground" />
-                      </div>
-                    )}
-                    <h3 className="text-base font-bold text-foreground mb-1">{emptyState?.title || "No results found"}</h3>
-                    <p className="text-sm text-muted-foreground mb-6 max-w-[300px] mx-auto">{emptyState?.description || "Try adjusting your search or filters."}</p>
-                    {emptyState?.action && (
-                      <Button variant="outline" size="sm" onClick={emptyState.action.onClick} className="h-9 px-6 text-xs font-bold rounded-xl shadow-sm">
-                        {emptyState.action.label}
-                      </Button>
-                    )}
-                  </div>
+                <td colSpan={columns.length} className="p-6">
+                  <EmptyState
+                    icon={emptyState?.icon || Inbox}
+                    title={emptyState?.title || "No results found"}
+                    description={emptyState?.description || "Try adjusting your search or filters."}
+                    action={emptyState?.action ? { label: emptyState.action.label, onClick: emptyState.action.onClick } : undefined}
+                    className="border-none bg-transparent shadow-none"
+                  />
                 </td>
               </tr>
             )}

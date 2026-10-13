@@ -9,13 +9,17 @@ if (process.env.NEXT_PUBLIC_SUPABASE_URL) {
   }
 }
 
+// Dev-only allowance so impeccable live mode can load. Guarded by NODE_ENV.
+const __impeccableLiveDev =
+  process.env.NODE_ENV === "development" ? " http://localhost:8400" : "";
+
 const cspHeader = `
   default-src 'self';
-  script-src 'self' 'unsafe-inline' 'unsafe-eval' https://va.vercel-scripts.com;
+  script-src 'self' 'unsafe-inline' 'unsafe-eval' https://va.vercel-scripts.com${__impeccableLiveDev};
   style-src 'self' 'unsafe-inline';
-  img-src 'self' blob: data: https://*.supabase.co https://covers.openlibrary.org https://books.google.com;
+  img-src 'self' blob: data: https://*.supabase.co https://covers.openlibrary.org https://openlibrary.org https://archive.org https://*.archive.org https://*.us.archive.org https://books.google.com https://*.googleusercontent.com https://images.unsplash.com https://m.media-amazon.com https://images-na.ssl-images-amazon.com;
   font-src 'self' data: https://fonts.gstatic.com;
-  connect-src 'self' https://*.supabase.co wss://*.supabase.co https://vitals.vercel-insights.com https://covers.openlibrary.org https://openlibrary.org https://books.google.com https://www.googleapis.com;
+  connect-src 'self' https://*.supabase.co wss://*.supabase.co https://vitals.vercel-insights.com https://covers.openlibrary.org https://openlibrary.org https://archive.org https://*.archive.org https://books.google.com https://www.googleapis.com${__impeccableLiveDev};
   worker-src 'self' blob:;
   frame-ancestors 'none';
   object-src 'none';
@@ -65,7 +69,43 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'openlibrary.org',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'archive.org',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.archive.org',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
         hostname: 'books.google.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'm.media-amazon.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'images-na.ssl-images-amazon.com',
         port: '',
         pathname: '/**',
       },

@@ -34,10 +34,39 @@ async function PoliciesPageContent() {
   );
 }
 
+import { Skeleton } from "@/components/ui/skeleton";
+
+function PoliciesSkeleton() {
+  return (
+    <div className="mx-auto flex w-full max-w-5xl flex-col gap-6 p-4 md:p-6 animate-pulse">
+      <div className="flex flex-col gap-2 pb-4 border-b border-border/60">
+        <Skeleton className="h-8 w-56 rounded-lg" />
+        <Skeleton className="h-4 w-80 rounded-md" />
+      </div>
+      <div className="flex gap-2 overflow-x-auto pb-1">
+        {[1, 2, 3, 4, 5].map((i) => (
+          <Skeleton key={i} className="h-9 w-28 shrink-0 rounded-lg" />
+        ))}
+      </div>
+      <div className="rounded-xl border border-border/60 bg-card/40 p-6 space-y-6">
+        {[1, 2, 3, 4].map((i) => (
+          <div key={i} className="flex items-center justify-between gap-4 py-3 border-b border-border/60 last:border-0">
+            <div className="space-y-1.5 flex-1">
+              <Skeleton className="h-5 w-48 rounded-md" />
+              <Skeleton className="h-4 w-72 rounded-md" />
+            </div>
+            <Skeleton className="h-6 w-12 rounded-lg" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export default function PoliciesPage() {
   return (
     <div className="w-full">
-      <Suspense fallback={<div className="p-8 animate-pulse space-y-4"><div className="h-8 w-48 bg-muted rounded" /><div className="h-64 w-full bg-muted rounded" /></div>}>
+      <Suspense fallback={<PoliciesSkeleton />}>
         <PoliciesPageContent />
       </Suspense>
     </div>

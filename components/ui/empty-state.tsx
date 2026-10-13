@@ -30,14 +30,14 @@ export function EmptyState({
   contentClassName,
 }: EmptyStateProps) {
   return (
-    <Card className={cn("w-full border-dashed border-border bg-card shadow-sm", className)}>
+    <Card className={cn("w-full border-dashed border-border/60 bg-card shadow-sm", className)}>
       <CardContent
         className={cn(
           "flex min-h-[380px] flex-col items-center justify-center px-6 py-12 text-center sm:px-10 sm:py-16",
           contentClassName,
         )}
       >
-        <div className="mb-5 flex h-20 w-20 items-center justify-center rounded-2xl border border-border bg-muted text-muted-foreground">
+        <div className="mb-5 flex h-20 w-20 items-center justify-center rounded-xl border border-border/60 bg-muted text-muted-foreground">
           <Icon size={38} />
         </div>
         <h3 className="mb-2 text-2xl font-bold tracking-tight text-foreground">{title}</h3>

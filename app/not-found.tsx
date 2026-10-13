@@ -14,9 +14,9 @@ export default function NotFound() {
 
   return (
     <div className="flex min-h-[80vh] flex-col items-center justify-center px-4 text-center">
-      <div className="relative mb-8 flex h-20 w-20 items-center justify-center rounded-3xl bg-muted text-muted-foreground shadow-sm ring-1 ring-border/50">
+      <div className="relative mb-8 flex h-20 w-20 items-center justify-center rounded-xl bg-muted text-muted-foreground shadow-sm ring-1 ring-border/50">
         <Search size={40} />
-        <div className="absolute -inset-1 animate-pulse rounded-3xl bg-muted/50" />
+        <div className="absolute -inset-1 animate-pulse rounded-xl bg-muted/50" />
       </div>
 
       <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
@@ -32,7 +32,7 @@ export default function NotFound() {
           <Button
             size="lg"
             disabled={!!loading}
-            className="h-12 w-full rounded-2xl bg-primary text-primary-foreground px-8 text-sm font-semibold shadow-lg transition-transform hover:scale-[1.02] active:scale-[0.98] sm:w-auto"
+            className="h-12 w-full rounded-lg bg-primary text-primary-foreground px-8 text-sm font-semibold shadow-xs transition-colors sm:w-auto"
           >
             {loading === 'home' ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -47,7 +47,7 @@ export default function NotFound() {
             variant="outline"
             size="lg"
             disabled={!!loading}
-            className="h-12 w-full rounded-2xl border-input px-8 text-sm font-semibold hover:bg-muted sm:w-auto"
+            className="h-12 w-full rounded-lg border-input px-8 text-sm font-semibold shadow-xs transition-colors hover:bg-muted sm:w-auto"
           >
             {loading === 'catalog' && (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />

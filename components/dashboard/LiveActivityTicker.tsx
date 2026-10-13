@@ -33,20 +33,19 @@ function ToastItem({ event, onDismiss }: ToastItemProps) {
       animate={{ opacity: 1, x: 0, scale: 1 }}
       exit={{ opacity: 0, scale: 0.8, filter: 'blur(4px)' }}
       className={cn(
-        "flex items-center gap-3 p-3 rounded-2xl border backdrop-blur-md shadow-lg pointer-events-auto",
-        "bg-background/80 border-border/50 shadow-primary/5"
+        "flex items-center gap-3 p-3 rounded-xl border border-border/60 bg-card/40 shadow-sm pointer-events-auto"
       )}
     >
       <div className={cn(
-        "p-2 rounded-xl text-white shrink-0",
-        event.type === 'borrow' ? "bg-primary" : 
-        event.type === 'return' ? "bg-emerald-500" : "bg-amber-500"
+        "p-2 rounded-lg shrink-0",
+        event.type === 'borrow' ? "bg-primary text-primary-foreground" : 
+        event.type === 'return' ? "status-success border" : "status-warning border"
       )}>
         {event.type === 'borrow' ? <BookOpen size={14} /> : 
          event.type === 'return' ? <History size={14} /> : <Zap size={14} />}
       </div>
       <div className="flex-1 min-w-0 pr-1">
-         <p className="text-[10px] font-black uppercase tracking-widest opacity-50">
+         <p className="text-2xs font-semibold uppercase tracking-wider text-muted-foreground">
             {event.type === 'borrow' ? 'Borrow Processed' : 
              event.type === 'return' ? 'Return Confirmed' : 'New Arrival'}
          </p>

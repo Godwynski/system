@@ -13,7 +13,7 @@ interface CoverUploaderProps {
 export function CoverUploader({ coverPreviewUrl, coverUrl, onCoverSelected }: CoverUploaderProps) {
   return (
     <div className="space-y-4">
-      <div className="sticky top-24 rounded-2xl border border-border/40 bg-card p-6 shadow-sm">
+      <div className="sticky top-24 rounded-xl border border-border/60 bg-card p-6 shadow-sm">
         <h3 className="mb-4 flex items-center gap-2 text-sm font-bold text-foreground">
           <ImageIcon className="h-4 w-4 text-muted-foreground/70" />
           Book Cover
@@ -55,12 +55,12 @@ export function CoverUploader({ coverPreviewUrl, coverUrl, onCoverSelected }: Co
           <Button 
             type="button"
             variant="outline" 
-            className="h-10 w-full gap-2 rounded-xl text-xs font-bold border-border/40 transition-colors hover:bg-muted"
+            className="h-10 w-full gap-2 rounded-lg text-xs font-semibold border-border/60 transition-colors hover:bg-muted"
             onClick={() => (document.getElementById('file-upload') as HTMLInputElement).click()}
           >
             Upload File
           </Button>
-          <p className="text-[10px] text-muted-foreground/60 text-center font-medium">Supported: JPG, PNG, WEBP (Max 2MB)</p>
+          <p className="text-xs text-muted-foreground/60 text-center font-medium">Supported: JPG, PNG, WEBP (Max 2MB)</p>
         </div>
       </div>
     </div>

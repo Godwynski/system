@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { toast } from "sonner";
 
 export function useLogout() {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
@@ -10,20 +11,21 @@ export function useLogout() {
   const logout = async () => {
     try {
       setIsLoggingOut(true);
+      toast.loading("Ending session safely...", { id: "logout-session" });
       
       // Sign out from Supabase
       await supabase.auth.signOut();
       
-      // Brief delay to allow the state to propagate
-      // and for the user to see the "Logging out..." indicator
-      await new Promise(resolve => setTimeout(resolve, 500));
+      toast.success("Signed out successfully", { id: "logout-session" });
       
-      // Use window.location.href for a clean redirected state
-      // This is often more reliable than router.push when session state 
-      // is being cleared across the whole app.
+      // Brief delay to allow state propagation and toast visibility
+      await new Promise(resolve => setTimeout(resolve, 400));
+      
+      // Redirect cleanly to home page
       window.location.href = "/";
     } catch (error) {
       console.error("Error during logout:", error);
+      toast.error("Failed to sign out. Please try again.", { id: "logout-session" });
       setIsLoggingOut(false);
     }
   };

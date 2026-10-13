@@ -34,11 +34,20 @@ async function AuditAuthGate() {
   );
 }
 
+import { Skeleton } from "@/components/ui/skeleton";
+
 function AuditSkeleton() {
   return (
-    <div className="space-y-4">
-      <div className="h-10 w-full bg-muted rounded-lg animate-pulse" />
-      <div className="h-[400px] w-full bg-muted/50 rounded-xl border-2 border-border animate-pulse" />
+    <div className="space-y-4 w-full">
+      <div className="flex items-center justify-between gap-3 p-2 rounded-xl border border-border/60 bg-card/40">
+        <Skeleton className="h-10 w-full sm:max-w-md rounded-lg" />
+        <Skeleton className="h-9 w-28 rounded-lg" />
+      </div>
+      <div className="rounded-xl border border-border/60 bg-card/40 p-4 space-y-3">
+        {[1, 2, 3, 4, 5, 6].map((i) => (
+          <Skeleton key={i} className="h-12 w-full rounded-lg" />
+        ))}
+      </div>
     </div>
   );
 }

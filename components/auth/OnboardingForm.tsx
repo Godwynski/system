@@ -74,40 +74,40 @@ export function OnboardingForm({ initialData }: OnboardingFormProps) {
 
   if (isSuccess) {
     return (
-      <Card className="max-w-md w-full border-primary/20 shadow-2xl animate-in zoom-in duration-500">
+      <Card className="max-w-md w-full border border-border/60 bg-card shadow-sm rounded-xl animate-in fade-in duration-200">
         <CardHeader className="text-center space-y-4 pt-8">
-          <div className="mx-auto w-20 h-20 rounded-2xl bg-primary/10 flex items-center justify-center animate-bounce-subtle">
-            <CheckCircle2 className="w-10 h-10 text-primary" />
+          <div className="mx-auto w-16 h-16 rounded-xl bg-status-success/15 border border-status-success/30 flex items-center justify-center">
+            <CheckCircle2 className="w-8 h-8 text-status-success" />
           </div>
-          <div className="space-y-2">
-            <CardTitle className="text-2xl font-bold tracking-tight">Information Received</CardTitle>
-            <CardDescription className="text-base px-4">
+          <div className="space-y-1">
+            <CardTitle className="text-xl font-bold tracking-tight">Information Received</CardTitle>
+            <CardDescription className="text-xs text-muted-foreground px-4">
               Your profile has been updated successfully. Redirecting you to status page...
             </CardDescription>
           </div>
         </CardHeader>
-        <CardContent className="flex flex-col items-center justify-center pb-12 gap-4">
-           <Loader2 className="w-6 h-6 animate-spin text-primary/40" />
-           <p className="text-xs text-muted-foreground font-medium uppercase tracking-widest">Processing</p>
+        <CardContent className="flex flex-col items-center justify-center pb-8 gap-3">
+           <Loader2 className="w-5 h-5 animate-spin text-muted-foreground" />
+           <p className="text-xs text-muted-foreground font-semibold uppercase tracking-wider">Processing</p>
         </CardContent>
       </Card>
     );
   }
 
   return (
-    <Card className="max-w-md w-full border-border shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <Card className="max-w-md w-full border border-border/60 bg-card shadow-sm rounded-xl">
       <CardHeader className="space-y-1 pb-4">
-        <CardTitle className="text-2xl font-bold tracking-tight">Complete Your Profile</CardTitle>
-        <CardDescription>
+        <CardTitle className="text-xl font-bold tracking-tight">Complete Your Profile</CardTitle>
+        <CardDescription className="text-xs text-muted-foreground">
           Provide your details to enable your digital library card.
         </CardDescription>
       </CardHeader>
       
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-5">
-          <div className="space-y-2">
-            <Label htmlFor="address" className="text-sm font-semibold flex items-center gap-2">
-              <MapPin className="w-4 h-4 text-primary" />
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-1.5">
+            <Label htmlFor="address" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+              <MapPin className="w-3.5 h-3.5 text-primary" />
               Home Address
             </Label>
             <Input 
@@ -115,14 +115,14 @@ export function OnboardingForm({ initialData }: OnboardingFormProps) {
               placeholder="House No., Street, Brgy, City"
               value={formData.address}
               onChange={(e) => setFormData(prev => ({ ...prev, address: e.target.value }))}
-              className="h-11 rounded-xl transition-all focus-visible:ring-primary/20"
+              className="h-10 rounded-lg border border-border/60 bg-background text-xs font-semibold placeholder:text-muted-foreground/50"
               required
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="phone" className="text-sm font-semibold flex items-center gap-2">
-              <Phone className="w-4 h-4 text-primary" />
+          <div className="space-y-1.5">
+            <Label htmlFor="phone" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+              <Phone className="w-3.5 h-3.5 text-primary" />
               Contact Number
             </Label>
             <Input 
@@ -136,14 +136,14 @@ export function OnboardingForm({ initialData }: OnboardingFormProps) {
                   setFormData(prev => ({ ...prev, phone: value }));
                 }
               }}
-              className="h-11 rounded-xl transition-all focus-visible:ring-primary/20"
+              className="h-10 rounded-lg border border-border/60 bg-background text-xs font-semibold tabular-nums placeholder:text-muted-foreground/50"
               required
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="program" className="text-sm font-semibold flex items-center gap-2">
-              <GraduationCap className="w-4 h-4 text-primary" />
+          <div className="space-y-1.5">
+            <Label htmlFor="program" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+              <GraduationCap className="w-3.5 h-3.5 text-primary" />
               Academic Program
             </Label>
             <Select 
@@ -151,12 +151,12 @@ export function OnboardingForm({ initialData }: OnboardingFormProps) {
               onValueChange={(val) => setFormData(prev => ({ ...prev, department: val }))}
               required
             >
-              <SelectTrigger className="h-11 rounded-xl transition-all focus-visible:ring-primary/20">
+              <SelectTrigger className="h-10 rounded-lg border border-border/60 bg-background text-xs font-semibold">
                 <SelectValue placeholder="Select your program" />
               </SelectTrigger>
-              <SelectContent className="rounded-xl">
+              <SelectContent className="rounded-xl border border-border/60 bg-popover shadow-xl">
                 {programs.map((prog) => (
-                  <SelectItem key={prog} value={prog} className="rounded-lg">
+                  <SelectItem key={prog} value={prog} className="rounded-lg text-xs font-semibold">
                     {prog}
                   </SelectItem>
                 ))}
@@ -167,15 +167,15 @@ export function OnboardingForm({ initialData }: OnboardingFormProps) {
           <div className="pt-2">
             <Button 
               type="submit" 
-              className="w-full h-12 rounded-xl text-base font-bold group relative overflow-hidden bg-primary text-primary-foreground shadow-lg transition-all active:scale-[0.98]"
+              className="w-full h-10 rounded-lg text-xs font-semibold uppercase tracking-wider shadow-xs"
               disabled={isSubmitting}
             >
               {isSubmitting ? (
-                <Loader2 className="w-5 h-5 animate-spin" />
+                <Loader2 className="w-4 h-4 animate-spin" />
               ) : (
                 <>
                   Submit for Approval
-                  <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight className="ml-2 w-4 h-4" />
                 </>
               )}
             </Button>

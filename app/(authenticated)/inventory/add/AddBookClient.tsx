@@ -202,7 +202,7 @@ export function AddBookClient() {
     <div className="w-full space-y-6">
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
         <div className="lg:col-span-2 space-y-6">
-          <form onSubmit={handleSubmit} className="space-y-8 rounded-2xl border border-border/40 bg-card p-6 sm:p-8 relative overflow-hidden">
+          <form onSubmit={handleSubmit} className="space-y-8 rounded-xl border border-border/60 bg-card/40 p-6 sm:p-8 relative overflow-hidden">
             
             <ISBNLookupBar 
               isbn={formData.isbn}
@@ -217,11 +217,11 @@ export function AddBookClient() {
               categories={categories}
             />
 
-            <div className="flex gap-3 pt-6 border-t border-border/30 mt-8">
+            <div className="flex gap-3 pt-6 border-t border-border/60 mt-8">
               <Button 
                 type="submit" 
                 disabled={loading}
-                className="h-11 flex-1 rounded-xl bg-primary text-sm font-bold text-primary-foreground transition-all hover:bg-primary/90"
+                className="h-10 flex-1 rounded-lg bg-primary text-xs font-semibold uppercase tracking-wider text-primary-foreground transition-all hover:bg-primary/90"
               >
                 {loading ? 'Processing...' : (
                   <div className="flex items-center gap-2">
@@ -234,7 +234,7 @@ export function AddBookClient() {
                 type="button" 
                 variant="outline"
                 asChild
-                className="h-11 rounded-xl px-8 text-sm font-bold border-border/40 hover:bg-muted transition-colors"
+                className="h-10 rounded-lg px-8 text-xs font-semibold uppercase tracking-wider border-border/60 hover:bg-muted transition-colors"
               >
                 <Link href="/inventory">Cancel</Link>
               </Button>

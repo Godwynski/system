@@ -1,9 +1,10 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { getPublicBookById } from '@/lib/actions/public-catalog';
-import { ChevronLeft, MapPin, Hash, Tag } from 'lucide-react';
+import { ChevronLeft, MapPin, Hash, Tag, BookOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import { EmptyState } from '@/components/ui/empty-state';
 import { Suspense } from 'react';
 import { getCategoryName } from '@/lib/utils';
 
@@ -19,11 +20,22 @@ async function PublicBookDetailLoader({ params }: { params: Promise<{ id: string
   }
 
   if (!book) {
-    return <div className="p-8 text-center text-muted-foreground">Book not found.</div>;
+    return (
+      <EmptyState
+        icon={BookOpen}
+        title="Book not found"
+        description="The requested volume could not be located in the catalog."
+        action={{
+          label: "Back to Library",
+          href: "/",
+        }}
+        className="rounded-xl border border-border/60 bg-card/40 shadow-sm"
+      />
+    );
   }
 
   return (
-    <div className="bg-card rounded-2xl shadow-sm border border-border p-6 md:p-8 flex flex-col md:flex-row gap-8">
+    <div className="bg-card rounded-xl shadow-sm border border-border/60 p-6 md:p-8 flex flex-col md:flex-row gap-8">
       <div className="w-full md:w-1/3 flex-shrink-0">
         <div className="relative aspect-[2/3] bg-muted rounded-lg overflow-hidden flex items-center justify-center shadow-inner">
           <Image 
@@ -106,7 +118,7 @@ export default function PublicBookDetailPage({ params }: { params: Promise<{ id:
       </Button>
 
       <Suspense fallback={
-        <div className="bg-card rounded-2xl shadow-sm border border-border p-6 md:p-8 flex flex-col md:flex-row gap-8 animate-pulse">
+        <div className="bg-card rounded-xl shadow-sm border border-border/60 p-6 md:p-8 flex flex-col md:flex-row gap-8 animate-pulse">
           <div className="w-full md:w-1/3 aspect-[2/3] bg-muted rounded-lg opacity-40" />
           <div className="flex-1 space-y-6">
             <div className="space-y-4">

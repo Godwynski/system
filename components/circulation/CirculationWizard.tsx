@@ -52,22 +52,22 @@ const RETURN_STEPS = [
 
 function MemberPreview({ student }: { student: ActiveStudent }) {
   return (
-    <div className="mb-8 p-4 rounded-2xl bg-primary/5 border border-primary/10 flex items-center gap-4">
-      <Avatar className="h-10 w-10 border border-primary/20 bg-background">
+    <div className="mb-8 p-4 rounded-xl bg-card/40 border border-border/60 flex items-center gap-4">
+      <Avatar className="h-10 w-10 border border-border/60 bg-background">
         <AvatarFallback>
-          <User className="h-5 w-5 text-primary/60" />
+          <User className="h-5 w-5 text-muted-foreground" />
         </AvatarFallback>
       </Avatar>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
-          <h4 className="text-xs font-bold truncate">{student.fullName}</h4>
-          <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[9px] font-bold uppercase tracking-wider">
+          <h4 className="text-sm font-semibold truncate text-foreground">{student.fullName}</h4>
+          <span className="px-2 py-0.5 rounded-lg border text-xs font-semibold uppercase tracking-wider status-success">
             {student.status}
           </span>
         </div>
-        <p className="text-[10px] text-muted-foreground flex items-center gap-1.5 mt-0.5">
+        <p className="text-xs text-muted-foreground flex items-center gap-1.5 mt-0.5">
           <Bookmark className="h-3 w-3" />
-          {student.studentId}
+          <span className="tabular-nums">{student.studentId}</span>
         </p>
       </div>
       <CheckCircle2 className="h-4 w-4 text-primary" />
@@ -279,24 +279,24 @@ export function CirculationWizard() {
   return (
     <div className="w-full space-y-8 pb-12">
       {/* Centered Compact Stepper */}
-      <div className="bg-card/30 border border-border/10 rounded-2xl p-6 pb-10 backdrop-blur-sm">
+      <div className="bg-card/40 border border-border/60 rounded-xl p-6 pb-10">
         <CirculationStepper steps={steps} currentStep={currentStep} />
       </div>
 
-      <main className="bg-card/50 border border-border/10 rounded-3xl p-8 relative overflow-hidden transition-all duration-200">
+      <main className="bg-card/40 border border-border/60 rounded-xl p-8 relative overflow-hidden transition-all duration-200">
         {/* Header Action Bar Integrated */}
-        <div className="flex items-center justify-between mb-8 pb-6 border-b border-border/20">
-          <div className="flex items-center gap-1.5 bg-muted/30 p-1 rounded-xl border border-border/10">
+        <div className="flex items-center justify-between mb-8 pb-6 border-b border-border/60">
+          <div className="flex items-center gap-1.5 bg-muted/40 p-1 rounded-lg border border-border/60">
             <Button
               variant={mode === 'checkout' ? 'default' : 'ghost'}
-              className="h-7 rounded-lg px-4 text-[9px] font-bold uppercase tracking-wider"
+              className="h-7 rounded-lg px-4 text-xs font-semibold uppercase tracking-wider"
               onClick={() => switchMode('checkout')}
             >
               Checkout
             </Button>
             <Button
               variant={mode === 'return' ? 'default' : 'ghost'}
-              className="h-7 rounded-lg px-4 text-[9px] font-bold uppercase tracking-wider"
+              className="h-7 rounded-lg px-4 text-xs font-semibold uppercase tracking-wider"
               onClick={() => switchMode('return')}
             >
               Return
@@ -310,7 +310,7 @@ export function CirculationWizard() {
             onClick={handleReset}
           >
             <RefreshCcw className="h-3.5 w-3.5" />
-            <span className="text-[10px] font-bold uppercase tracking-wider">Reset</span>
+            <span className="text-xs font-semibold uppercase tracking-wider">Reset</span>
           </Button>
         </div>
 
@@ -365,19 +365,19 @@ export function CirculationWizard() {
                 borrowedAt={mode === 'return' ? pendingReturn!.borrowedAt : undefined}
               />
               
-              <div className="flex gap-3 justify-end pt-6 border-t border-border/20">
+              <div className="flex gap-3 justify-end pt-6 border-t border-border/60">
                   <Button 
                     variant="ghost" 
                     onClick={handleReset} 
                     disabled={isProcessing}
-                    className="rounded-xl px-6 h-10 text-[11px] font-bold uppercase tracking-wider"
+                    className="rounded-lg px-6 h-10 text-xs font-semibold uppercase tracking-wider"
                   >
                     Cancel
                   </Button>
                   <Button 
                     onClick={confirmAction} 
                     disabled={isProcessing}
-                    className="rounded-xl px-8 h-10 bg-primary text-[11px] font-bold uppercase tracking-wider"
+                    className="rounded-lg px-8 h-10 bg-primary text-xs font-semibold uppercase tracking-wider"
                   >
                     {isProcessing ? 'Finalizing...' : `Confirm ${mode === 'checkout' ? 'Checkout' : 'Return'}`}
                   </Button>

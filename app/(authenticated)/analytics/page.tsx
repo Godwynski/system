@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import { getDashboardStats } from "@/lib/actions/dashboard";
 import { getMe } from "@/lib/auth-helpers";
 import { AnalyticsClient } from "./AnalyticsClient";
-import { Loader2 } from "lucide-react";
+import { AnalyticsSkeleton } from "./AnalyticsSkeleton";
 
 export const metadata = {
   title: "Analytics | Lumina LMS",
@@ -22,11 +22,7 @@ export default async function AnalyticsPage() {
   
   return (
     <div className="flex flex-col gap-6 w-full">
-      <Suspense fallback={
-        <div className="flex items-center justify-center p-20">
-           <Loader2 className="h-8 w-8 animate-spin text-primary/30" />
-        </div>
-      }>
+      <Suspense fallback={<AnalyticsSkeleton />}>
         <AnalyticsClient 
           statsPromise={statsPromise}
           role={role}

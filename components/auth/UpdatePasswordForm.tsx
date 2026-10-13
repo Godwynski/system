@@ -44,7 +44,7 @@ export function UpdatePasswordForm({
 
   return (
     <div className={cn("mx-auto w-full max-w-md", className)} {...props}>
-      <Card className="overflow-hidden border-border bg-card text-foreground shadow-sm">
+      <Card className="overflow-hidden rounded-xl border border-border/60 bg-card text-foreground shadow-sm">
         <CardHeader className="space-y-4 pb-5">
           <Link href="/" className="flex items-center gap-3 w-fit hover:opacity-80 transition-opacity md:hidden">
             <Logo size={20} />
@@ -66,7 +66,7 @@ export function UpdatePasswordForm({
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="h-11 rounded-lg border-input bg-background px-3.5 text-sm text-foreground placeholder:text-muted-foreground focus-visible:bg-background focus-visible:ring-ring pr-10"
+                  className="h-10 rounded-lg border border-border/60 bg-background px-3.5 text-sm text-foreground placeholder:text-muted-foreground focus-visible:bg-background focus-visible:ring-ring pr-10"
                 />
                 <Button
                   type="button"
@@ -83,7 +83,7 @@ export function UpdatePasswordForm({
             <Button
               type="submit"
               disabled={isLoading}
-              className="h-11 w-full rounded-lg text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/90"
+              className="h-10 w-full rounded-lg text-sm font-semibold bg-primary text-primary-foreground hover:bg-primary/90 shadow-xs transition-colors"
             >
               {isLoading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
               {isLoading ? "Updating..." : "Update password"}

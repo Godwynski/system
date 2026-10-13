@@ -62,7 +62,10 @@ export default function RootLayout({
         </AnimationProvider>
         <Toaster position="bottom-right" richColors />
         <SpeedInsights />
-      </body>
+      {/* impeccable-live-start */}
+<script async src="http://localhost:8400/live.js?token=8f3d6ba3-54e2-4e81-93c7-4210a666693a"></script>
+{/* impeccable-live-end */}
+</body>
     </html>
   );
 }

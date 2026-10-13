@@ -2,6 +2,7 @@ import { UpdatePasswordForm } from "@/components/auth/UpdatePasswordForm";
 import { AuthPageShell } from "@/components/auth/auth-page-shell";
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Suspense } from "react";
 
 export const metadata = {
@@ -29,7 +30,7 @@ export default async function UpdatePasswordPage() {
       title="Set a new password for your account."
       description="Use a strong password with letters, numbers, and symbols to maintain account security."
     >
-      <Suspense fallback={<div className="h-96 w-full animate-pulse rounded-xl bg-slate-200" />}>
+      <Suspense fallback={<Skeleton className="h-96 w-full rounded-xl" />}>
         <UpdatePasswordForm />
       </Suspense>
     </AuthPageShell>

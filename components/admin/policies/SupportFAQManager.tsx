@@ -14,6 +14,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import { EmptyState } from "@/components/ui/empty-state";
 
 /**
  * Manages the FAQ / Knowledge Base items for policy support.
@@ -107,13 +108,13 @@ export function SupportFAQManager({
   };
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div className="space-y-8 animate-in fade-in duration-200">
       <div className="flex items-center justify-between px-2">
         <div className="space-y-1">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/40 flex items-center gap-2">
+          <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-2">
             Knowledge Base
           </p>
-          <p className="text-[9px] font-medium text-muted-foreground/30 uppercase tracking-widest">
+          <p className="text-xs font-medium text-muted-foreground tabular-nums">
             {currentFaqs.length} entries registered
           </p>
         </div>
@@ -122,9 +123,9 @@ export function SupportFAQManager({
             onClick={startAdd}
             variant="ghost"
             size="sm"
-            className="h-9 rounded-xl gap-2 text-primary hover:bg-primary/5 text-[10px] font-bold uppercase tracking-widest transition-all"
+            className="h-9 rounded-lg gap-2 text-primary hover:bg-primary/10 text-xs font-semibold uppercase tracking-wider transition-colors"
           >
-            <Plus className="h-3 w-3" />
+            <Plus className="h-3.5 w-3.5" />
             Add Entry
           </Button>
         )}
@@ -132,12 +133,13 @@ export function SupportFAQManager({
 
       <div className="grid gap-4">
         {currentFaqs.length === 0 && !disabled && (
-          <div className="flex flex-col items-center justify-center py-12 rounded-[2rem] border border-dashed border-border/20 bg-muted/[0.01]">
-             <div className="h-12 w-12 rounded-2xl bg-muted/5 flex items-center justify-center mb-3">
-               <HelpCircle className="h-6 w-6 text-muted-foreground/10" />
-             </div>
-             <p className="text-[10px] font-bold text-muted-foreground/30 uppercase tracking-widest">No entries found</p>
-          </div>
+          <EmptyState
+            icon={HelpCircle}
+            title="No entries found"
+            description="Add common questions and answers to assist patrons with library policies."
+            className="border-dashed border-border/60 bg-card/40 rounded-xl"
+            contentClassName="min-h-[160px] py-6 sm:py-8"
+          />
         )}
 
         <div className="grid gap-3">
@@ -146,41 +148,41 @@ export function SupportFAQManager({
             const modified = isModified(faq);
             return (
                 <div key={`curr-${i}`} className={cn(
-                  "group/faq relative rounded-[2rem] border p-6 transition-all duration-300",
-                  added ? "bg-primary/[0.02] border-primary/10 shadow-[0_0_20px_rgba(var(--primary),0.05)]" : 
-                  modified ? "bg-primary/[0.01] border-primary/10 shadow-[0_0_20px_rgba(var(--primary),0.02)]" :
-                  "bg-muted/[0.02] border-border/40 hover:bg-muted/[0.05] hover:border-border/60 hover:shadow-xl hover:shadow-muted/5"
+                  "group/faq relative rounded-xl border p-4 transition-colors",
+                  added ? "bg-primary/5 border-primary/20" : 
+                  modified ? "status-warning" :
+                  "bg-card/40 border-border/60 hover:bg-muted/20 hover:border-border"
                 )}>
-                  <div className="flex justify-between gap-8">
-                    <div className="min-w-0 flex-1 space-y-3">
+                  <div className="flex justify-between gap-6">
+                    <div className="min-w-0 flex-1 space-y-2">
                       <div className="flex items-center gap-3">
                         <div className={cn(
-                          "h-8 w-8 rounded-xl flex items-center justify-center shrink-0",
-                          added || modified ? "bg-primary/10 text-primary" :
-                          "bg-muted/20 text-muted-foreground/60"
+                          "h-8 w-8 rounded-lg flex items-center justify-center shrink-0 border border-border/60",
+                          added || modified ? "bg-primary/10 text-primary border-primary/20" :
+                          "bg-muted/20 text-muted-foreground"
                         )}>
-                          <MessageSquare className="h-3.5 w-3.5" />
+                          <MessageSquare className="h-4 w-4" />
                         </div>
                         <p className="text-sm font-bold text-foreground tracking-tight line-clamp-1">{faq.question}</p>
                         {added && (
-                          <span className="text-[8px] text-primary font-bold uppercase tracking-widest px-2 py-0.5 rounded-md bg-primary/10 border border-primary/20">New</span>
+                          <span className="text-xs text-primary font-semibold uppercase tracking-wider px-2 py-0.5 rounded-md bg-primary/10 border border-primary/20">New</span>
                         )}
                         {modified && (
-                          <span className="text-[8px] text-primary/80 font-bold uppercase tracking-widest px-2 py-0.5 rounded-md bg-primary/5 border border-primary/10">Edited</span>
+                          <span className="text-xs font-semibold uppercase tracking-wider px-2 py-0.5 rounded-md status-warning">Edited</span>
                         )}
                       </div>
-                    <div className="flex gap-4 items-start pl-11">
-                      <ArrowRight className="h-3 w-3 text-muted-foreground/20 mt-1 shrink-0" />
-                      <p className="text-xs text-muted-foreground/60 leading-relaxed font-medium line-clamp-2">{faq.answer}</p>
+                    <div className="flex gap-3 items-start pl-11">
+                      <ArrowRight className="h-3 w-3 text-muted-foreground mt-0.5 shrink-0" />
+                      <p className="text-xs text-muted-foreground leading-relaxed font-medium line-clamp-2">{faq.answer}</p>
                     </div>
                   </div>
                   {!disabled && (
-                    <div className="flex gap-2 opacity-0 group-hover/faq:opacity-100 transition-all duration-300 translate-x-2 group-hover/faq:translate-x-0">
-                      <Button variant="ghost" size="icon" className="h-10 w-10 rounded-2xl hover:bg-background shadow-inner border border-transparent hover:border-border/10 transition-all" onClick={() => startEdit(i)}>
-                        <Edit3 size={15} className="text-muted-foreground/60 group-hover/faq:text-primary transition-colors" />
+                    <div className="flex gap-1.5 opacity-0 group-hover/faq:opacity-100 transition-opacity">
+                      <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/30" onClick={() => startEdit(i)}>
+                        <Edit3 size={14} />
                       </Button>
-                      <Button variant="ghost" size="icon" className="h-10 w-10 rounded-2xl text-muted-foreground/20 hover:text-rose-500/60 hover:bg-rose-500/[0.02] transition-all" onClick={() => removeFAQ(i)}>
-                        <Trash2 size={15} />
+                      <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg text-muted-foreground hover:text-destructive hover:bg-destructive/10" onClick={() => removeFAQ(i)}>
+                        <Trash2 size={14} />
                       </Button>
                     </div>
                   )}
@@ -191,27 +193,27 @@ export function SupportFAQManager({
         </div>
 
         {removedFaqs.length > 0 && (
-          <div className="mt-8 space-y-4 pt-10 border-t border-border/10">
-             <div className="flex items-center gap-3 px-2">
-                <div className="h-1.5 w-1.5 rounded-full bg-muted-foreground/20" />
-                <p className="text-[10px] font-bold text-muted-foreground/30 uppercase tracking-widest">Pending Removal</p>
+          <div className="mt-8 space-y-4 pt-8 border-t border-border/60">
+             <div className="flex items-center gap-2 px-2">
+                <div className="h-1.5 w-1.5 rounded-full bg-muted-foreground" />
+                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Pending Removal</p>
              </div>
              <div className="grid gap-3">
                 {removedFaqs.map((faq, i) => (
-                   <div key={`rem-${i}`} className="group/rem relative rounded-[1.5rem] border border-border/20 bg-muted/[0.02] p-5 opacity-60 hover:opacity-100 transition-all duration-300">
+                   <div key={`rem-${i}`} className="group/rem relative rounded-xl border border-border/60 bg-card/40 p-4 opacity-60 hover:opacity-100 transition-opacity">
                      <div className="flex justify-between gap-6">
                        <div className="min-w-0 flex-1">
                          <p className="text-xs font-bold text-muted-foreground line-through tracking-tight mb-1">Q: {faq.question}</p>
-                         <p className="text-[10px] text-muted-foreground/60 leading-relaxed line-through italic font-medium">A: {faq.answer}</p>
+                         <p className="text-xs text-muted-foreground leading-relaxed line-through italic font-medium">A: {faq.answer}</p>
                        </div>
                        {!disabled && (
                           <Button 
                             variant="ghost" 
                             size="icon" 
-                            className="h-10 w-10 rounded-2xl text-primary hover:bg-primary/10 border border-transparent hover:border-primary/20 transition-all shrink-0" 
+                            className="h-8 w-8 rounded-lg text-primary hover:bg-primary/10 border border-border/60 transition-colors shrink-0" 
                             onClick={() => restoreFAQ(faq)}
                           >
-                            <Plus size={16} />
+                            <Plus size={14} />
                           </Button>
                        )}
                      </div>
@@ -223,36 +225,32 @@ export function SupportFAQManager({
       </div>
 
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="sm:max-w-[500px] p-0 overflow-hidden border border-border/20 shadow-2xl rounded-[2rem] bg-background">
-          <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
-          
-          <DialogHeader className="p-8 pb-4">
-            <div className="flex items-center gap-4 mb-2">
-              <div className="h-12 w-12 rounded-xl bg-primary/5 flex items-center justify-center text-primary/60 border border-primary/5">
-                <HelpCircle className="h-6 w-6" />
+        <DialogContent className="sm:max-w-[500px] p-0 overflow-hidden border border-border/60 shadow-xl rounded-xl bg-background">
+          <DialogHeader className="p-6 pb-2">
+            <div className="flex items-center gap-3 mb-1">
+              <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary border border-primary/20">
+                <HelpCircle className="h-5 w-5" />
               </div>
               <div className="space-y-0.5">
-                <DialogTitle className="text-xl font-bold tracking-tight text-foreground">
+                <DialogTitle className="text-lg font-bold tracking-tight text-foreground">
                   {editingIndex !== null ? "Edit FAQ" : "Add FAQ"}
                 </DialogTitle>
-                <div className="flex items-center gap-2">
-                  <p className="text-[9px] text-muted-foreground/40 font-bold uppercase tracking-widest">
-                    Knowledge Base Entry
-                  </p>
-                </div>
+                <p className="text-xs text-muted-foreground font-semibold uppercase tracking-wider">
+                  Knowledge Base Entry
+                </p>
               </div>
             </div>
           </DialogHeader>
 
-          <div className="p-8 pt-2 space-y-6">
-            <div className="space-y-2">
+          <div className="p-6 pt-2 space-y-4">
+            <div className="space-y-1.5">
               <div className="flex justify-between items-center ml-1">
-                <Label className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground/40">
+                <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                   Question
                 </Label>
                 <span className={cn(
-                  "text-[8px] font-bold tracking-widest",
-                  newQ.length > MAX_Q_LENGTH ? "text-rose-500" : "text-muted-foreground/20"
+                  "text-xs font-semibold tabular-nums",
+                  newQ.length > MAX_Q_LENGTH ? "text-destructive" : "text-muted-foreground/60"
                 )}>
                   {newQ.length}/{MAX_Q_LENGTH}
                 </span>
@@ -263,19 +261,19 @@ export function SupportFAQManager({
                 onChange={(e) => setNewQ(e.target.value)}
                 disabled={disabled}
                 className={cn(
-                  "h-12 rounded-xl border-border/20 bg-muted/5 text-xs px-4 focus:ring-0 transition-all font-medium placeholder:text-muted-foreground/20",
-                  newQ.length > MAX_Q_LENGTH && "border-rose-500/50 bg-rose-500/5"
+                  "h-10 rounded-lg border border-border/60 bg-background text-xs px-3 font-medium placeholder:text-muted-foreground/50",
+                  newQ.length > MAX_Q_LENGTH && "border-destructive/60 bg-destructive/5"
                 )}
               />
             </div>
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               <div className="flex justify-between items-center ml-1">
-                <Label className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground/40">
+                <Label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                   Answer
                 </Label>
                 <span className={cn(
-                  "text-[8px] font-bold tracking-widest",
-                  newA.length > MAX_A_LENGTH ? "text-rose-500" : "text-muted-foreground/20"
+                  "text-xs font-semibold tabular-nums",
+                  newA.length > MAX_A_LENGTH ? "text-destructive" : "text-muted-foreground/60"
                 )}>
                   {newA.length}/{MAX_A_LENGTH}
                 </span>
@@ -286,25 +284,25 @@ export function SupportFAQManager({
                 onChange={(e) => setNewA(e.target.value)}
                 disabled={disabled}
                 className={cn(
-                  "min-h-[150px] rounded-2xl border-border/20 bg-muted/5 text-xs p-5 resize-none focus:ring-0 transition-all leading-relaxed font-medium placeholder:text-muted-foreground/20",
-                  newA.length > MAX_A_LENGTH && "border-rose-500/50 bg-rose-500/5"
+                  "min-h-[120px] rounded-lg border border-border/60 bg-background text-xs p-3 resize-none leading-relaxed font-medium placeholder:text-muted-foreground/50",
+                  newA.length > MAX_A_LENGTH && "border-destructive/60 bg-destructive/5"
                 )}
               />
             </div>
           </div>
 
-          <DialogFooter className="p-8 pt-0 flex gap-3">
+          <DialogFooter className="p-6 pt-0 flex gap-3">
              <Button 
                 variant="ghost" 
                 onClick={() => setIsModalOpen(false)}
-                className="flex-1 h-12 rounded-xl text-[10px] font-bold uppercase tracking-widest text-muted-foreground/60 hover:text-foreground hover:bg-muted/10 transition-all"
+                className="flex-1 h-10 rounded-lg text-xs font-semibold uppercase tracking-wider text-muted-foreground hover:text-foreground hover:bg-muted/10 transition-colors"
               >
                 Cancel
               </Button>
               <Button
                 onClick={addOrUpdateFAQ}
                 disabled={disabled || !newQ.trim() || !newA.trim() || newQ.length > MAX_Q_LENGTH || newA.length > MAX_A_LENGTH}
-                className="flex-[2] h-12 rounded-xl text-[10px] font-bold uppercase tracking-widest shadow-sm transition-all active:scale-[0.98]"
+                className="flex-[2] h-10 rounded-lg text-xs font-semibold uppercase tracking-wider shadow-xs transition-colors"
               >
                 {editingIndex !== null ? "Save Changes" : "Add Entry"}
               </Button>

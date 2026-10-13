@@ -15,34 +15,34 @@ export function SuccessStep({ title, message, onReset, reservationReady, reserve
   return (
     <div className="flex flex-col items-center justify-center py-12 space-y-8">
       <div className="relative">
-        <div className="h-20 w-20 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
-          <CheckCircle2 className="h-10 w-10 text-emerald-500" />
+        <div className="h-16 w-16 rounded-full status-success border flex items-center justify-center">
+          <CheckCircle2 className="h-8 w-8" />
         </div>
       </div>
 
       <div className="text-center space-y-2 max-w-sm">
-        <h3 className="text-xl font-black uppercase tracking-tight text-foreground">{title}</h3>
+        <h3 className="text-xl font-bold uppercase tracking-tight text-foreground">{title}</h3>
         <p className="text-xs text-muted-foreground leading-relaxed font-medium">
           {message}
         </p>
       </div>
 
       {reservationReady && (
-        <div className="w-full max-w-sm bg-primary/5 border border-primary/10 rounded-2xl p-4 flex items-center gap-4">
-          <div className="bg-primary/10 rounded-xl p-2.5 text-primary border border-primary/20">
-            <Bookmark className="h-5 w-5 fill-primary/20" />
+        <div className="w-full max-w-sm bg-card/40 border border-border/60 rounded-xl p-4 flex items-center gap-4">
+          <div className="bg-muted rounded-lg p-2.5 text-foreground border border-border/60">
+            <Bookmark className="h-5 w-5" />
           </div>
           <div className="text-left">
-            <p className="text-[9px] font-bold uppercase tracking-widest text-primary/60">Hold Fulfillment</p>
-            <p className="text-[11px] font-black text-primary leading-tight mt-0.5 uppercase">Place on Hold Shelf</p>
-            <p className="text-[10px] font-medium text-primary/80 truncate">{reservedFor || 'Reserved Student'}</p>
+            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Hold Fulfillment</p>
+            <p className="text-xs font-semibold text-foreground leading-tight mt-0.5 uppercase tracking-wider">Place on Hold Shelf</p>
+            <p className="text-xs text-muted-foreground truncate">{reservedFor || 'Reserved Student'}</p>
           </div>
         </div>
       )}
 
       <Button 
         onClick={onReset}
-        className="h-11 rounded-xl px-8 bg-primary shadow-lg shadow-primary/20 font-bold text-[11px] uppercase tracking-widest"
+        className="h-10 rounded-lg px-8 bg-primary font-semibold text-xs uppercase tracking-wider"
       >
         <RefreshCcw className="mr-2 h-3.5 w-3.5" />
         Process Another

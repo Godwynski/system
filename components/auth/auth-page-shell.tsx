@@ -27,7 +27,7 @@ export function AuthPageShell({
         )}
         {children}
       </main>
-      <p className="mt-8 text-2xs text-muted-foreground">© 2026 Lumina LMS</p>
+      <p className="mt-8 text-xs font-semibold text-muted-foreground">© 2026 Lumina LMS</p>
     </div>
   );
 }

@@ -20,7 +20,7 @@ export function MainHeader({ userNav }: MainHeaderProps) {
   const isCollapsed = state === "collapsed"
 
   return (
-    <header className="sticky top-0 z-40 hidden md:flex h-16 shrink-0 items-center gap-4 border-b border-border/20 bg-background/60 backdrop-blur-2xl px-6 transition-all duration-300">
+    <header className="sticky top-0 z-40 hidden md:flex h-16 shrink-0 items-center gap-4 border-b border-border/60 bg-background/95 px-6 transition-all duration-300">
       <div className="flex items-center flex-1 overflow-hidden">
         <div 
           className={cn(
@@ -33,14 +33,13 @@ export function MainHeader({ userNav }: MainHeaderProps) {
           <Link href="/dashboard" className="flex items-center gap-3.5 shrink-0 group" aria-label="Lumina LMS Platform">
             <div className="relative">
               <Logo size={20} className="scale-90 shrink-0 group-hover:scale-100 transition-transform duration-300" />
-              <div className="absolute -inset-1 bg-primary/10 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity" />
             </div>
             <div className="flex flex-col whitespace-nowrap">
-              <span className="leading-none text-[15px] font-black tracking-tight text-foreground/90">Lumina</span>
-              <span className="text-[9px] font-bold uppercase tracking-[0.15em] text-muted-foreground/60">LMS Platform</span>
+              <span className="leading-none text-base font-bold tracking-tight text-foreground">Lumina</span>
+              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">LMS Platform</span>
             </div>
           </Link>
-          <div className="h-5 w-[1px] bg-border/20 mx-1" />
+          <div className="h-5 w-[1px] bg-border/60 mx-1" />
         </div>
         
         <div className="flex-1 truncate">
@@ -55,7 +54,7 @@ export function MainHeader({ userNav }: MainHeaderProps) {
           <NotificationBell />
           {userNav && (
             <>
-              <div className="h-8 w-[1px] bg-border/20 mx-1" />
+              <div className="h-8 w-[1px] bg-border/60 mx-1" />
               {userNav}
             </>
           )}

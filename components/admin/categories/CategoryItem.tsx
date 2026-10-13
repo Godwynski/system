@@ -34,48 +34,48 @@ export function CategoryItem({
   return (
     <div
       className={cn(
-        "group flex items-center justify-between rounded-[2rem] border border-border/10 bg-muted/[0.02] p-6 transition-all duration-500",
-        isBulkEditing && isChanged && "border-primary/20 bg-primary/[0.02] shadow-[0_0_20px_rgba(var(--primary),0.02)]",
-        !category.is_active && !isBulkEditing && "opacity-60 grayscale-[0.5] bg-muted/[0.05]",
-        "hover:bg-muted/[0.05] hover:border-border/20"
+        "group flex items-center justify-between rounded-xl border border-border/60 bg-card/40 p-4 transition-colors",
+        isBulkEditing && isChanged && "border-primary/40 bg-primary/5",
+        !category.is_active && !isBulkEditing && "opacity-60 bg-muted/20",
+        "hover:bg-muted/20 hover:border-border"
       )}
     >
       <div className="flex-1 min-w-0">
         {isBulkEditing && draftCategory && onDraftChange ? (
-          <div className="grid gap-6 md:grid-cols-3">
-            <div className="space-y-2">
-              <label className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground/40 ml-1 flex items-center gap-1.5">
-                <Type className="h-2.5 w-2.5" />
+          <div className="grid gap-4 md:grid-cols-3">
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground ml-1 flex items-center gap-1.5">
+                <Type className="h-3 w-3" />
                 Display Name
               </label>
               <Input
                 value={draftCategory.name}
                 onChange={(e) => onDraftChange("name", e.target.value)}
-                className="h-11 rounded-xl bg-background border-border/20 text-xs font-bold shadow-inner focus:ring-4 focus:ring-primary/5 transition-all"
+                className="h-10 rounded-lg bg-background border border-border/60 text-xs font-semibold"
                 placeholder="Category Name"
               />
             </div>
-            <div className="space-y-2">
-              <label className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground/40 ml-1 flex items-center gap-1.5">
-                <Hash className="h-2.5 w-2.5" />
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground ml-1 flex items-center gap-1.5">
+                <Hash className="h-3 w-3" />
                 URL Identifier
               </label>
               <Input
                 value={draftCategory.slug}
                 onChange={(e) => onDraftChange("slug", e.target.value)}
-                className="h-11 rounded-xl bg-background border-border/20 text-xs font-mono font-bold shadow-inner focus:ring-4 focus:ring-primary/5 transition-all"
+                className="h-10 rounded-lg bg-background border border-border/60 text-xs font-mono font-semibold"
                 placeholder="slug-identifier"
               />
             </div>
-            <div className="space-y-2">
-              <label className="text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground/40 ml-1 flex items-center gap-1.5">
-                <AlignLeft className="h-2.5 w-2.5" />
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground ml-1 flex items-center gap-1.5">
+                <AlignLeft className="h-3 w-3" />
                 Description
               </label>
               <Input
                 value={draftCategory.description || ""}
                 onChange={(e) => onDraftChange("description", e.target.value)}
-                className="h-11 rounded-xl bg-background border-border/20 text-xs font-medium shadow-inner focus:ring-4 focus:ring-primary/5 transition-all"
+                className="h-10 rounded-lg bg-background border border-border/60 text-xs font-medium"
                 placeholder="Optional description"
               />
             </div>
@@ -83,21 +83,21 @@ export function CategoryItem({
         ) : (
           <div className="flex flex-col gap-1.5">
             <div className="flex items-center gap-3">
-              <h3 className="text-sm font-black text-foreground tracking-tight group-hover:text-primary transition-colors duration-500">
+              <h3 className="text-sm font-bold text-foreground tracking-tight group-hover:text-primary transition-colors">
                 {category.name}
               </h3>
               {!category.is_active && (
-                 <span className="px-2 py-0.5 rounded-full bg-muted/40 border border-border/40 text-[8px] font-black uppercase tracking-[0.15em] text-muted-foreground/60 shadow-xs">
-                   Archived
-                 </span>
+                <span className="px-2 py-0.5 rounded-md bg-muted/40 border border-border/60 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Archived
+                </span>
               )}
             </div>
             <div className="flex items-center gap-3">
-              <p className="font-mono text-[10px] font-bold text-primary/40 bg-primary/[0.03] px-2 py-0.5 rounded-md border border-primary/5">
+              <p className="font-mono text-xs text-muted-foreground bg-muted/30 px-2 py-0.5 rounded-md border border-border/60">
                 {category.slug}
               </p>
               {category.description && (
-                <p className="text-[11px] text-muted-foreground/50 font-medium truncate max-w-[400px]">
+                <p className="text-xs text-muted-foreground truncate max-w-[400px]">
                   {category.description}
                 </p>
               )}
@@ -106,14 +106,14 @@ export function CategoryItem({
         )}
       </div>
 
-      <div className="flex gap-2.5 ml-8">
+      <div className="flex gap-2 ml-6">
         {!isBulkEditing && onEdit && onArchive && (
           <>
             <Button
               onClick={() => onEdit(category)}
               size="sm"
               variant="outline"
-              className="h-10 w-10 rounded-xl p-0 border-border/20 bg-background/50 backdrop-blur-sm text-muted-foreground/60 hover:text-primary hover:border-primary/20 hover:bg-primary/[0.03] transition-all duration-300 shadow-sm"
+              className="h-8 w-8 rounded-lg p-0 border border-border/60 bg-background text-muted-foreground hover:text-foreground hover:bg-muted/30 transition-colors"
             >
               <Edit2 className="h-4 w-4" />
             </Button>
@@ -122,7 +122,7 @@ export function CategoryItem({
                 onClick={() => onArchive(category.id)}
                 size="sm"
                 variant="outline"
-                className="h-10 w-10 rounded-xl p-0 border-border/20 bg-background/50 backdrop-blur-sm text-muted-foreground/60 hover:text-rose-500 hover:border-rose-500/20 hover:bg-rose-500/[0.03] transition-all duration-300 shadow-sm"
+                className="h-8 w-8 rounded-lg p-0 border border-border/60 bg-background text-muted-foreground hover:text-destructive hover:border-destructive/30 hover:bg-destructive/10 transition-colors"
                 title="Archive category"
               >
                 <Archive className="h-4 w-4" />
@@ -132,7 +132,7 @@ export function CategoryItem({
                 onClick={() => onRestore && onRestore(category.id)}
                 size="sm"
                 variant="outline"
-                className="h-10 w-10 rounded-xl p-0 border-border/20 bg-background/50 backdrop-blur-sm text-muted-foreground/60 hover:text-emerald-500 hover:border-emerald-500/20 hover:bg-emerald-500/[0.03] transition-all duration-300 shadow-sm"
+                className="h-8 w-8 rounded-lg p-0 border border-border/60 bg-background text-muted-foreground hover:text-status-success hover:border-status-success/30 hover:bg-status-success/10 transition-colors"
                 title="Restore category"
               >
                 <RotateCcw className="h-4 w-4" />
@@ -141,9 +141,9 @@ export function CategoryItem({
           </>
         )}
         {isBulkEditing && isChanged && (
-          <div className="h-11 flex items-center justify-center px-4 rounded-xl bg-primary/[0.03] text-primary border border-primary/20 shadow-sm animate-in fade-in zoom-in duration-500">
-            <Check className="h-4 w-4 mr-2" />
-            <span className="text-[9px] font-black uppercase tracking-[0.2em]">Modified</span>
+          <div className="h-8 flex items-center justify-center px-3 rounded-lg status-success border border-border/60 text-xs font-semibold uppercase tracking-wider">
+            <Check className="h-3.5 w-3.5 mr-1.5" />
+            <span>Modified</span>
           </div>
         )}
       </div>

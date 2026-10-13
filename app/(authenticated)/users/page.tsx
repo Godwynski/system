@@ -3,6 +3,7 @@ import { getMe } from "@/lib/auth-helpers";
 import { redirect } from "next/navigation";
 import { UsersContent } from "./UsersContent";
 import { getUsers } from "@/lib/actions/users";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const PAGE_SIZE = 12;
 
@@ -49,12 +50,20 @@ function UserPageWrapper({ usersPromise }: { usersPromise: ReturnType<typeof bui
 
 function UsersSkeleton() {
   return (
-    <div className="w-full space-y-4 animate-pulse">
-      <div className="h-10 w-64 bg-muted rounded-lg" />
-      <div className="h-8 w-full bg-muted rounded-md" />
-      <div className="space-y-2">
-        {[1, 2, 3, 4, 5].map((i) => (
-          <div key={i} className="h-16 w-full bg-muted/40 rounded-xl" />
+    <div className="w-full space-y-4">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between pb-4 border-b border-border/60">
+        <div className="space-y-1.5">
+          <Skeleton className="h-8 w-48 rounded-lg" />
+          <Skeleton className="h-4 w-72 rounded-lg" />
+        </div>
+      </div>
+      <div className="flex items-center gap-3 p-2 rounded-xl border border-border/60 bg-card/40">
+        <Skeleton className="h-10 w-full sm:max-w-md rounded-lg" />
+        <Skeleton className="h-9 w-24 rounded-lg" />
+      </div>
+      <div className="rounded-xl border border-border/60 bg-card/40 p-4 space-y-3">
+        {[1, 2, 3, 4, 5, 6].map((i) => (
+          <Skeleton key={i} className="h-12 w-full rounded-lg" />
         ))}
       </div>
     </div>

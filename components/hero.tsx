@@ -4,7 +4,13 @@ import type { User } from '@supabase/supabase-js';
 import { m } from "framer-motion";
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Loader2, ShieldCheck, BookOpen, UserCheck, GraduationCap } from 'lucide-react';
+import { 
+  ArrowRight, 
+  Loader2, 
+  ScanLine, 
+  BookMarked, 
+  ShieldCheck 
+} from 'lucide-react';
 import { useState } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { MicrosoftIcon } from '@/components/ui/microsoft-icon';
@@ -48,7 +54,7 @@ export function Hero({ user, role }: { user: User | null; role: string | null })
         password: "Password123!",
       });
       if (error) throw error;
-      toast.success('Successfully logged in!');
+      toast.success('Signed in successfully');
       router.push("/dashboard");
       router.refresh();
     } catch (error: unknown) {
@@ -64,13 +70,13 @@ export function Hero({ user, role }: { user: User | null; role: string | null })
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      transition: { staggerChildren: 0.1, delayChildren: 0.1 }
+      transition: { staggerChildren: 0.08, delayChildren: 0.05 }
     }
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.8 } }
+    hidden: { opacity: 0, y: 12 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.4 } }
   };
 
   return (
@@ -78,97 +84,152 @@ export function Hero({ user, role }: { user: User | null; role: string | null })
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="flex flex-col items-center justify-center text-center max-w-4xl mx-auto py-12 md:py-24"
+      className="w-full max-w-5xl mx-auto text-center py-10 sm:py-16 md:py-24 px-4 sm:px-6"
     >
-
-      <m.div variants={itemVariants} className="space-y-6 mb-10 w-full">
-        <h1 className="text-balance text-4xl font-extrabold tracking-tight text-foreground sm:text-6xl md:text-7xl">
+      {/* Title & Purpose with Fluid Responsive Typography */}
+      <m.div variants={itemVariants} className="space-y-4 sm:space-y-6">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-foreground leading-[1.12]">
           {user ? (
-            <>Welcome back, <br className="hidden sm:block"/><span className="text-muted-foreground">{user.user_metadata?.full_name || user.email?.split('@')[0]}</span>.</>
+            <>
+              Welcome back,
+              <span className="text-muted-foreground block font-normal text-2xl sm:text-3xl md:text-4xl lg:text-5xl mt-2">
+                {user.user_metadata?.full_name || user.email?.split('@')[0]}.
+              </span>
+            </>
           ) : (
-            <>Intelligent Library Operations for the <span className="text-muted-foreground">Modern Era.</span></>
+            <>
+              Lumina Library Platform
+            </>
           )}
         </h1>
-        <p className="text-balance text-lg text-muted-foreground sm:text-xl md:max-w-2xl mx-auto">
+
+        <p className="text-sm sm:text-base md:text-lg lg:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed font-normal">
           {user ? (
-            `You are signed in with the ${role} role and have access to your workspace.`
+            `Signed in with the ${role || 'authenticated'} profile. Your circulation queues, policy tools, and inventory dashboard are ready.`
           ) : (
-            'Streamline physical and digital resource management with role-based access, smart circulation, and unified identity.'
+            'Unified circulation, autonomous cataloging, and automated policy governance for institutional libraries.'
           )}
         </p>
       </m.div>
 
-      <m.div variants={itemVariants} className="flex flex-col sm:flex-row gap-4 items-center w-full max-w-md">
+      {/* Responsive Authentication Console */}
+      <m.div variants={itemVariants} className="mt-8 sm:mt-12 w-full max-w-md sm:max-w-lg lg:max-w-xl mx-auto space-y-5">
         {user ? (
-          <div className="flex justify-center w-full">
-            <Button asChild size="lg" className="rounded-full font-semibold shadow-md px-8 h-12">
+          <div className="flex flex-col sm:flex-row gap-3.5 justify-center items-center pt-2">
+            <Button 
+              asChild 
+              size="lg" 
+              className="rounded-xl font-semibold px-6 sm:px-8 h-12 sm:h-13 text-sm sm:text-base bg-foreground text-background hover:bg-foreground/90 transition-all w-full sm:w-auto shadow-sm"
+            >
               <Link href="/dashboard">
-                Go to Dashboard
+                Open Circulation Desk
                 <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
+            </Button>
+            <Button 
+              asChild 
+              variant="outline" 
+              size="lg" 
+              className="rounded-xl font-semibold px-6 sm:px-8 h-12 sm:h-13 text-sm sm:text-base border-border/80 w-full sm:w-auto hover:bg-muted/50 transition-all"
+            >
+              <Link href="/catalog">
+                Search Catalog
               </Link>
             </Button>
           </div>
         ) : (
-          <div className="flex flex-col gap-6 items-center w-full">
+          <div className="space-y-5">
             <Button
               type="button"
               variant="outline"
               size="lg"
-              className="h-12 w-full rounded-xl text-sm font-semibold flex items-center justify-center gap-3 border-input bg-background text-foreground hover:bg-muted shadow-sm transition-all"
+              className="h-12 sm:h-14 w-full rounded-xl text-sm sm:text-base font-semibold flex items-center justify-center gap-3 border-border/80 bg-card text-foreground hover:bg-muted/50 transition-all shadow-xs"
               onClick={handleMicrosoftLogin}
               disabled={isLoading}
             >
               {isLoading && !loadingEmail ? (
-                <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
+                <Loader2 className="h-4.5 w-4.5 sm:h-5 sm:w-5 animate-spin text-muted-foreground" />
               ) : (
-                <MicrosoftIcon className="h-5 w-5" />
+                <MicrosoftIcon className="h-4.5 w-4.5 sm:h-5 sm:w-5" />
               )}
-              <span>{isLoading && !loadingEmail ? "Redirecting..." : "Sign in with Microsoft"}</span>
+              <span>{isLoading && !loadingEmail ? "Connecting to Azure AD..." : "Sign in with Microsoft Azure AD"}</span>
             </Button>
 
-            {/* Hide the demo access buttons on the landing page */}
-            {true && (
-              <div className="w-full space-y-4 mt-2">
-                <div className="relative">
-                  <div className="absolute inset-0 flex items-center">
-                    <span className="w-full border-t border-border" />
-                  </div>
-                  <div className="relative flex justify-center text-[10px] font-bold uppercase tracking-widest">
-                    <span className="bg-background px-4 text-muted-foreground/60">Quick Demo Access</span>
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 gap-3 w-full">
-                  {[
-                    { label: "Super Admin", email: "admin@lumina.test", icon: ShieldCheck, color: "hover:border-emerald-500/50 hover:bg-emerald-500/[0.04] hover:text-emerald-500 dark:hover:text-emerald-400" },
-                    { label: "Librarian", email: "librarian@lumina.test", icon: BookOpen, color: "hover:border-indigo-500/50 hover:bg-indigo-500/[0.04] hover:text-indigo-500 dark:hover:text-indigo-400" },
-                    { label: "Staff", email: "staff@lumina.test", icon: UserCheck, color: "hover:border-sky-500/50 hover:bg-sky-500/[0.04] hover:text-sky-500 dark:hover:text-sky-400" },
-                    { label: "Student", email: "student@lumina.test", icon: GraduationCap, color: "hover:border-amber-500/50 hover:bg-amber-500/[0.04] hover:text-amber-500 dark:hover:text-amber-400" },
-                  ].map((roleItem) => {
-                    const Icon = roleItem.icon;
-                    const isThisLoading = loadingEmail === roleItem.email;
-                    return (
-                      <Button
-                        key={roleItem.email}
-                        type="button"
-                        variant="outline"
-                        className={`h-12 rounded-xl border border-border text-[11px] font-bold uppercase tracking-wider text-muted-foreground transition-all duration-300 flex items-center justify-start px-4 gap-2.5 ${roleItem.color}`}
-                        onClick={() => signInWithCredentials(roleItem.email)}
-                        disabled={isLoading}
-                      >
-                        {isThisLoading ? (
-                          <Loader2 className="h-4 w-4 animate-spin text-muted-foreground shrink-0" />
-                        ) : (
-                          <Icon className="h-4 w-4 shrink-0 transition-transform duration-300 group-hover:scale-110" />
-                        )}
-                        <span>{isThisLoading ? "Signing in..." : roleItem.label}</span>
-                      </Button>
-                    );
-                  })}
-                </div>
+            <div className="relative py-2">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t border-border/50" />
               </div>
-            )}
+              <div className="relative flex justify-center text-xs uppercase tracking-wider">
+                <span className="bg-background px-3 text-muted-foreground font-mono">
+                  Quick Access Demo Roles
+                </span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3 text-left">
+              {[
+                { label: "Super Admin", email: "admin@lumina.test", role: "Full System Admin" },
+                { label: "Chief Librarian", email: "librarian@lumina.test", role: "Circulation & Books" },
+                { label: "Circulation Staff", email: "staff@lumina.test", role: "Checkout Desk" },
+                { label: "Student Scholar", email: "student@lumina.test", role: "Patron Access" },
+              ].map((roleItem) => {
+                const isThisLoading = loadingEmail === roleItem.email;
+                return (
+                  <button
+                    key={roleItem.email}
+                    type="button"
+                    className="h-14 sm:h-16 rounded-xl border border-border/70 bg-card p-3 sm:p-3.5 transition-all hover:border-foreground/40 hover:bg-muted/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-foreground/20 flex flex-col justify-between shadow-xs disabled:opacity-50"
+                    onClick={() => signInWithCredentials(roleItem.email)}
+                    disabled={isLoading}
+                  >
+                    <div className="flex items-center justify-between w-full">
+                      <span className="font-semibold text-xs sm:text-sm text-foreground truncate">
+                        {roleItem.label}
+                      </span>
+                      {isThisLoading && <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground" />}
+                    </div>
+                    <span className="font-mono text-2xs sm:text-xs text-muted-foreground truncate">
+                      {roleItem.email}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
           </div>
         )}
+      </m.div>
+
+      {/* Real Specifications with Responsive Scaling */}
+      <m.div variants={itemVariants} className="mt-14 sm:mt-20 pt-10 sm:pt-14 border-t border-border/40 grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8 lg:gap-12 text-left">
+        <div className="space-y-2">
+          <div className="flex items-center gap-2 text-sm sm:text-base font-semibold text-foreground">
+            <ScanLine className="h-4 w-4 sm:h-5 sm:w-5 text-foreground shrink-0" />
+            <span>Optical Circulation</span>
+          </div>
+          <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+            Barcode and QR code reader integration for instant check-in, checkout, and role-based borrowing limit validation.
+          </p>
+        </div>
+
+        <div className="space-y-2">
+          <div className="flex items-center gap-2 text-sm sm:text-base font-semibold text-foreground">
+            <BookMarked className="h-4 w-4 sm:h-5 sm:w-5 text-foreground shrink-0" />
+            <span>Autonomous Cataloging</span>
+          </div>
+          <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+            Automated metadata discovery via OpenLibrary and Google Books for immediate Dewey Decimal and shelf placement.
+          </p>
+        </div>
+
+        <div className="space-y-2">
+          <div className="flex items-center gap-2 text-sm sm:text-base font-semibold text-foreground">
+            <ShieldCheck className="h-4 w-4 sm:h-5 sm:w-5 text-foreground shrink-0" />
+            <span>Audit & Governance</span>
+          </div>
+          <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+            Append-only change logging for all circulation overrides, automated penalty rules, and Microsoft Azure AD identity.
+          </p>
+        </div>
       </m.div>
     </m.div>
   );

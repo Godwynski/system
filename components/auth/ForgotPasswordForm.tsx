@@ -45,7 +45,7 @@ export function ForgotPasswordForm({
 
   return (
     <div className={cn("mx-auto w-full max-w-md", className)} {...props}>
-      <Card className="overflow-hidden border-border bg-card text-foreground shadow-sm">
+      <Card className="overflow-hidden rounded-xl border border-border/60 bg-card/40 text-foreground shadow-sm">
         <CardHeader className="space-y-4 pb-5">
           <Link href="/" className="flex items-center gap-3 w-fit hover:opacity-80 transition-opacity md:hidden">
             <Logo size={20} />
@@ -54,7 +54,7 @@ export function ForgotPasswordForm({
           
           {success ? (
             <div className="flex flex-col items-center justify-center pt-4 pb-2 animate-in zoom-in duration-300">
-              <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10 border border-primary/20">
+              <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-primary/10 border border-primary/20">
                 <MailCheck className="h-7 w-7 text-primary" />
               </div>
               <CardTitle className="text-2xl font-bold tracking-tight text-foreground">Check your email</CardTitle>
@@ -75,7 +75,7 @@ export function ForgotPasswordForm({
         
         <CardContent className={cn(success ? "pb-8" : "")}>
           {success ? (
-            <Button asChild variant="outline" className="h-11 w-full rounded-xl border-input hover:bg-muted font-semibold shadow-sm transition-all">
+            <Button asChild variant="outline" className="h-10 w-full rounded-lg border border-border/60 hover:bg-muted font-semibold shadow-xs transition-colors">
               <Link href="/">
                 Return to sign in
               </Link>
@@ -92,14 +92,14 @@ export function ForgotPasswordForm({
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="h-11 rounded-xl border-input bg-background px-3.5 text-sm transition-all focus-visible:ring-primary/20"
+                    className="h-10 rounded-lg border border-border/60 bg-background px-3.5 text-sm transition-colors focus-visible:ring-primary/20"
                   />
                 </div>
 
                 <Button
                   type="submit"
                   disabled={isLoading}
-                  className="mt-2 h-11 w-full rounded-xl text-sm font-bold bg-primary text-primary-foreground hover:bg-primary/90 shadow-md transition-all active:scale-[0.98]"
+                  className="mt-2 h-10 w-full rounded-lg text-sm font-bold bg-primary text-primary-foreground hover:bg-primary/90 shadow-xs transition-colors"
                 >
                   {isLoading ? (
                     <>

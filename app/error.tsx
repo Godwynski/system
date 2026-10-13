@@ -24,10 +24,10 @@ export default function Error({
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 0.4, ease: "easeOut" }}
-        className="relative mb-8 flex h-20 w-20 items-center justify-center rounded-3xl bg-destructive/10 text-destructive shadow-sm ring-1 ring-destructive/20"
+        className="relative mb-8 flex h-20 w-20 items-center justify-center rounded-xl bg-destructive/10 text-destructive shadow-sm ring-1 ring-destructive/20"
       >
         <AlertCircle size={40} />
-        <div className="absolute -inset-1 animate-pulse rounded-3xl bg-destructive/5" />
+        <div className="absolute -inset-1 animate-pulse rounded-xl bg-destructive/5" />
       </m.div>
 
       <m.h1
@@ -71,7 +71,7 @@ export default function Error({
         <Button
           onClick={() => reset()}
           size="lg"
-          className="h-12 w-full rounded-2xl bg-primary text-primary-foreground px-8 text-sm font-semibold shadow-lg transition-transform hover:scale-[1.02] active:scale-[0.98] sm:w-auto"
+          className="h-12 w-full rounded-lg bg-primary text-primary-foreground px-8 text-sm font-semibold shadow-xs transition-colors sm:w-auto"
         >
           <RefreshCcw className="mr-2 h-4 w-4" />
           Try again
@@ -80,7 +80,7 @@ export default function Error({
           <Button
             variant="outline"
             size="lg"
-            className="h-12 w-full rounded-2xl border-input px-8 text-sm font-semibold hover:bg-muted sm:w-auto"
+            className="h-12 w-full rounded-lg border-input px-8 text-sm font-semibold shadow-xs transition-colors hover:bg-muted sm:w-auto"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
             Go to Home

@@ -66,7 +66,7 @@ export function NewUserClient({ currentRole }: { currentRole?: string }) {
                     className="h-10 rounded-lg pl-9 text-sm"
                   />
                 </div>
-                <p className="text-[10px] text-muted-foreground">
+                <p className="text-xs text-muted-foreground">
                   The user must have already signed up to the system via SSO or Email initially.
                 </p>
               </FieldGroup>
@@ -95,7 +95,7 @@ export function NewUserClient({ currentRole }: { currentRole?: string }) {
               placeholder="e.g. Computer Science"
             />
           </div>
-          <div className="pt-4 border-t mt-6 flex justify-end gap-3">
+          <div className="pt-4 border-t border-border/60 mt-6 flex justify-end gap-3">
             <Button variant="outline" onClick={() => router.push('/users')} disabled={isSaving}>
               Cancel
             </Button>

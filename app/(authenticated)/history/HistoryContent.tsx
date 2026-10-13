@@ -12,6 +12,7 @@ import { StatusBadge } from "@/components/common/StatusBadge";
 import { type UserRole } from "@/lib/auth-helpers";
 import { AdminTableShell } from "@/components/admin/AdminTableShell";
 import { CompactPagination } from "@/components/ui/compact-pagination";
+import { Skeleton } from "@/components/ui/skeleton";
 
 
 interface HistoryContentProps {
@@ -25,11 +26,14 @@ interface HistoryContentProps {
 
 export function HistorySkeleton() {
   return (
-    <div className="space-y-4 w-full animate-pulse">
-      <div className="h-20 w-full bg-muted rounded-lg" />
-      <div className="space-y-2">
+    <div className="w-full space-y-4">
+      <div className="flex items-center justify-between gap-4 p-2 rounded-xl border border-border/60 bg-card/40">
+        <Skeleton className="h-10 w-full sm:max-w-xs rounded-lg" />
+        <Skeleton className="h-9 w-64 rounded-lg" />
+      </div>
+      <div className="rounded-xl border border-border/60 bg-card/40 p-4 space-y-3">
         {Array.from({ length: 5 }).map((_, i) => (
-          <div key={i} className="h-24 w-full bg-muted rounded-lg" />
+          <Skeleton key={i} className="h-14 w-full rounded-lg" />
         ))}
       </div>
     </div>
@@ -105,7 +109,7 @@ export default function HistoryContent({
                 <span className="text-xs font-bold text-foreground">
                   {record.profiles?.full_name || "Unknown User"}
                 </span>
-                <span className="text-[10px] text-muted-foreground uppercase tracking-tighter">
+                <span className="text-xs text-muted-foreground uppercase tracking-wider tabular-nums">
                   {record.profiles?.student_id ||
                     record.profiles?.email?.split("@")[0] ||
                     "No ID"}
@@ -120,7 +124,7 @@ export default function HistoryContent({
 
       accessor: (record) => (
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-8 shrink-0 items-center justify-center rounded-lg border border-border bg-muted/30 text-[10px] font-black text-muted-foreground uppercase tracking-widest group-hover:bg-background transition-colors">
+          <div className="flex h-10 w-8 shrink-0 items-center justify-center rounded-lg border border-border bg-muted/30 text-xs font-semibold text-muted-foreground uppercase tracking-wider group-hover:bg-background transition-colors">
             {record.books?.title?.charAt(0) || "?"}
           </div>
           <div className="min-w-0">
@@ -129,10 +133,10 @@ export default function HistoryContent({
                 {record.books?.title || "Unknown Title"}
               </p>
               {record.status?.toUpperCase() === 'RETURNED' && (
-                <CheckCircle2 size={14} className="text-emerald-500 shrink-0" />
+                <CheckCircle2 size={14} className="text-muted-foreground shrink-0" />
               )}
             </div>
-            <p className="truncate text-[10px] font-medium text-muted-foreground uppercase tracking-wider">
+            <p className="truncate text-xs font-medium text-muted-foreground uppercase tracking-wider">
               {record.books?.author || "Internal Entity"}
             </p>
           </div>
@@ -145,7 +149,7 @@ export default function HistoryContent({
       accessor: (record) => (
         <div className="flex items-center gap-2">
           <Calendar size={14} className="text-muted-foreground" />
-          <span className="text-[11px] font-bold text-foreground">{formatDate(record.borrowed_at)}</span>
+          <span className="text-xs font-semibold text-foreground tabular-nums">{formatDate(record.borrowed_at)}</span>
         </div>
       )
     },
@@ -157,13 +161,13 @@ export default function HistoryContent({
           <div className="flex flex-col gap-1">
             <div className="flex items-center gap-2">
               <Clock size={14} className={cn("text-muted-foreground", overdue && "text-destructive")} />
-              <span className={cn("text-[11px] font-bold", overdue ? "text-destructive" : "text-foreground")}>
+              <span className={cn("text-xs font-semibold tabular-nums", overdue ? "text-destructive" : "text-foreground")}>
                 Due {formatDate(record.due_date)}
               </span>
             </div>
             {record.returned_at && (
-              <div className="flex items-center gap-1.5 text-[10px] font-black text-emerald-600 uppercase tracking-tight">
-                <CheckCircle2 size={12} strokeWidth={3} />
+              <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground uppercase tracking-wider tabular-nums">
+                <CheckCircle2 size={12} strokeWidth={2.5} />
                 Returned {formatDate(record.returned_at)}
               </div>
             )}
@@ -181,7 +185,7 @@ export default function HistoryContent({
   ];
 
   const filterControls = (
-    <div className="flex flex-wrap items-center justify-between gap-4 w-full font-sans">
+    <div className="flex flex-wrap items-center justify-between gap-4 w-full">
       <form 
         onSubmit={(e) => {
           e.preventDefault();
@@ -195,19 +199,19 @@ export default function HistoryContent({
           placeholder="Search timeline..."
           value={localSearch}
           onChange={(e) => setLocalSearch(e.target.value)}
-          className="h-10 rounded-xl pl-9 bg-muted/10 border-border/40 focus:bg-background transition-all text-xs font-bold"
+          className="h-10 rounded-lg pl-9 bg-background border border-border/60 focus:bg-background transition-all text-xs font-semibold"
         />
       </form>
-      <div className="flex items-center gap-1 p-1 bg-muted/20 rounded-xl border border-border/10">
+      <div className="flex items-center gap-1 p-1 bg-muted/20 rounded-lg border border-border/60">
         {(["all", "ACTIVE", "RETURNED", "OVERDUE"] as const).map((status) => (
           <button
             key={status}
             onClick={() => updateFilters({ status, page: 1 })}
             className={cn(
-              "rounded-lg px-4 py-2 text-[10px] font-black uppercase tracking-widest transition-all",
+              "rounded-md px-3.5 py-1.5 text-xs font-semibold uppercase tracking-wider transition-colors",
               statusFilter === status
-                ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20 scale-105"
-                 : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+                ? "bg-primary text-primary-foreground shadow-xs"
+                : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
             )}
           >
             {status === "all" ? "All" : status.toLowerCase()}

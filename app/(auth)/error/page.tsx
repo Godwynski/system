@@ -23,7 +23,7 @@ async function ErrorContent({
         </div>
 
         <div className="space-y-3">
-          <h4 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/70 px-1">
+          <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground px-1">
             What this means
           </h4>
           <div className="p-4 rounded-xl bg-muted/40 border border-border/50 space-y-3">
@@ -31,8 +31,8 @@ async function ErrorContent({
               Archived accounts cannot access system resources or borrow books. Your data is preserved for records but active access is disabled.
             </p>
             <div className="pt-2 border-t border-border/50">
-               <p className="text-[10px] font-bold text-foreground mb-1 uppercase tracking-tight">Need assistance?</p>
-               <p className="text-[11px] text-muted-foreground">
+               <p className="text-xs font-semibold text-foreground mb-1 uppercase tracking-wider">Need assistance?</p>
+               <p className="text-xs text-muted-foreground">
                  If you believe this is a mistake, please visit the <strong>School Library Administration</strong> to request account reactivation.
                </p>
             </div>
@@ -54,7 +54,7 @@ async function ErrorContent({
         </div>
 
         <div className="space-y-3">
-          <h4 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/70 px-1">
+          <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground px-1">
             Required Email Formats
           </h4>
           <div className="space-y-2">
@@ -66,7 +66,7 @@ async function ErrorContent({
                 <div className="shrink-0 w-8 h-8 rounded-lg bg-background flex items-center justify-center border shadow-sm">
                   <LogIn className="w-4 h-4 text-muted-foreground" />
                 </div>
-                <code className="text-[11px] font-medium text-foreground truncate">{format}</code>
+                <code className="text-xs font-mono text-foreground truncate">{format}</code>
               </div>
             ))}
           </div>
@@ -77,7 +77,7 @@ async function ErrorContent({
 
   return (
     <div className="flex flex-col items-center justify-center py-6 gap-4 text-center">
-      <div className="p-4 rounded-2xl bg-muted/50 border border-border/50">
+      <div className="p-4 rounded-xl border border-border/60 bg-card/40 shadow-sm">
         <AlertCircle className="h-8 w-8 text-muted-foreground/50" />
       </div>
       <div className="space-y-1">
@@ -105,12 +105,12 @@ export default function Page({
     <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-background to-muted/20">
       <div className="max-w-md w-full space-y-6">
         <div className="flex justify-center mb-8">
-          <Logo size={28} className="rotate-3 shadow-2xl" />
+          <Logo size={28} className="rotate-3 shadow-sm" />
         </div>
         
-        <Card className="border-border shadow-2xl overflow-hidden rounded-2xl animate-in fade-in zoom-in duration-500">
+        <Card className="rounded-xl border border-border/60 bg-card/40 shadow-sm overflow-hidden animate-in fade-in zoom-in duration-500">
           <CardHeader className="text-center space-y-2 pb-2 pt-8">
-            <div className="mx-auto w-14 h-14 rounded-2xl bg-destructive/10 flex items-center justify-center mb-2">
+            <div className="mx-auto w-14 h-14 rounded-xl bg-destructive/10 flex items-center justify-center mb-2">
               <ShieldAlert className="w-7 h-7 text-destructive" />
             </div>
             <CardTitle className="text-2xl font-bold tracking-tight">Authentication Error</CardTitle>
@@ -126,7 +126,7 @@ export default function Page({
           </CardContent>
 
           <CardFooter className="flex flex-col gap-3 pb-8 px-8 pt-4">
-             <Button asChild variant="outline" className="w-full h-11 rounded-xl group font-semibold shadow-sm transition-all hover:bg-muted border-border/50">
+             <Button asChild variant="outline" className="w-full h-11 rounded-lg group font-semibold shadow-xs transition-colors hover:bg-muted border-border/60">
                 <Link href="/">
                   <ArrowLeft className="mr-2 w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                   Back to Sign In
@@ -135,7 +135,7 @@ export default function Page({
           </CardFooter>
         </Card>
         
-        <p className="text-center text-[10px] text-muted-foreground uppercase tracking-widest font-bold opacity-50">
+        <p className="text-center text-xs text-muted-foreground uppercase tracking-widest font-semibold opacity-60">
           Lumina LMS Security Protocol
         </p>
       </div>

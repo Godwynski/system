@@ -317,12 +317,9 @@ export default function MyCardContainer({ initialData, variant = "page" }: MyCar
   if (variant === "dashboard") {
     return (
       <div className="w-full relative group/dashboard">
-        {/* Subtle Background Glow */}
-        <div className="absolute -inset-4 bg-primary/5 rounded-[2rem] blur-2xl opacity-0 group-hover/dashboard:opacity-100 transition-opacity pointer-events-none" />
-        
         <div className="relative mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <Badge className="mb-1 bg-primary/20 text-primary border-none text-[10px] font-bold uppercase tracking-widest px-2.5 h-6">Official Library ID</Badge>
+            <Badge className="mb-1 bg-primary/20 text-primary border-none text-xs font-semibold uppercase tracking-wider px-2.5 h-6">Official Library ID</Badge>
             <h1 className="text-xl font-black tracking-tight text-foreground/90 uppercase">{data.fullName}</h1>
           </div>
 
@@ -332,7 +329,7 @@ export default function MyCardContainer({ initialData, variant = "page" }: MyCar
               onClick={() => setShowBack((prev) => !prev)}
               variant="outline"
               size="sm"
-              className="h-8 gap-1.5 text-[10px] font-bold"
+              className="h-8 gap-1.5 text-xs font-semibold"
             >
               <RotateCcw className="h-3.5 w-3.5" />
               {showBack ? "Front" : "Back"}
@@ -343,7 +340,7 @@ export default function MyCardContainer({ initialData, variant = "page" }: MyCar
               onClick={exportCardAsImage}
               disabled={isExporting}
               size="sm"
-              className="h-8 gap-1.5 text-[10px] font-bold"
+              className="h-8 gap-1.5 text-xs font-semibold"
             >
               <Download className="h-3.5 w-3.5" />
               {isExporting ? "..." : "Export"}
@@ -438,7 +435,7 @@ export default function MyCardContainer({ initialData, variant = "page" }: MyCar
         </m.div>
 
         <Dialog open={isQrOpen} onOpenChange={setIsQrOpen}>
-          <DialogContent className="max-w-[320px] sm:max-w-[360px] border border-border/20 bg-card/95 backdrop-blur-md p-6 rounded-2xl shadow-xl flex flex-col items-center text-center gap-4">
+          <DialogContent className="max-w-[320px] sm:max-w-[360px] border border-border/60 bg-card p-6 rounded-xl shadow-xl flex flex-col items-center text-center gap-4">
             <DialogHeader className="w-full flex flex-col items-center">
               <DialogTitle className="text-lg font-black tracking-tight text-foreground uppercase">
                 {data.fullName}
@@ -448,7 +445,7 @@ export default function MyCardContainer({ initialData, variant = "page" }: MyCar
               </DialogDescription>
             </DialogHeader>
             
-            <div className="relative group w-48 h-48 sm:w-56 sm:h-56 border border-foreground/20 bg-white p-3 rounded-2xl shadow-inner flex items-center justify-center transition-all hover:scale-[1.02]">
+            <div className="relative group w-48 h-48 sm:w-56 sm:h-56 border border-border/60 bg-white p-3 rounded-xl shadow-sm flex items-center justify-center">
               {data.qrUrl ? (
                 <Image
                   src={data.qrUrl}
@@ -464,10 +461,10 @@ export default function MyCardContainer({ initialData, variant = "page" }: MyCar
             </div>
             
             <div className="flex flex-col items-center gap-1">
-              <p className="font-mono text-base sm:text-lg font-black tracking-tighter text-foreground">
+              <p className="font-mono text-base sm:text-lg font-black tracking-tighter text-foreground tabular-nums">
                 {data.cardNumber}
               </p>
-              <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/80">
+              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground/80">
                 Card Number
               </p>
             </div>
@@ -492,7 +489,7 @@ export default function MyCardContainer({ initialData, variant = "page" }: MyCar
               onClick={() => setShowBack((prev) => !prev)}
               variant="outline"
               size="sm"
-              className="flex-1 sm:flex-none text-[11px] font-semibold sm:whitespace-nowrap sm:min-w-[132px]"
+              className="flex-1 sm:flex-none text-xs font-semibold sm:whitespace-nowrap sm:min-w-[132px]"
             >
               <RotateCcw className="mr-1.5 h-3.5 w-3.5" />
               {showBack ? "Show front" : "Show back"}
@@ -503,7 +500,7 @@ export default function MyCardContainer({ initialData, variant = "page" }: MyCar
               onClick={exportCardAsImage}
               disabled={isExporting}
               size="sm"
-              className="flex-1 sm:flex-none text-[11px] font-semibold sm:whitespace-nowrap sm:min-w-[132px]"
+              className="flex-1 sm:flex-none text-xs font-semibold sm:whitespace-nowrap sm:min-w-[132px]"
             >
               <Download className="mr-1.5 h-3.5 w-3.5" />
               {isExporting ? "Exporting..." : "Export front + back"}
@@ -515,7 +512,7 @@ export default function MyCardContainer({ initialData, variant = "page" }: MyCar
               disabled={isExporting}
               variant="outline"
               size="sm"
-              className="flex-1 sm:flex-none text-[11px] font-semibold sm:whitespace-nowrap sm:min-w-[132px]"
+              className="flex-1 sm:flex-none text-xs font-semibold sm:whitespace-nowrap sm:min-w-[132px]"
             >
               <Wallet className="mr-1.5 h-3.5 w-3.5" />
               Wallet preset
@@ -528,7 +525,7 @@ export default function MyCardContainer({ initialData, variant = "page" }: MyCar
                 disabled={isRefreshingAssets}
                 variant="outline"
                 size="sm"
-                className="flex-1 sm:flex-none text-[11px] font-semibold sm:whitespace-nowrap sm:min-w-[132px]"
+                className="flex-1 sm:flex-none text-xs font-semibold sm:whitespace-nowrap sm:min-w-[132px]"
               >
                 <RefreshCw className={cn("mr-1.5 h-3.5 w-3.5", isRefreshingAssets && "animate-spin")} />
                 {isRefreshingAssets ? "Refreshing..." : "Refresh assets"}
@@ -536,7 +533,7 @@ export default function MyCardContainer({ initialData, variant = "page" }: MyCar
             )}
           </div>
 
-          <div className="hidden text-[10px] font-bold uppercase tracking-widest text-muted-foreground sm:block">
+          <div className="hidden text-xs font-semibold uppercase tracking-wider text-muted-foreground tabular-nums sm:block">
             Verified • {mounted ? new Date().toLocaleDateString("en-US") : "..."}
           </div>
         </div>
@@ -549,10 +546,10 @@ export default function MyCardContainer({ initialData, variant = "page" }: MyCar
         className="relative"
       >
         {isLoadingAssets && (
-          <div className="absolute inset-0 z-20 flex items-center justify-center rounded-2xl bg-background/60 backdrop-blur-[2px]">
+          <div className="absolute inset-0 z-20 flex items-center justify-center rounded-xl bg-background/80">
             <div className="flex flex-col items-center gap-2">
               <RefreshCw className="h-8 w-8 animate-spin text-primary" />
-              <p className="text-xs font-bold uppercase tracking-widest text-primary">Loading Assets...</p>
+              <p className="text-xs font-semibold uppercase tracking-wider text-primary">Loading Assets...</p>
             </div>
           </div>
         )}
@@ -631,32 +628,30 @@ export default function MyCardContainer({ initialData, variant = "page" }: MyCar
         </div>
       </m.div>
 
-      <p className="mt-2 text-[11px] text-muted-foreground sm:hidden">
+      <p className="mt-2 text-xs text-muted-foreground sm:hidden">
         Tip: Rotate your phone to landscape for the best card preview.
       </p>
 
-
-
-      <div className="mt-8 rounded-xl border border-border/20 bg-card p-6 shadow-sm">
-        <h3 className="text-sm font-bold text-foreground uppercase tracking-widest mb-4">Quick Guide</h3>
+      <div className="mt-8 rounded-xl border border-border/60 bg-card/40 p-6 shadow-sm">
+        <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider mb-4">Quick Guide</h3>
         <ul className="space-y-3 text-sm text-muted-foreground">
           <li className="flex gap-3">
-            <span className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-muted border border-border/40 text-[10px] font-bold text-foreground">1</span>
+            <span className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-muted border border-border/60 text-xs font-semibold tabular-nums text-foreground">1</span>
             Present this QR code to the librarian during checkout.
           </li>
           <li className="flex gap-3">
-            <span className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-muted border border-border/40 text-[10px] font-bold text-foreground">2</span>
+            <span className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-muted border border-border/60 text-xs font-semibold tabular-nums text-foreground">2</span>
             Back side now focuses on essential borrowing, returning, and support information.
           </li>
           <li className="flex gap-3">
-            <span className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-muted border border-border/40 text-[10px] font-bold text-foreground">3</span>
+            <span className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-muted border border-border/60 text-xs font-semibold tabular-nums text-foreground">3</span>
             Export options include front+back composite and wallet-size preset (1012x638 px).
           </li>
 
         </ul>
       </div>
       <Dialog open={isQrOpen} onOpenChange={setIsQrOpen}>
-        <DialogContent className="max-w-[320px] sm:max-w-[360px] border border-border/20 bg-card/95 backdrop-blur-md p-6 rounded-2xl shadow-xl flex flex-col items-center text-center gap-4">
+        <DialogContent className="max-w-[320px] sm:max-w-[360px] border border-border/60 bg-card p-6 rounded-xl shadow-xl flex flex-col items-center text-center gap-4">
           <DialogHeader className="w-full flex flex-col items-center">
             <DialogTitle className="text-lg font-black tracking-tight text-foreground uppercase">
               {data.fullName}
@@ -666,7 +661,7 @@ export default function MyCardContainer({ initialData, variant = "page" }: MyCar
             </DialogDescription>
           </DialogHeader>
           
-          <div className="relative group w-48 h-48 sm:w-56 sm:h-56 border border-foreground/20 bg-white p-3 rounded-2xl shadow-inner flex items-center justify-center transition-all hover:scale-[1.02]">
+          <div className="relative group w-48 h-48 sm:w-56 sm:h-56 border border-border/60 bg-white p-3 rounded-xl shadow-sm flex items-center justify-center">
             {data.qrUrl ? (
               <Image
                 src={data.qrUrl}
@@ -682,10 +677,10 @@ export default function MyCardContainer({ initialData, variant = "page" }: MyCar
           </div>
           
           <div className="flex flex-col items-center gap-1">
-            <p className="font-mono text-base sm:text-lg font-black tracking-tighter text-foreground">
+            <p className="font-mono text-base sm:text-lg font-black tracking-tighter text-foreground tabular-nums">
               {data.cardNumber}
             </p>
-            <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/80">
+            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground/80">
               Card Number
             </p>
           </div>

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import Image from 'next/image';
+import { BookCover } from '@/components/ui/book-cover';
 import {
   updateBookCopyStatus,
   updateBook,
@@ -40,15 +41,16 @@ import { FieldGroup } from '@/components/settings/SettingsShared';
 import { cn, getCategoryName } from '@/lib/utils';
 import type { Book, BookCopyWithReservation } from '@/lib/types';
 import { Badge } from '@/components/ui/badge';
+import { EmptyState } from '@/components/ui/empty-state';
 
 // ─── Config ────────────────────────────────────────────────────────────────
 
 const STATUS_CONFIG = {
-  AVAILABLE:   { label: 'Available',   icon: CheckCircle2, color: 'text-emerald-500',  bg: 'bg-emerald-500/5', border: 'border-emerald-500/10' },
-  BORROWED:    { label: 'Borrowed',    icon: History,      color: 'text-blue-500',       bg: 'bg-blue-500/5',    border: 'border-blue-500/10'    },
-  MAINTENANCE: { label: 'Maintenance', icon: Wrench,       color: 'text-amber-500',    bg: 'bg-amber-500/5',  border: 'border-amber-500/10'  },
-  LOST:        { label: 'Lost',        icon: SearchX,      color: 'text-rose-500',       bg: 'bg-rose-500/5',    border: 'border-rose-500/10'    },
-  RESERVED:    { label: 'Reserved',    icon: Clock,        color: 'text-indigo-500',   bg: 'bg-indigo-500/5', border: 'border-indigo-500/10' },
+  AVAILABLE:   { label: 'Available',   icon: CheckCircle2, statusClass: 'status-success' },
+  BORROWED:    { label: 'Borrowed',    icon: History,      statusClass: 'status-neutral' },
+  MAINTENANCE: { label: 'Maintenance', icon: Wrench,       statusClass: 'status-warning' },
+  LOST:        { label: 'Lost',        icon: SearchX,      statusClass: 'status-danger' },
+  RESERVED:    { label: 'Reserved',    icon: Clock,        statusClass: 'status-warning' },
 } as const;
 
 const EDITABLE_STATUSES = ['AVAILABLE', 'BORROWED', 'MAINTENANCE', 'LOST'] as const;
@@ -98,44 +100,44 @@ function ReservationQueuePanel({
   };
 
   return (
-    <div className="rounded-xl border border-border/40 bg-muted/5 flex flex-col h-full transition-all">
-      <div className="px-3 py-2 border-b border-border/40 flex items-center justify-between shrink-0">
+    <div className="rounded-xl border border-border/60 bg-card/40 flex flex-col h-full transition-all">
+      <div className="px-3 py-2 border-b border-border/60 flex items-center justify-between shrink-0">
         <div className="flex items-center gap-2">
-          <span className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Queue</span>
-          <Badge variant="secondary" className="h-4 px-1.5 text-[9px] bg-indigo-500/10 text-indigo-500 hover:bg-indigo-500/10 border-none">
+          <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Queue</span>
+          <Badge variant="secondary" className="h-4 px-1.5 text-xs font-semibold bg-muted text-foreground border border-border/60 tabular-nums">
             {queue.length}
           </Badge>
         </div>
       </div>
-      <div className="divide-y divide-border/20 overflow-y-auto custom-scrollbar flex-1 max-h-[160px]">
+      <div className="divide-y divide-border/60 overflow-y-auto custom-scrollbar flex-1 max-h-[160px]">
         {queue.map((entry) => {
           const r = reserver(entry);
           return (
             <div key={entry.id} className="px-3 py-2.5 flex items-center justify-between gap-3">
               <div className="flex items-center gap-2.5 min-w-0">
-                <div className="relative h-6 w-6 shrink-0 overflow-hidden rounded-full border border-border/40">
+                <div className="relative h-6 w-6 shrink-0 overflow-hidden rounded-full border border-border/60">
                   {r?.avatar_url ? (
                     <Image src={r.avatar_url} alt="" fill className="object-cover" unoptimized />
                   ) : (
                     <div className="flex h-full w-full items-center justify-center bg-muted/40">
-                      <UserCircle2 size={10} className="text-muted-foreground/40" />
+                      <UserCircle2 size={12} className="text-muted-foreground/60" />
                     </div>
                   )}
                 </div>
                 <div className="min-w-0">
-                  <p className="text-[11px] font-medium truncate leading-tight text-foreground">{r?.full_name ?? 'Unknown'}</p>
-                  <p className="text-[9px] text-muted-foreground/60">Position {entry.queue_position}</p>
+                  <p className="text-xs font-medium truncate leading-tight text-foreground">{r?.full_name ?? 'Unknown'}</p>
+                  <p className="text-xs text-muted-foreground/60">Position <span className="tabular-nums">{entry.queue_position}</span></p>
                 </div>
               </div>
               <div className="text-right shrink-0">
                 <span className={cn(
-                  "text-[9px] font-bold uppercase tracking-wider",
-                  entry.status === 'READY' ? "text-emerald-500" : "text-muted-foreground/40"
+                  "text-xs font-semibold uppercase tracking-wider",
+                  entry.status === 'READY' ? "status-success !bg-transparent !border-0" : "text-muted-foreground/60"
                 )}>
                   {entry.status === 'READY' ? 'Ready' : 'Waiting'}
                 </span>
                 {entry.hold_expires_at && entry.status === 'READY' && (
-                  <p className="text-[8px] font-medium text-amber-500/80 mt-0.5">{formatRelativeTime(entry.hold_expires_at, mounted)}</p>
+                  <p className="text-xs font-medium text-status-warning mt-0.5">{formatRelativeTime(entry.hold_expires_at, mounted)}</p>
                 )}
               </div>
             </div>
@@ -411,24 +413,22 @@ export function AdminManagementContent({
       {/* Header Summary */}
       {!isEditing && (
         <div className="flex gap-6 pr-8">
-          <div className="relative h-36 w-24 shrink-0 overflow-hidden rounded-lg shadow-sm border border-border/40">
-            <Image 
-              src={book.cover_url || "/images/default-book-cover.png"} 
+          <div className="relative h-36 w-24 shrink-0 overflow-hidden rounded-lg shadow-xs border border-border/60 bg-muted/30">
+            <BookCover 
+              src={book.cover_url} 
               alt={book.title} 
-              fill 
-              className="object-cover" 
-              unoptimized 
+              sizes="96px"
             />
           </div>
           <div className="flex-1 min-w-0 flex flex-col py-1">
             <div className="flex items-center gap-2 mb-2">
                <span className={cn(
-                 "inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-medium tracking-tight",
+                 "inline-flex items-center rounded-lg border px-2 py-0.5 text-xs font-semibold uppercase tracking-wider",
                  !book.is_active
-                   ? "bg-amber-500/10 text-amber-600"
+                   ? "status-warning"
                    : isAvailable
-                     ? "bg-emerald-500/10 text-emerald-600"
-                     : "bg-rose-500/10 text-rose-600"
+                     ? "status-success"
+                     : "status-danger"
                )}>
                  <span className="mr-1.5 h-1.5 w-1.5 rounded-full bg-current" />
                  {!book.is_active ? "Archived" : isAvailable ? "In Stock" : "Out of Stock"}
@@ -438,14 +438,14 @@ export function AdminManagementContent({
             <p className="text-base text-muted-foreground/80 mb-4">{book.author}</p>
             
             <div className="flex flex-wrap gap-1.5">
-               <Badge variant="secondary" className="text-[10px] font-medium bg-muted/40 hover:bg-muted/40 text-muted-foreground border-none px-2 py-0">
+               <Badge variant="secondary" className="text-xs font-semibold uppercase tracking-wider bg-muted text-muted-foreground border border-border/60 px-2 py-0.5 rounded-lg">
                  {categoryName || 'General'}
                </Badge>
-               <Badge variant="secondary" className="text-[10px] font-medium bg-muted/40 hover:bg-muted/40 text-muted-foreground border-none px-2 py-0">
-                 DDC {book.dewey_decimal || 'N/A'}
+               <Badge variant="secondary" className="text-xs font-semibold uppercase tracking-wider bg-muted text-muted-foreground border border-border/60 px-2 py-0.5 rounded-lg">
+                 DDC <span className="tabular-nums">{book.dewey_decimal || 'N/A'}</span>
                </Badge>
                {book.isbn && (
-                 <Badge variant="secondary" className="text-[10px] font-medium bg-muted/40 hover:bg-muted/40 text-muted-foreground border-none px-2 py-0">
+                 <Badge variant="secondary" className="text-xs font-semibold uppercase tracking-wider bg-muted text-muted-foreground border border-border/60 px-2 py-0.5 rounded-lg tabular-nums">
                    {book.isbn}
                  </Badge>
                )}
@@ -457,7 +457,7 @@ export function AdminManagementContent({
                  variant="ghost" 
                  size="icon"
                  onClick={() => setIsEditing(true)}
-                 className="h-8 w-8 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted"
+                 className="h-8 w-8 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted"
                >
                  <Edit3 size={16} />
                </Button>
@@ -468,35 +468,35 @@ export function AdminManagementContent({
 
       {/* Edit Form */}
       {isEditing && (
-        <div className="rounded-2xl border border-border/40 bg-card p-6 shadow-sm animate-in fade-in slide-in-from-top-2">
-          <div className="mb-6 flex items-center justify-between border-b border-border/20 pb-3">
+        <div className="rounded-xl border border-border/60 bg-card/40 p-6 shadow-sm animate-in fade-in slide-in-from-top-2">
+          <div className="mb-6 flex items-center justify-between border-b border-border/60 pb-3">
             <div className="flex items-center gap-2">
               <div className="h-6 w-1 bg-primary rounded-full" />
-              <h3 className="text-xs font-bold uppercase tracking-widest text-foreground">Edit Library Asset Metadata</h3>
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-foreground">Edit Library Asset Metadata</h3>
             </div>
-            <Button variant="ghost" size="sm" onClick={() => setIsEditing(false)} className="h-7 px-2.5 text-[10px] font-bold uppercase rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground">Cancel</Button>
+            <Button variant="ghost" size="sm" onClick={() => setIsEditing(false)} className="h-8 px-2.5 text-xs font-semibold uppercase rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground">Cancel</Button>
           </div>
           
           <div className="space-y-6">
             {/* Segment 1: Basic Information & Taxonomy */}
             <div className="space-y-4">
-              <div className="flex items-center gap-2 border-b border-border/10 pb-2">
+              <div className="flex items-center gap-2 border-b border-border/60 pb-2">
                 <BookOpen size={13} className="text-primary/70" />
-                <h4 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/80">Basic Information & Cataloging</h4>
+                <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Basic Information & Cataloging</h4>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 gap-4">
                 <FieldGroup label="Title" className="sm:col-span-2 md:col-span-6">
                   <Input 
                     value={editForm.title} 
                     onChange={e => setEditForm(prev => ({ ...prev, title: e.target.value }))} 
-                    className="h-9 rounded-xl text-xs bg-background/50 border border-border/60 focus-visible:ring-1 focus-visible:ring-primary/40 focus-visible:border-primary/40" 
+                    className="h-9 rounded-lg text-xs bg-background/50 border border-border/60 focus-visible:ring-1 focus-visible:ring-primary focus-visible:border-primary" 
                   />
                 </FieldGroup>
                 <FieldGroup label="Author" className="sm:col-span-1 md:col-span-2">
                   <Input 
                     value={editForm.author} 
                     onChange={e => setEditForm(prev => ({ ...prev, author: e.target.value }))} 
-                    className="h-9 rounded-xl text-xs bg-background/50 border border-border/60 focus-visible:ring-1 focus-visible:ring-primary/40 focus-visible:border-primary/40" 
+                    className="h-9 rounded-lg text-xs bg-background/50 border border-border/60 focus-visible:ring-1 focus-visible:ring-primary focus-visible:border-primary" 
                   />
                 </FieldGroup>
                 <FieldGroup label="Category" className="sm:col-span-1 md:col-span-2">
@@ -504,10 +504,10 @@ export function AdminManagementContent({
                     value={editForm.category_id || 'none'} 
                     onValueChange={v => setEditForm(prev => ({ ...prev, category_id: v === 'none' ? '' : v }))}
                   >
-                    <SelectTrigger className="h-9 rounded-xl text-xs bg-background/50 border border-border/60 focus:ring-1 focus:ring-primary/40">
+                    <SelectTrigger className="h-9 rounded-lg text-xs bg-background/50 border border-border/60 focus:ring-1 focus:ring-ring">
                       <SelectValue placeholder="Select a category" />
                     </SelectTrigger>
-                    <SelectContent className="border-border/40 shadow-xl">
+                    <SelectContent className="border-border/60 shadow-xl rounded-lg">
                       <SelectItem value="none" className="text-xs">General / Uncategorized</SelectItem>
                       {categories.map((c) => (
                         <SelectItem key={c.id} value={c.id} className="text-xs">{c.name}</SelectItem>
@@ -527,21 +527,21 @@ export function AdminManagementContent({
                       }
                     }}
                     onChange={e => setEditForm(prev => ({ ...prev, published_year: e.target.value }))} 
-                    className="h-9 rounded-xl text-xs bg-background/50 border border-border/60 focus-visible:ring-1 focus-visible:ring-primary/40 focus-visible:border-primary/40" 
+                    className="h-9 rounded-lg text-xs bg-background/50 border border-border/60 focus-visible:ring-1 focus-visible:ring-primary focus-visible:border-primary" 
                   />
                 </FieldGroup>
                 <FieldGroup label="ISBN" className="sm:col-span-1 md:col-span-3">
                   <Input 
                     value={editForm.isbn} 
                     disabled
-                    className="h-9 rounded-xl text-xs bg-muted/40 border border-border/40 text-muted-foreground/70 cursor-not-allowed select-all" 
+                    className="h-9 rounded-lg text-xs bg-muted/40 border border-border/60 text-muted-foreground/70 cursor-not-allowed select-all tabular-nums" 
                   />
                 </FieldGroup>
                 <FieldGroup label="Dewey Decimal (DDC)" className="sm:col-span-1 md:col-span-3">
                   <Input 
                     value={editForm.dewey_decimal} 
                     onChange={e => setEditForm(prev => ({ ...prev, dewey_decimal: e.target.value }))} 
-                    className="h-9 rounded-xl text-xs bg-background/50 border border-border/60 focus-visible:ring-1 focus-visible:ring-primary/40 focus-visible:border-primary/40" 
+                    className="h-9 rounded-lg text-xs bg-background/50 border border-border/60 focus-visible:ring-1 focus-visible:ring-primary focus-visible:border-primary" 
                   />
                 </FieldGroup>
               </div>
@@ -549,16 +549,16 @@ export function AdminManagementContent({
 
             {/* Segment 2: Physical Placement & Description */}
             <div className="space-y-4 pt-2">
-              <div className="flex items-center gap-2 border-b border-border/10 pb-2">
+              <div className="flex items-center gap-2 border-b border-border/60 pb-2">
                 <MapPin size={13} className="text-primary/70" />
-                <h4 className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/80">Physical Placement & Description</h4>
+                <h4 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Physical Placement & Description</h4>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <FieldGroup label="Location">
                   <Input 
                     value={editForm.location} 
                     onChange={e => setEditForm(prev => ({ ...prev, location: e.target.value }))} 
-                    className="h-9 rounded-xl text-xs bg-background/50 border border-border/60 focus-visible:ring-1 focus-visible:ring-primary/40 focus-visible:border-primary/40" 
+                    className="h-9 rounded-lg text-xs bg-background/50 border border-border/60 focus-visible:ring-1 focus-visible:ring-primary focus-visible:border-primary" 
                     placeholder="e.g. Second Floor"
                   />
                 </FieldGroup>
@@ -566,7 +566,7 @@ export function AdminManagementContent({
                   <Input 
                     value={editForm.section} 
                     onChange={e => setEditForm(prev => ({ ...prev, section: e.target.value }))} 
-                    className="h-9 rounded-xl text-xs bg-background/50 border border-border/60 focus-visible:ring-1 focus-visible:ring-primary/40 focus-visible:border-primary/40" 
+                    className="h-9 rounded-lg text-xs bg-background/50 border border-border/60 focus-visible:ring-1 focus-visible:ring-primary focus-visible:border-primary" 
                     placeholder="e.g. Fiction Section"
                   />
                 </FieldGroup>
@@ -574,7 +574,7 @@ export function AdminManagementContent({
                   <Textarea 
                     value={editForm.description} 
                     onChange={e => setEditForm(prev => ({ ...prev, description: e.target.value }))} 
-                    className="min-h-[92px] rounded-xl text-xs bg-background/50 border border-border/60 focus-visible:ring-1 focus-visible:ring-primary/40 focus-visible:border-primary/40 resize-none custom-scrollbar" 
+                    className="min-h-[92px] rounded-lg text-xs bg-background/50 border border-border/60 focus-visible:ring-1 focus-visible:ring-primary focus-visible:border-primary resize-none custom-scrollbar" 
                     placeholder="Enter book description or summary..."
                   />
                 </FieldGroup>
@@ -582,18 +582,18 @@ export function AdminManagementContent({
             </div>
           </div>
 
-          <div className="mt-6 flex items-center justify-between border-t border-border/20 pt-4">
+          <div className="mt-6 flex items-center justify-between border-t border-border/60 pt-4">
              {book.is_active ? (
                showDeleteConfirm ? (
                  <div className="flex items-center gap-2">
-                   <span className="text-[9px] font-black text-rose-600 uppercase tracking-widest">Archive this asset?</span>
-                   <Button onClick={handleDeleteBook} disabled={deleteLoading} variant="destructive" size="sm" className="h-8 text-[10px] font-black uppercase rounded-lg">
+                   <span className="text-xs font-semibold text-destructive uppercase tracking-wider">Archive this asset?</span>
+                   <Button onClick={handleDeleteBook} disabled={deleteLoading} variant="destructive" size="sm" className="h-8 text-xs font-semibold uppercase rounded-lg">
                      Confirm
                    </Button>
-                   <Button variant="ghost" size="sm" onClick={() => setShowDeleteConfirm(false)} className="h-8 text-[10px] font-bold uppercase rounded-lg">No</Button>
+                   <Button variant="ghost" size="sm" onClick={() => setShowDeleteConfirm(false)} className="h-8 text-xs font-semibold uppercase rounded-lg">No</Button>
                  </div>
                ) : (
-                 <Button variant="ghost" size="sm" onClick={() => setShowDeleteConfirm(true)} className="h-8 px-0 text-rose-600 hover:text-rose-700 hover:bg-transparent text-[10px] font-black uppercase transition-colors">
+                 <Button variant="ghost" size="sm" onClick={() => setShowDeleteConfirm(true)} className="h-8 px-0 text-destructive hover:text-destructive/90 hover:bg-transparent text-xs font-semibold uppercase tracking-wider transition-colors">
                    <Archive size={12} className="mr-1.5" /> Archive Asset
                  </Button>
                )
@@ -603,17 +603,17 @@ export function AdminManagementContent({
                  size="sm" 
                  onClick={handleRestoreBook} 
                  disabled={restoreLoading}
-                 className="h-8 px-0 text-emerald-600 hover:text-emerald-700 hover:bg-transparent text-[10px] font-black uppercase transition-colors"
+                 className="h-8 px-0 status-success !bg-transparent !border-0 hover:bg-transparent text-xs font-semibold uppercase tracking-wider transition-colors"
                >
                  {restoreLoading ? <Loader2 size={12} className="mr-1.5 animate-spin" /> : <RotateCw size={12} className="mr-1.5" />}
                  Restore Asset
                </Button>
              )}
              <div className="flex items-center gap-2">
-               <Button variant="outline" size="sm" onClick={() => setIsEditing(false)} className="h-8 rounded-lg px-3 text-[10px] font-bold uppercase tracking-wider">
+               <Button variant="outline" size="sm" onClick={() => setIsEditing(false)} className="h-8 rounded-lg px-3 text-xs font-semibold uppercase tracking-wider border-border/60">
                  Cancel
                </Button>
-               <Button onClick={handleUpdateBook} disabled={updateLoading} size="sm" className="h-8 rounded-lg px-4 text-[10px] font-black uppercase tracking-widest">
+               <Button onClick={handleUpdateBook} disabled={updateLoading} size="sm" className="h-8 rounded-lg px-4 text-xs font-semibold uppercase tracking-wider bg-primary text-primary-foreground">
                  {updateLoading ? <Loader2 className="animate-spin h-3 w-3 mr-1.5" /> : <Save size={12} className="mr-1.5" />}
                  Save Changes
                </Button>
@@ -624,22 +624,22 @@ export function AdminManagementContent({
 
       {/* Stats & Queue */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-         <div className="rounded-xl border border-border/20 bg-muted/5 p-4 flex items-center justify-between px-6">
+         <div className="rounded-xl border border-border/60 bg-card/40 p-4 flex items-center justify-between px-6">
             <div className="text-center">
-              <p className="text-[10px] font-bold text-muted-foreground/60 uppercase tracking-widest mb-1">Total</p>
-              <p className="text-xl font-semibold text-foreground leading-none">{book.total_copies ?? 0}</p>
+              <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">Total</p>
+              <p className="text-xl font-bold text-foreground leading-none tabular-nums">{book.total_copies ?? 0}</p>
             </div>
-            <div className="w-px h-8 bg-border/20" />
+            <div className="w-px h-8 bg-border/60" />
             <div className="text-center">
-              <p className="text-[10px] font-bold text-emerald-500/60 uppercase tracking-widest mb-1">Available</p>
-              <p className="text-xl font-semibold text-emerald-500 leading-none">{book.available_copies ?? 0}</p>
+              <p className="text-xs font-semibold status-success !bg-transparent !border-0 uppercase tracking-wider mb-1">Available</p>
+              <p className="text-xl font-bold status-success !bg-transparent !border-0 leading-none tabular-nums">{book.available_copies ?? 0}</p>
             </div>
             {reservationQueue.length > 0 && (
               <>
-                <div className="w-px h-8 bg-border/20" />
+                <div className="w-px h-8 bg-border/60" />
                 <div className="text-center">
-                  <p className="text-[10px] font-bold text-indigo-500/60 uppercase tracking-widest mb-1">Queue</p>
-                  <p className="text-xl font-semibold text-indigo-500 leading-none">{reservationQueue.length}</p>
+                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-1">Queue</p>
+                  <p className="text-xl font-bold text-foreground leading-none tabular-nums">{reservationQueue.length}</p>
                 </div>
               </>
             )}
@@ -649,15 +649,15 @@ export function AdminManagementContent({
 
       {/* Inventory List */}
       <div className="space-y-4">
-        <div className="flex items-center justify-between border-b border-border/20 pb-3">
+        <div className="flex items-center justify-between border-b border-border/60 pb-3">
           <div className="flex items-center gap-2">
-            <h3 className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">Inventory Assets</h3>
+            <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Inventory Assets</h3>
           </div>
           
           <div className="flex items-center gap-4">
             {canManage && (
               !showAddCopies ? (
-                <Button variant="ghost" size="sm" onClick={() => setShowAddCopies(true)} className="h-8 text-[10px] font-medium text-primary hover:text-primary hover:bg-primary/5 px-2">
+                <Button variant="ghost" size="sm" onClick={() => setShowAddCopies(true)} className="h-8 text-xs font-semibold uppercase tracking-wider text-primary hover:text-primary hover:bg-muted px-2.5 rounded-lg">
                   <Plus className="mr-1.5 h-3.5 w-3.5" /> Add Copies
                 </Button>
               ) : (
@@ -673,12 +673,12 @@ export function AdminManagementContent({
                       }
                     }}
                     onChange={e => setCopiesToAdd(parseInt(e.target.value) || 1)} 
-                    className="h-8 w-14 text-center text-xs px-1 rounded-md [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                    className="h-8 w-14 text-center text-xs px-1 rounded-lg border border-border/60 bg-background tabular-nums [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                   />
-                  <Button size="sm" onClick={handleAddCopies} disabled={addCopiesLoading} className="h-8 px-3 text-[10px] font-medium">
+                  <Button size="sm" onClick={handleAddCopies} disabled={addCopiesLoading} className="h-8 px-3 rounded-lg text-xs font-semibold uppercase tracking-wider">
                     {addCopiesLoading ? <Loader2 className="animate-spin h-3.5 w-3.5" /> : 'Confirm'}
                   </Button>
-                  <Button variant="ghost" size="sm" onClick={() => setShowAddCopies(false)} className="h-8 px-2 text-[10px] font-medium text-muted-foreground">
+                  <Button variant="ghost" size="sm" onClick={() => setShowAddCopies(false)} className="h-8 px-2 rounded-lg text-xs font-semibold uppercase tracking-wider text-muted-foreground">
                     Cancel
                   </Button>
                 </div>
@@ -688,13 +688,13 @@ export function AdminManagementContent({
             <Select value={copyFilter} onValueChange={(v) => {
               if (v === 'ALL' || isBookCopyStatus(v)) setCopyFilter(v as 'ALL' | BookCopyWithReservation['status']);
             }}>
-              <SelectTrigger className="h-8 w-[110px] rounded-md border-none bg-muted/40 hover:bg-muted/60 px-2.5 text-[10px] font-medium text-muted-foreground shadow-none focus:ring-0 transition-colors">
+              <SelectTrigger className="h-8 w-[120px] rounded-lg border border-border/60 bg-muted/20 hover:bg-muted px-2.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground shadow-none focus:ring-1 focus:ring-ring transition-colors">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent className="border-border/40 shadow-xl">
-                <SelectItem value="ALL" className="text-[10px] font-medium">All Statuses</SelectItem>
+              <SelectContent className="border-border/60 shadow-xl rounded-lg">
+                <SelectItem value="ALL" className="text-xs font-semibold uppercase tracking-wider">All Statuses</SelectItem>
                 {Object.entries(STATUS_CONFIG).map(([key, cfg]) => (
-                  <SelectItem key={key} value={key} className="text-[10px] font-medium">{cfg.label}</SelectItem>
+                  <SelectItem key={key} value={key} className="text-xs font-semibold uppercase tracking-wider">{cfg.label}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
@@ -709,35 +709,38 @@ export function AdminManagementContent({
               <InventoryItemSkeleton />
             </div>
           ) : filteredCopies.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-16 rounded-xl border border-dashed border-border/20 bg-muted/5">
-              <SearchX size={24} className="text-muted-foreground/20 mb-3" />
-              <p className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground/40">No matching assets found</p>
-            </div>
+            <EmptyState
+              icon={SearchX}
+              title="No assets found"
+              description="No matching library copies or assets found."
+              className="border-dashed border-border/60 bg-muted/5"
+              contentClassName="min-h-[160px] py-6 sm:py-8"
+            />
           ) : (
             paginatedCopies.map((copy) => {
               const statusCfg = STATUS_CONFIG[copy.status as keyof typeof STATUS_CONFIG] ?? {
-                label: copy.status, icon: AlertCircle, color: 'text-muted-foreground', bg: 'bg-muted', border: 'border-border'
+                label: copy.status, icon: AlertCircle, statusClass: 'status-neutral'
               };
               const StatusIcon = statusCfg.icon;
               const res = copy.reservation;
               const r = res?.profiles as { full_name?: string | null; avatar_url?: string | null } | null;
 
               return (
-                <div key={copy.id} className="group flex flex-col gap-2 rounded-lg border border-border/20 bg-muted/5 p-3 transition-colors hover:bg-muted/10">
+                <div key={copy.id} className="group flex flex-col gap-2 rounded-lg border border-border/60 bg-card/40 p-3 transition-colors hover:bg-muted/30">
                   <div className="flex items-center justify-between gap-3">
                     <div className="flex items-center gap-3 min-w-0">
-                      <div className={cn("h-9 w-9 shrink-0 rounded-md border flex items-center justify-center transition-colors", statusCfg.bg, statusCfg.border)}>
-                        <StatusIcon size={16} className={statusCfg.color} />
+                      <div className={cn("h-9 w-9 shrink-0 rounded-lg border flex items-center justify-center transition-colors", statusCfg.statusClass)}>
+                        <StatusIcon size={16} />
                       </div>
                       <div className="min-w-0">
                         <div className="flex items-center gap-2 mb-0.5">
-                          <p className="font-mono text-[12px] font-semibold text-foreground/90 truncate">{copy.qr_string}</p>
-                          <span className="text-[9px] font-medium text-muted-foreground px-1.5 py-0.5 border border-border/40 rounded bg-muted/40 uppercase tracking-tighter">{copy.accession_number}</span>
+                          <p className="font-mono text-xs font-semibold text-foreground truncate tabular-nums">{copy.qr_string}</p>
+                          <span className="text-xs font-medium text-muted-foreground px-1.5 py-0.5 border border-border/60 rounded-lg bg-muted/40 uppercase tracking-wider tabular-nums">{copy.accession_number}</span>
                         </div>
-                        <div className="flex items-center gap-2 text-[10px] text-muted-foreground/60">
-                          <span className={cn("font-medium", statusCfg.color)}>{statusCfg.label}</span>
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                          <span className={cn("font-semibold uppercase tracking-wider", statusCfg.statusClass, "bg-transparent border-none")}>{statusCfg.label}</span>
                           <span className="opacity-20">•</span>
-                          <span className="font-mono opacity-60">ID: {copy.id.split('-')[0]}</span>
+                          <span className="font-mono opacity-60 tabular-nums">ID: {copy.id.split('-')[0]}</span>
                         </div>
                       </div>
                     </div>
@@ -747,19 +750,19 @@ export function AdminManagementContent({
                         <Select value={copy.status} onValueChange={(v) => {
                           if (isEditableStatus(v)) handleStatusChange(copy.id, v);
                         }}>
-                          <SelectTrigger className="h-8 w-[100px] rounded-md border-none bg-muted/40 hover:bg-muted/60 px-2.5 text-[10px] font-semibold uppercase shadow-none focus:ring-0 transition-colors">
+                          <SelectTrigger className="h-8 w-[110px] rounded-lg border border-border/60 bg-muted/20 hover:bg-muted px-2.5 text-xs font-semibold uppercase tracking-wider shadow-none focus:ring-1 focus:ring-ring transition-colors">
                             <SelectValue />
                           </SelectTrigger>
-                          <SelectContent className="border-border/40 shadow-xl">
+                          <SelectContent className="border-border/60 shadow-xl rounded-lg">
                             {EDITABLE_STATUSES.map((key) => (
-                              <SelectItem key={key} value={key} className="text-[10px] font-semibold uppercase">
+                              <SelectItem key={key} value={key} className="text-xs font-semibold uppercase tracking-wider">
                                 {STATUS_CONFIG[key].label}
                               </SelectItem>
                             ))}
                           </SelectContent>
                         </Select>
                       ) : (
-                        <Badge variant="outline" className="h-8 px-2.5 text-[10px] font-semibold uppercase border-border/40">
+                        <Badge variant="outline" className="h-8 px-2.5 text-xs font-semibold uppercase tracking-wider border-border/60 rounded-lg">
                           {statusCfg.label}
                         </Badge>
                       )}
@@ -771,22 +774,22 @@ export function AdminManagementContent({
 
                   {/* Reserver Info */}
                   {copy.status === 'RESERVED' && r && (
-                    <div className="flex items-center gap-2.5 bg-indigo-500/5 rounded-md border border-indigo-500/10 p-2 mt-1">
-                      <div className="relative h-6 w-6 shrink-0 overflow-hidden rounded-full border border-background">
+                    <div className="flex items-center gap-2.5 bg-muted/40 rounded-lg border border-border/60 p-2 mt-1">
+                      <div className="relative h-6 w-6 shrink-0 overflow-hidden rounded-full border border-border/60">
                          {r.avatar_url ? (
                            <Image src={r.avatar_url} alt="" fill className="object-cover" unoptimized />
                          ) : (
-                           <div className="h-full w-full bg-indigo-100 dark:bg-indigo-900/40 flex items-center justify-center">
-                             <UserCircle2 size={12} className="text-indigo-400" />
+                           <div className="h-full w-full bg-muted flex items-center justify-center">
+                             <UserCircle2 size={12} className="text-muted-foreground" />
                            </div>
                          )}
                       </div>
                       <div className="min-w-0 flex-1">
-                        <p className="text-[10px] font-semibold text-indigo-600 dark:text-indigo-400 uppercase tracking-tight truncate">
+                        <p className="text-xs font-semibold text-foreground uppercase tracking-wider truncate">
                           Reserved by {r.full_name ?? 'Unknown User'}
                         </p>
                         {res?.hold_expires_at && (
-                          <p className="text-[9px] font-medium text-amber-500/80">
+                          <p className="text-xs font-medium text-status-warning">
                             Expires {formatRelativeTime(res.hold_expires_at, mounted)}
                           </p>
                         )}
@@ -800,7 +803,7 @@ export function AdminManagementContent({
         </div>
 
         {!loading && filteredCopies.length > COPIES_PER_PAGE && (
-          <div className="pt-2 border-t border-border/10">
+          <div className="pt-2 border-t border-border/60">
             <CompactPagination
               page={activePage}
               totalItems={filteredCopies.length}
@@ -812,7 +815,7 @@ export function AdminManagementContent({
         )}
       </div>
 
-      <div className="pt-2 border-t border-border/20 hidden">
+      <div className="pt-2 border-t border-border/60 hidden">
         {/* Analytics link removed per request to put everything in the modal */}
       </div>
     </div>

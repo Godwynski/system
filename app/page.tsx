@@ -1,17 +1,17 @@
-import { EnvVarWarning } from "@/components/env-var-warning";
 import { Logo } from "@/components/layout/Logo";
 import { AuthButton } from "@/components/auth/AuthButton";
 import { Hero } from "@/components/hero";
+import { LandingFooter } from "@/components/landing/LandingFooter";
 import { hasEnvVars } from "@/lib/utils";
 import Link from "next/link";
 import { Suspense } from "react";
 import { getMe } from "@/lib/auth-helpers";
 import { redirect } from "next/navigation";
-
 import { Skeleton } from "@/components/ui/skeleton";
 
 export const metadata = {
-  title: "Lumina LMS | Global Library Platform",
+  title: "Lumina LMS | Academic Library Platform",
+  description: "Minimalist institutional library management platform with optical barcode circulation, autonomous ISBN cataloging, and automated penalty governance.",
 };
 
 async function HeroSection() {
@@ -30,50 +30,47 @@ async function AuthRedirect() {
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-background selection:bg-muted/40 overflow-x-hidden">
+    <main className="min-h-screen bg-background selection:bg-foreground selection:text-background flex flex-col justify-between">
       <Suspense fallback={null}>
         <AuthRedirect />
       </Suspense>
-      {/* Dynamic Background */}
-      <div className="fixed inset-0 z-0 bg-[radial-gradient(hsl(var(--border))_1px,transparent_1px)] opacity-30 [background-size:24px_24px] [mask-image:radial-gradient(ellipse_60%_60%_at_50%_50%,#000_70%,transparent_100%)]"></div>
-      
-      <div className="relative z-10 flex min-h-screen w-full flex-col">
-        <header className="sticky top-0 z-50 flex h-20 w-full justify-center border-b border-border/40 bg-background/60 backdrop-blur-xl transition-all duration-300">
-          <div className="flex w-full max-w-7xl items-center justify-between px-6 md:px-10">
-            <div className="flex items-center gap-4 text-xl font-black tracking-tighter">
-              <Logo size={22} className="rotate-3" />
-              <Link href="/" className="text-foreground hover:opacity-80 transition-opacity">LUMINA</Link>
-            </div>
-            
-            <div className="flex items-center gap-6">
-              {!hasEnvVars ? (
-                <EnvVarWarning />
-              ) : (
-                <Suspense fallback={<Skeleton className="h-10 w-28 rounded-full" />}>
-                  <AuthButton />
-                </Suspense>
-              )}
-            </div>
+
+      {/* Header with Fluid Responsive Scaling */}
+      <header className="w-full border-b border-border/40 bg-background/80 backdrop-blur-sm sticky top-0 z-50">
+        <div className="flex h-16 sm:h-18 w-full max-w-6xl mx-auto items-center justify-between px-4 sm:px-6 md:px-8">
+          <Link href="/" className="flex items-center gap-2.5 sm:gap-3 group">
+            <Logo size={20} className="shadow-xs transition-opacity group-hover:opacity-80" />
+            <span className="text-sm sm:text-base font-bold tracking-tight text-foreground">
+              Lumina LMS
+            </span>
+          </Link>
+
+          <div className="flex items-center gap-3 sm:gap-5 text-xs sm:text-sm font-mono text-muted-foreground">
+            <span className="hidden sm:inline">Academic Edition</span>
+            {hasEnvVars && (
+              <Suspense fallback={<Skeleton className="h-9 w-9 sm:h-10 sm:w-10 rounded-xl" />}>
+                <AuthButton />
+              </Suspense>
+            )}
           </div>
-        </header>
-
-        <div className="flex-1 flex flex-col items-center">
-          <Suspense fallback={
-            <div className="min-h-[70vh] w-full flex flex-col items-center justify-center gap-8 px-6">
-              <Skeleton className="h-16 w-[300px] sm:w-[500px] rounded-2xl opacity-20" />
-              <Skeleton className="h-6 w-[250px] sm:w-[400px] rounded-xl opacity-10" />
-              <div className="flex gap-4">
-                <Skeleton className="h-12 w-32 rounded-full opacity-20" />
-                <Skeleton className="h-12 w-32 rounded-full opacity-10" />
-              </div>
-            </div>
-          }>
-            <HeroSection />
-          </Suspense>
         </div>
+      </header>
 
+      {/* Hero & Functional Console with Fluid Boundaries */}
+      <div className="flex-1 flex flex-col items-center justify-center">
+        <Suspense fallback={
+          <div className="min-h-[50vh] w-full flex flex-col items-center justify-center gap-6 px-6">
+            <Skeleton className="h-12 w-64 sm:w-96 rounded-xl opacity-20" />
+            <Skeleton className="h-5 w-72 sm:w-[480px] rounded-lg opacity-10" />
+            <Skeleton className="h-14 w-full max-w-md rounded-xl opacity-15" />
+          </div>
+        }>
+          <HeroSection />
+        </Suspense>
       </div>
+
+      {/* Minimal Responsive Footer */}
+      <LandingFooter />
     </main>
   );
 }
-
